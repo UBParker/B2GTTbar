@@ -49,13 +49,14 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         self.ak4Jet = ROOT.TLorentzVector()
         # INCORRECT: NEED TO FILL JET MASS FOR AK4 JETS
         # For now it is okay because we only use the 3-vector (delta r to lepton)
-        self.ak4Jet.SetPtEtaPhiM( self.tree.AK4dRminPt[0], self.tree.AK4dRminEta[0], self.tree.AK4dRminPhi[0], 0. )
+        self.ak4Jet.SetPtEtaPhiM( self.tree.AK4_dRminLep_Pt[0], self.tree.AK4_dRminLep_Eta[0], self.tree.AK4_dRminLep_Phi[0], self.tree.AK4_dRminLep_Mass[0] )
+        '''
         if self.printAK4Warning :
             print '----------------------------------- WARNING --------------------------------------'
             print '    AK4 jet mass is not set correctly. It is set to zero because it is not filled.'
             print '    To be fixed. Do NOT use the AK4 four vector, but you can use the three vector.'
             self.printAK4Warning = False
-
+        '''
         # Work the cut flow
         # Stage 0 : None.
         # Stage 1 : Trigger
@@ -75,18 +76,18 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         else :
             self.passed[1] = True
 
-        if not ( self.tree.LeptonIsMu[0] == 1 and self.leptonP4.Perp() > 60. and abs(self.leptonP4.Eta()) < 2.1 and self.tree.MuTight[0] ) : return self.passed
+        if not ( self.tree.LeptonIsMu[0] == 1 and self.leptonP4.Perp() > 53. and abs(self.leptonP4.Eta()) < 2.1 and self.tree.MuTight[0] ) : return self.passed
         self.passed[2] = True
         
-        if not (self.nuP4.Perp() > 50.) : return self.passed
+        if not (   self.nuP4.Perp() > 50.) : return self.passed
         self.passed[3] = True
 
         # NOTE: This jet cut was found to be strongly suboptimal by the semileptonic team. They had better performance at pt > 15 GeV, with 
         # delta R < 0.4 and ptrel > 20. For now, we will raise the HTLep cut and ptrel cut but we need to fix this. 
-        if not ( self.ak4Jet.Perp() > 50. and abs(self.ak4Jet.Eta()) < 2.4 and (self.tree.DeltaRJetLep[0] > 0.4 or self.tree.PtRel[0] > 40. ) ) : return self.passed
+        if not ( self.ak4Jet.M() > 30. and abs(self.ak4Jet.Eta()) < 2.4 and (self.tree.DeltaRJetLep[0] > 0.4 or self.tree.PtRel[0] > 20. ) ) : return self.passed
         self.passed[4] = True
         
-        if not ( (self.leptonP4 + self.nuP4).Perp() > 300. ) : return self.passed
+        if not ( (self.leptonP4 + self.nuP4).Perp() > 150. ) : return self.passed
         self.passed[5] = True
 
         return self.passed
