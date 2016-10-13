@@ -69,7 +69,7 @@ class RunSemiLepTTbar() :
 
         parser.add_option('--ignoreTrig', action='store_true',
                           dest='ignoreTrig',
-                          default = True,
+                          default = False,
                           help='Ignore the trigger?')
         
         parser.add_option('--Type2', action='store_true',
@@ -148,6 +148,8 @@ class RunSemiLepTTbar() :
         '''
         self.outfile.cd()
 
+        self.NegWeightsnum = 0.
+
         self.LeptonPtHist = []
         self.LeptonEtaHist = []
         self.METPtHist = []
@@ -195,7 +197,7 @@ class RunSemiLepTTbar() :
         # Deal with negative weights from W+ Jets 
         if theWeight < 0. :
            theWeight *= -1.
-
+           self.NegWeightsnum += 1
      
         if b.ak8Jet != None :
             self.AK8PtHist[index].Fill( b.ak8Jet.Perp()  , theWeight )
