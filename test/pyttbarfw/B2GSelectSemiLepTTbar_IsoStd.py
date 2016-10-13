@@ -41,12 +41,7 @@ class B2GSelectSemiLepTTbar_IsoStd( ) :
         self.ak4Jet = ROOT.TLorentzVector()
         # INCORRECT: NEED TO FILL JET MASS FOR AK4 JETS
         # For now it is okay because we only use the 3-vector (delta r to lepton)
-        self.ak4Jet.SetPtEtaPhiM( self.tree.AK4dRminPt[0], self.tree.AK4dRminEta[0], self.tree.AK4dRminPhi[0], 0. )
-        if self.printAK4Warning :
-            print '----------------------------------- WARNING --------------------------------------'
-            print '    AK4 jet mass is not set correctly. It is set to zero because it is not filled.'
-            print '    To be fixed. Do NOT use the AK4 four vector, but you can use the three vector.'
-            self.printAK4Warning = False
+        self.ak4Jet.SetPtEtaPhiM( self.tree.AK4_dRminLep_Pt[0], self.tree.AK4_dRminLep_Eta[0], self.tree.AK4_dRminLep_Phi[0], self.tree.AK4_dRminLep_Mass[0] )
 
         # Work the cut flow
         # Stage 0 : None.
@@ -73,14 +68,10 @@ class B2GSelectSemiLepTTbar_IsoStd( ) :
         if not (self.nuP4.Perp() > 40.) : return self.passed
         self.passed[3] = True
         
-        if not ( self.ak4Jet.Perp() > 30. and abs(self.ak4Jet.Eta()) < 2.4 and self.tree.DeltaRJetLep[0] > 0.4 ) : return self.passed
+        if not ( self.ak4Jet.M() > 30. and abs(self.ak4Jet.Eta()) < 2.4  ) : return self.passed
         self.passed[4] = True
         
-        if not ( (self.leptonP4 + self.nuP4).Perp() > 200. ) : return self.passed
+        if not ( self.tree.DeltaRJetLep[0] > 1. ) : return self.passed
         self.passed[5] = True
 
         return self.passed
-
-                    
-
-    
