@@ -68,10 +68,14 @@ class B2GSelectSemiLepTTbar_IsoStd( ) :
         if not (self.nuP4.Perp() > 40.) : return self.passed
         self.passed[3] = True
         
-        if not ( self.ak4Jet.M() > 30. and abs(self.ak4Jet.Eta()) < 2.4  ) : return self.passed
+        if not ( self.ak4Jet.Perp() > 30. and abs(self.ak4Jet.Eta()) < 2.4  ) : return self.passed
         self.passed[4] = True
         
-        if not ( self.tree.DeltaRJetLep[0] > 1. ) : return self.passed
+        if not ( self.tree.DeltaRJetLep[0] > 1. ) : return self.passed # Hemisphere cut btw lepton and W candidate ak8
         self.passed[5] = True
 
         return self.passed
+
+                    
+
+    
