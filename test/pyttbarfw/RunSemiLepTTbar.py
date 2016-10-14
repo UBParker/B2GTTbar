@@ -54,7 +54,7 @@ class RunSemiLepTTbar() :
 
         parser.add_option('--tau21Cut', type='float', action='store',
                           dest='tau21Cut',
-                          default = 0.6,
+                          default = 0.4,
                           help='Tau 21 cut')
 
         parser.add_option('--tau32Cut', type='float', action='store',
@@ -76,6 +76,11 @@ class RunSemiLepTTbar() :
                           default=False,
                           dest='Type2',
                           help='Do you want to apply selection for type 2 tops as described in AN-16-215 ?')
+
+        parser.add_option('--verbose', action='store_true',
+                          default=False,
+                          dest='verbose',
+                          help='Do you want to print values of key variables?')
 
         (options, args) = parser.parse_args(argv)
         argv = []
@@ -155,7 +160,8 @@ class RunSemiLepTTbar() :
         self.METPtHist = []
         self.HTLepHist = []
         self.Iso2DHist = []
-        
+        self.AK4BdiscHist = []        
+
         self.AK8PtHist = []
         self.AK8EtaHist = []
         self.AK8Tau21Hist = []
@@ -163,8 +169,30 @@ class RunSemiLepTTbar() :
         self.AK8MHist = []
         self.AK8MSDHist = []
         self.AK8MSDSJ0Hist = []
+        #self.AK8MSDSJ0PtHist = []          TO-DO : add histo of Pt of SD subjet 0
+
+        self.AK8MPt200To300Hist = []
+        self.AK8MSDPt200To300Hist = []
+        self.AK8MSDSJ0Pt200To300Hist = []
+
+        self.AK8MPt300To400Hist = []
+        self.AK8MSDPt300To400Hist = []
+        self.AK8MSDSJ0Pt300To400Hist = []
+
+        self.AK8MPt400To500Hist = []
+        self.AK8MSDPt400To500Hist = []
+        self.AK8MSDSJ0Pt400To500Hist = []
+
+        self.AK8MPt500To600Hist = []
+        self.AK8MSDPt500To600Hist = []
+        self.AK8MSDSJ0Pt500To600Hist = []
+
+        self.AK8MPt600To800Hist = []
+        self.AK8MSDPt600To800Hist = []
+        self.AK8MSDSJ0Pt600To800Hist = []
 
         self.hists = []
+
         for ival in xrange(self.nstages):
             self.AK8PtHist.append( ROOT.TH1F("AK8PtHist" +  str(ival), "Jet p_{T}, Stage " + str(ival), 1000, 0, 1000) )
             self.AK8EtaHist.append( ROOT.TH1F("AK8EtaHist" +  str(ival), "Jet #eta, Stage " + str(ival), 1000, -2.5, 2.5) )
@@ -181,7 +209,28 @@ class RunSemiLepTTbar() :
             self.METPtHist.append( ROOT.TH1F("METPtHist" +  str(ival), "Missing p_{T}, Stage " + str(ival), 1000, 0, 1000) )
             self.HTLepHist.append( ROOT.TH1F("HTLepHist" +  str(ival), "Lepton p_{T} + Missing p_{T}, Stage " + str(ival), 1000, 0, 1000) )
             self.Iso2DHist.append ( ROOT.TH2F("Iso2DHist" +  str(ival), "Lepton 2D isolation (#Delta R vs p_{T}^{REL} ), Stage " + str(ival), 25, 0, 500, 25, 0, 1) )
+            self.AK4BdiscHist.append( ROOT.TH1F("AK4BdiscHist" +  str(ival), "CSVv2 B disc , Stage " + str(ival), 1000, 0., 1.) )
 
+            # Create histos for type 1 selection binned pt of leading SD subjet 
+            self.AK8MPt200To300Hist.append( ROOT.TH1F("AK8MPt200To300Hist" +  str(ival), "Jet Mass, Stage " + str(ival), 1000, 0, 500) )
+            self.AK8MSDPt200To300Hist.append( ROOT.TH1F("AK8MSDPt200To300Hist" +  str(ival), "Jet Soft Dropped Mass, Stage " + str(ival), 1000, 0, 500) )
+            self.AK8MSDSJ0Pt200To300Hist.append( ROOT.TH1F("AK8MSDSJ0Pt200To300Hist" +  str(ival), "Leading Subjet Soft Dropped Mass, Stage " + str(ival), 1000, 0, 500) )
+
+            self.AK8MPt300To400Hist.append( ROOT.TH1F("AK8MPt300To400Hist" +  str(ival), "Jet Mass, Stage " + str(ival), 1000, 0, 500) )
+            self.AK8MSDPt300To400Hist.append( ROOT.TH1F("AK8MSDPt300To400Hist" +  str(ival), "Jet Soft Dropped Mass, Stage " + str(ival), 1000, 0, 500) )
+            self.AK8MSDSJ0Pt300To400Hist.append( ROOT.TH1F("AK8MSDSJ0Pt300To400Hist" +  str(ival), "Leading Subjet Soft Dropped Mass, Stage " + str(ival), 1000, 0, 500) )
+
+            self.AK8MPt400To500Hist.append( ROOT.TH1F("AK8MPt400To500Hist" +  str(ival), "Jet Mass, Stage " + str(ival), 1000, 0, 500) )
+            self.AK8MSDPt400To500Hist.append( ROOT.TH1F("AK8MSDPt400To500Hist" +  str(ival), "Jet Soft Dropped Mass, Stage " + str(ival), 1000, 0, 500) )
+            self.AK8MSDSJ0Pt400To500Hist.append( ROOT.TH1F("AK8MSDSJ0Pt400To500Hist" +  str(ival), "Leading Subjet Soft Dropped Mass, Stage " + str(ival), 1000, 0, 500) )
+
+            self.AK8MPt500To600Hist.append( ROOT.TH1F("AK8MPt500To600Hist" +  str(ival), "Jet Mass, Stage " + str(ival), 1000, 0, 500) )
+            self.AK8MSDPt500To600Hist.append( ROOT.TH1F("AK8MSDPt500To600Hist" +  str(ival), "Jet Soft Dropped Mass, Stage " + str(ival), 1000, 0, 500) )
+            self.AK8MSDSJ0Pt500To600Hist.append( ROOT.TH1F("AK8MSDSJ0Pt500To600Hist" +  str(ival), "Leading Subjet Soft Dropped Mass, Stage " + str(ival), 1000, 0, 500) )
+
+            self.AK8MPt600To800Hist.append( ROOT.TH1F("AK8MPt600To800Hist" +  str(ival), "Jet Mass, Stage " + str(ival), 1000, 0, 500) )
+            self.AK8MSDPt600To800Hist.append( ROOT.TH1F("AK8MSDPt600To800Hist" +  str(ival), "Jet Soft Dropped Mass, Stage " + str(ival), 1000, 0, 500) )
+            self.AK8MSDSJ0Pt600To800Hist.append( ROOT.TH1F("AK8MSDSJ0Pt600To800Hist" +  str(ival), "Leading Subjet Soft Dropped Mass, Stage " + str(ival), 1000, 0, 500) )
             
 
     def fill( self, index ) :
@@ -207,6 +256,27 @@ class RunSemiLepTTbar() :
             self.AK8MHist[index].Fill( b.ak8Jet.M()  , theWeight )
             self.AK8MSDHist[index].Fill( b.ak8SDJet.M()  , theWeight )
             self.AK8MSDSJ0Hist[index].Fill( b.ak8SDJet_Subjet0.M()  , theWeight )
+            # Filling jet mass histos binned by pt of the leading SD subjet
+            self.AK8MPt200To300Hist[index].Fill( b.ak8JetM200  , theWeight )
+            self.AK8MSDPt200To300Hist[index].Fill( b.ak8SDJetM200  , theWeight )
+            self.AK8MSDSJ0Pt200To300Hist[index].Fill( b.ak8SDJet_Subjet0M200  , theWeight )
+
+            self.AK8MPt300To400Hist[index].Fill( b.ak8JetM300  , theWeight )
+            self.AK8MSDPt300To400Hist[index].Fill( b.ak8SDJetM300  , theWeight )
+            self.AK8MSDSJ0Pt300To400Hist[index].Fill( b.ak8SDJet_Subjet0M300  , theWeight )
+
+            self.AK8MPt400To500Hist[index].Fill( b.ak8JetM400  , theWeight )
+            self.AK8MSDPt400To500Hist[index].Fill( b.ak8SDJetM400  , theWeight )
+            self.AK8MSDSJ0Pt400To500Hist[index].Fill( b.ak8SDJet_Subjet0M400  , theWeight )
+
+            self.AK8MPt500To600Hist[index].Fill( b.ak8JetM500  , theWeight )
+            self.AK8MSDPt500To600Hist[index].Fill( b.ak8SDJetM500  , theWeight )
+            self.AK8MSDSJ0Pt500To600Hist[index].Fill( b.ak8SDJet_Subjet0M500  , theWeight )
+
+            self.AK8MPt600To800Hist[index].Fill( b.ak8JetM600  , theWeight )
+            self.AK8MSDPt600To800Hist[index].Fill( b.ak8SDJetM600  , theWeight )
+            self.AK8MSDSJ0Pt600To800Hist[index].Fill( b.ak8SDJet_Subjet0M600  , theWeight )
+
 
         if a.leptonP4 != None : 
             self.LeptonPtHist[index].Fill( a.leptonP4.Perp()  , theWeight )
@@ -215,7 +285,7 @@ class RunSemiLepTTbar() :
             self.HTLepHist[index].Fill( a.leptonP4.Perp() + a.nuP4.Perp()  , theWeight )
             if a.ak4Jet != None : 
                 self.Iso2DHist[index].Fill( a.leptonP4.Perp( a.ak4Jet.Vect() ), a.leptonP4.DeltaR( a.ak4Jet )  , theWeight  )
-            
+                self.AK4BdiscHist[index].Fill(b.ak4JetBdisc , theWeight)
 
 
     def close( self ) :
