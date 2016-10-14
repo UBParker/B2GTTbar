@@ -49,11 +49,49 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.ak8SDJet_Subjet0 = ROOT.TLorentzVector()
         self.ak8SDJet_Subjet1 = ROOT.TLorentzVector()
         self.ak8SDJet_Subjet0.SetPtEtaPhiM( self.tree.JetPuppiSDsubjet0pt[0], self.tree.JetPuppiSDsubjet0eta[0], self.tree.JetPuppiSDsubjet0phi[0], self.tree.JetPuppiSDsubjet0mass[0] )
+
         self.ak8SDJet_Subjet1.SetPtEtaPhiM( self.tree.JetPuppiSDsubjet1pt[0], self.tree.JetPuppiSDsubjet1eta[0], self.tree.JetPuppiSDsubjet1phi[0], self.tree.JetPuppiSDsubjet1mass[0] )
         self.ak8SDJet =  self.ak8SDJet_Subjet0 +  self.ak8SDJet_Subjet1
+
+        self.ak8JetM200 = 0.
+        self.ak8SDJetM200 = 0.
+        self.ak8SDJet_Subjet0M200 = 0.
+        if (  200. < self.ak8SDJet_Subjet0.Perp() < 300. ) :
+	        self.ak8JetM200 = self.ak8Jet.M()
+	        self.ak8SDJetM200 = self.ak8SDJet.M()
+	        self.ak8SDJet_Subjet0M200 = self.ak8SDJet_Subjet0.M()
+        self.ak8JetM300 = 0.
+        self.ak8SDJetM300 = 0.
+        self.ak8SDJet_Subjet0M300 = 0.
+        if (  300. < self.ak8SDJet_Subjet0.Perp() < 400. ) :
+	        self.ak8JetM300 = self.ak8Jet.M()
+	        self.ak8SDJetM300 = self.ak8SDJet.M()
+	        self.ak8SDJet_Subjet0M300 = self.ak8SDJet_Subjet0.M()
+        self.ak8JetM400 = 0.
+        self.ak8SDJetM400 = 0.
+        self.ak8SDJet_Subjet0M400 = 0.
+        if (  400. < self.ak8SDJet_Subjet0.Perp() < 500. ) :
+	        self.ak8JetM400 = self.ak8Jet.M()
+	        self.ak8SDJetM400 = self.ak8SDJet.M()
+	        self.ak8SDJet_Subjet0M400 = self.ak8SDJet_Subjet0.M()
+        self.ak8JetM500 = 0.
+        self.ak8SDJetM500 = 0.
+        self.ak8SDJet_Subjet0M500 = 0.
+        if (  500. < self.ak8SDJet_Subjet0.Perp() < 600. ) :
+	        self.ak8JetM500 = self.ak8Jet.M()
+	        self.ak8SDJetM500 = self.ak8SDJet.M()
+	        self.ak8SDJet_Subjet0M500 = self.ak8SDJet_Subjet0.M()
+        self.ak8JetM600 = 0.
+        self.ak8SDJetM600 = 0.
+        self.ak8SDJet_Subjet0M600 = 0.
+        if (  600. < self.ak8SDJet_Subjet0.Perp() < 800. ) :
+	        self.ak8JetM600 = self.ak8Jet.M()
+	        self.ak8SDJetM600 = self.ak8SDJet.M()
+	        self.ak8SDJet_Subjet0M600 = self.ak8SDJet_Subjet0.M()
+
         self.tau32 = self.tree.JetPuppiTau32[0]
         self.tau21 = self.tree.JetPuppiTau21[0]
-        #print 'ak8SDJet = (%6.2f,%8.3f,%8.3f,%6.2f)' % ( self.ak8SDJet.Perp(), self.ak8SDJet.Eta(), self.ak8SDJet.Phi(), self.ak8SDJet.M() )
+        #if options.verbose : print 'ak8SDJet = (%6.2f,%8.3f,%8.3f,%6.2f)' % ( self.ak8SDJet.Perp(), self.ak8SDJet.Eta(), self.ak8SDJet.Phi(), self.ak8SDJet.M() )
 
 
         # Work the cut flow
@@ -67,10 +105,14 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         if not ( self.ak4JetBdisc > self.bdiscmin ) : return self.passed
         self.passed[2] = True
         
-        if not ( 110. < self.ak8SDJet.M() < 250. ) : return self.passed
+        if not ( 140. < self.ak8SDJet.M() < 250. ) : return self.passed
         self.passed[3] = True
 
         if not ( self.tau32 < self.tau32Cut ) : return self.passed
         self.passed[4] = True
 
         return self.passed
+
+                    
+
+    
