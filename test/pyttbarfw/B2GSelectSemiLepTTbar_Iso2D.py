@@ -10,7 +10,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
     """
     def __init__(self, options, tree ):
         self.ignoreTrig = options.ignoreTrig
-        self.nstages = 6
+        self.nstages = 8
         self.tree = tree        
         self.trigMap = TrigMap.TrigMap()
 
@@ -76,19 +76,28 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         else :
             self.passed[1] = True
 
-        if not ( self.tree.LeptonIsMu[0] == 1 and self.leptonP4.Perp() > 53. and abs(self.leptonP4.Eta()) < 2.1 and self.tree.MuTight[0] ) : return self.passed
+        if not ( self.tree.LeptonIsMu[0] == 1 and self.leptonP4.Perp() > 53. and abs(self.leptonP4.Eta()) < 2.1 and self.tree.MuTight[0] ) :
+            return self.passed
         self.passed[2] = True
         
-        if not (   self.nuP4.Perp() > 50.) : return self.passed
+        if not ( self.nuP4.Perp() > 50.) : return self.passed
         self.passed[3] = True
 
         # NOTE: This jet cut was found to be strongly suboptimal by the semileptonic team. They had better performance at pt > 15 GeV, with 
         # delta R < 0.4 and ptrel > 20. For now, we will raise the HTLep cut and ptrel cut but we need to fix this. 
-        if not ( self.ak4Jet.M() > 30. and abs(self.ak4Jet.Eta()) < 2.4 and (self.tree.DeltaRJetLep[0] > 0.4 or self.tree.PtRel[0] > 20. ) ) : return self.passed
+        if not ( self.ak4Jet.Perp() > 30. and abs(self.ak4Jet.Eta()) < 2.4  ) : return self.passed    
         self.passed[4] = True
         
-        if not ( (self.leptonP4 + self.nuP4).Perp() > 150. ) : return self.passed
+        # NOTE: I changed this from DeltRJetLep which is dR(lep, AK8) 
+        # https://github.com/cmsb2g/B2GTTbar/blob/79ec8fcd1965adb4840b448bfaa4f9049df76f6d/plugins/B2GTTbarTreeMaker.cc#L4621
+        if not  (self.tree.AK4_dRminLep_dRlep[0] > 0.4 or self.tree.PtRel[0] > 40 ) : return self.passed
         self.passed[5] = True
+
+        if not ( self.tree.DeltaRJetLep[0] > 1. ) : return self.passed # Hemisphere cut btw lepton and the ak8
+        self.passed[6] = True
+
+        if not ( (self.leptonP4 + self.nuP4).Perp() > 150. ) : return self.passed
+        self.passed[7] = True
 
         return self.passed
 
