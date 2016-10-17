@@ -76,11 +76,11 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         else :
             self.passed[1] = True
 
-        if not ( self.tree.LeptonIsMu[0] == 1 and self.leptonP4.Perp() > 53. and abs(self.leptonP4.Eta()) < 2.1 and self.tree.MuTight[0] ) :
+        if not ( self.tree.LeptonIsMu[0] == 1 and self.leptonP4.Perp() > 45. and abs(self.leptonP4.Eta()) < 2.1 and self.tree.MuTight[0] ) :
             return self.passed
         self.passed[2] = True
         
-        if not ( self.nuP4.Perp() > 50.) : return self.passed
+        if not ( self.nuP4.Perp() > 40.) : return self.passed
         self.passed[3] = True
 
         # NOTE: This jet cut was found to be strongly suboptimal by the semileptonic team. They had better performance at pt > 15 GeV, with 
@@ -96,8 +96,9 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         if not ( self.tree.DeltaRJetLep[0] > 1. ) : return self.passed # Hemisphere cut btw lepton and the ak8
         self.passed[6] = True
 
-        if not ( (self.leptonP4 + self.nuP4).Perp() > 150. ) : return self.passed
+        if not ( (self.leptonP4 + self.nuP4).Perp() > 200. ) : return self.passed
         self.passed[7] = True
+
 
         return self.passed
 
