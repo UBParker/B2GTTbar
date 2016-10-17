@@ -11,6 +11,7 @@ import sys
 import math
 import array as array
 import CMS_lumi, tdrstyle
+import ROOT
 from optparse import OptionParser
 
 parser = OptionParser()
@@ -29,6 +30,11 @@ parser.add_option('--rebinNum', type='float', action='store',
                   dest='rebinNum',
                   default = 10,
                   help='number to rebin the histograms by')
+
+parser.add_option('--nstages', type='int', action='store',
+                  dest='nstages',
+                  default = 13,
+                  help='number of stages of selection (sum of nstages from lept and had selections)')
 
 parser.add_option('--Type2', action='store_true',
                   default=False,
@@ -54,28 +60,22 @@ parser.add_option('--verbose', action='store_true',
 argv = []
 
 
-def ScalettMC(httbar__, hdata__ , hstT__ , hwjetsT__, intMin, intMax ) :
+def ScalettMC(httbar__, hdata__ , hMC__, intMin, intMax ) :
     # Find the tt scale factor
     sf = 0.
     scalefactortt = 0.
-
-    hMC__ = httbar__.Clone()
-    hMC__.SetDirectory(0)
-    if options.allMC:
-        hMC__.Add(hstT__)
-        hMC__.Add(hwjetsT__)
 
     intMinbin = hMC__.FindBin(intMin)
     intMaxbin = hMC__.FindBin(intMax)
 
     if (hdata__.Integral() > 0.) and (hMC__.Integral() > 0.) and options.ttSF: 
         diff = float(hdata__.Integral(intMinbin, intMaxbin))- float(  hMC__.Integral(intMinbin, intMaxbin)  )
-        sf = abs(    diff/ float(  httbar__.Integral(intMinbin, intMaxbin)     +1.  )        )     
+        sf = abs(    diff/ float(  httbar__.Integral(intMinbin, intMaxbin)     ) +1.       )     
     if not options.ttSF: 
         sf = 1.
 
     scalefactortt = sf 
-    if options.ttSF and options.vebose: print "tt SCALE FACTOR APPLIED : {0:2.2f}".format(scalefactortt)
+    if options.ttSF and options.verbose: print "tt SCALE FACTOR APPLIED : {0:2.2f} based on integral of range ({1},{2})".format(scalefactortt, intMin, intMax)
 
     if httbar__.Integral() > 0 : 
         httbar__.Scale( scalefactortt ) 
@@ -84,6 +84,43 @@ def ScalettMC(httbar__, hdata__ , hstT__ , hwjetsT__, intMin, intMax ) :
         httbar__.Scale( 0.)
 
     return httbar__ 
+
+# Define histograms and arrays for storing and calculating SF, JMR, JMS
+ptBs =  array.array('d', [200., 300., 400., 500., 600., 800.])
+nptBs = len(ptBs) - 1
+
+
+hpeak = ROOT.TH1F("hpeak", " ;p_{T} of SD subjet 0 (GeV); JMS ",  nptBs, ptBs)  ##frac{Mean Mass_{data}}{Mean Mass_{MC}}
+hwidth = ROOT.TH1F("hwidth", " ;p_{T} of SD subjet 0 (GeV); JMR ", nptBs, ptBs) ##frac{#sigma_{data}}{#sigma_{MC}}
+
+hNpassDataPre = ROOT.TH1F("hNpassDataPre", " ;;  ", nptBs, ptBs) 
+hNpassMCPre = ROOT.TH1F("hNpassMCPre", " ;;  ", nptBs, ptBs) 
+hmeanDataPre = ROOT.TH1F("hmeanDataPre", " ;;  ", nptBs, ptBs) 
+hmeanMCPre = ROOT.TH1F("hmeanMCPre", " ;;  ", nptBs, ptBs) 
+hsigmaDataPre = ROOT.TH1F("hsigmaDataPre", " ;;  ", nptBs, ptBs) 
+hsigmaMCPre = ROOT.TH1F("hsigmaMCPre", " ;;  ", nptBs, ptBs) 
+
+hNpassDataPost = ROOT.TH1F("hNpassDataPost", " ;;  ", nptBs, ptBs) 
+hNpassMCPost = ROOT.TH1F("hNpassMCPost", " ;;  ", nptBs, ptBs) 
+hscale = ROOT.TH1F("hscale", " ; ;  ", nptBs, ptBs)
+hDataEff = ROOT.TH1F("hDataEff", " ; ; ", nptBs, ptBs)
+hMCEff = ROOT.TH1F("hMCEff", " ; ; ", nptBs, ptBs)
+
+
+nMCpre = array.array('d', [0., 0., 0., 0., 0.])
+nDatapre = array.array('d', [0., 0., 0., 0., 0.])
+nMCupre = array.array('d', [0., 0., 0., 0., 0.])
+nDataupre = array.array('d', [0., 0., 0., 0., 0.])
+
+MCmeans = array.array('d', [0., 0., 0., 0., 0.])
+MCsigmas = array.array('d', [0., 0., 0., 0., 0.])
+Datameans = array.array('d', [0., 0., 0., 0., 0.])
+Datasigmas = array.array('d', [0., 0., 0., 0., 0.])
+
+nMCpost = array.array('d', [0., 0., 0., 0., 0.])
+nDatapost = array.array('d', [0., 0., 0., 0., 0.])
+nMCupost = array.array('d', [0., 0., 0., 0., 0.])
+nDataupost = array.array('d', [0., 0., 0., 0., 0.])
 
 
 
@@ -100,7 +137,7 @@ if options.Type2:
                           [0.0    ,   600. ], # LeptonPtHist
                           [2.5    ,  -2.5  ], # LeptonEtaHist
                           [0.     ,   300. ], # METPtHist
-                          [0.     ,   400. ], # HTLepHist
+                          [0.     ,   700. ], # HTLepHist
                           [0.     ,   300. ], # Iso2DHist  
                           [0.     ,     1. ], # AK4BdiscHist
                           [39.    ,   150. ], # AK8MSDSJ0Pt200To300Hist
@@ -120,7 +157,7 @@ else:
                           [0.0    ,   600. ], # LeptonPtHist
                           [2.5    ,  -2.5  ], # LeptonEtaHist
                           [0.     ,   300. ], # METPtHist
-                          [0.     ,   400. ], # HTLepHist
+                          [0.     ,   700. ], # HTLepHist
                           [0.     ,   300. ], # Iso2DHist
                           [0.     ,     1. ], # AK4BdiscHist
                           [39.    ,   150. ], # AK8MSDSJ0Pt200To300Hist
@@ -192,11 +229,6 @@ HistoTitle =            [           "AK8 Jet SD Mass (GeV)",
 iHisto = Histos.index(options.hist) 
 if options.verbose : print "Histo name in options was {0}, index number {1:0.0f}, entry in Histos(index) is {2}".format(options.hist, iHisto, Histos[iHisto] )
 
-
-import ROOT
-#ROOT.gStyle.SetTitleOffset(0.5, "Y")
-
-
 #set the tdr style
 tdrstyle.setTDRStyle()
 
@@ -242,8 +274,8 @@ xs_wjets = [
     ]
 
 nev_wjets = [
-    26304033., #100To200   10 / 214 failed      # fix this: update to new numbers after crab report
-    4963240.,  #200To400 
+    27529599., #100To200   1 / 642 failed      CORRECT
+    4963240.,  #200To400  # fix this: update to new numbers after crab report
     1963464.,  #400To600 
     3722395.,  #600To800
     6314257.,  #800To1200 
@@ -260,14 +292,14 @@ xs_st = [
     ]
 
 nev_st = [                                      # fix this :add event counts from crab report
-    3279200.,     #ST t-channel top  
-    1682400.,     #ST t-channel antitop   
-    998400.,     #ST tW top                        https://twiki.cern.ch/twiki/bin/view/LHCPhysics/SingleTopRefXsec#Single_top_Wt
+   2990400.,     #ST t-channel top  1/41 incomplete
+   1682400.,     #ST t-channel antitop  
+    998400.,     #ST tW top     
     985000.,     #ST tW antitop                         
-    985000.,     #ST s-channel  
+   1000000.,     #ST s-channel  
     ]
 
-ROOT.gStyle.SetOptStat(000000)
+
 
 if options.Type2 :
     print "Type 2 selection"
@@ -302,22 +334,28 @@ if options.allMC :
 
     wjets_colors = [   
         ROOT.kWhite,ROOT.kRed - 9, ROOT.kRed - 7, ROOT.kRed - 4, ROOT.kRed, ROOT.kRed +1, ROOT.kRed +2   ]
-    #wjets_colors = [  ROOT.kBlack,ROOT.kMagenta, ROOT.kYellow, ROOT.kGreen, ROOT.kRed, ROOT.kBlue, ROOT.kOrange   ]
 
-    '''
-    stfiles = [
-        ROOT.TFile('wjets100to200_outfile.root'),
-        ROOT.TFile('wjets200to400_outfile.root'),
-        ROOT.TFile('wjets400to600_outfile.root'),
-        ROOT.TFile('wjets600to800_outfile.root'),
-        ROOT.TFile('wjets800to1200_outfile.root')
-        ]
+    if options.Type2 :
+        stfiles = [
+                ROOT.TFile('st1_outfile_type2.root'),
+                ROOT.TFile('st2_outfile_type2.root'),
+                ROOT.TFile('st3_outfile_type2.root'),
+                ROOT.TFile('st4_outfile_type2.root'),
+                ROOT.TFile('st5_outfile_type2.root') ]
+    else:        
+        stfiles = [
+                ROOT.TFile('st1_outfile_type1.root'),
+                ROOT.TFile('st2_outfile_type1.root'),
+                ROOT.TFile('st3_outfile_type1.root'),
+                ROOT.TFile('st4_outfile_type1.root'),
+                ROOT.TFile('st5_outfile_type1.root'),
+            ]
 
     st_colors = [  ROOT.kWhite,ROOT.kCyan - 9, ROOT.kCyan - 7, ROOT.kCyan - 4, ROOT.kCyan  ]
-    '''
+    
 objs = []
 
-for istage in xrange(13) : 
+for istage in xrange(options.nstages) : 
 
     # Get and scale the stored histos
  
@@ -326,6 +364,7 @@ for istage in xrange(13) :
 
 
     hwjets_list = []
+    hst_list = []
     if options.allMC :
         # W + Jets MC Stack
         hwjets = None
@@ -344,11 +383,10 @@ for istage in xrange(13) :
         #hwjets_stack.Draw("hist")
         hwjets.SetFillColor( ROOT.kRed )
         hwjets.Rebin(options.rebinNum)
-        '''
+        
         # ST stack (t-channel top, t-channel antitop, tW top, tW antitop, s-channel)
         hst = None
         hst_stack = ROOT.THStack("hst_stack", "hst_stack")
-        # working here ???
         for ist in xrange(len(stfiles)) :
             htemp = stfiles[ist].Get(options.hist + str(istage))
             htemp.Scale( xs_st[ist] / nev_st[ist] * lumi )
@@ -363,36 +401,38 @@ for istage in xrange(13) :
 
         hst.SetFillColor( ROOT.kCyan )
         hst.Rebin(options.rebinNum)
-        '''
+        
 
     httbar = ttbarfile.Get(options.hist + str(istage))
     httbar.Sumw2()
-    httbar.Scale( xs_ttbar / nev_ttbar * lumi )
-    if options.allMC : 
-        #httbar = ScalettMC(httbar, hdata, hst , hwjets,  xAxisrange[iHisto][0] , xAxisrange[iHisto][1] ) 
-        if options.verbose : print "Apply another scaling after adding ST "
+    ttKfactor = 1. # 0.94 # TO-DO - Check with Christine on origin of this and updating to 80x
+    httbar.Scale(ttKfactor * xs_ttbar / nev_ttbar * lumi )
     httbar.SetFillColor(ROOT.kGreen + 2)
-
-
     httbar.Rebin(options.rebinNum)
+
     hdata.Rebin(options.rebinNum)
 
     mchist = httbar.Clone()
     if options.allMC : 
         mchist.Add( hwjets )
-        #mchist.Add( hst )
+        mchist.Add( hst )
+
+    #Scale ttbar MC by ratio of integrals of data MC
+    httbar = ScalettMC(httbar, hdata, mchist ,  xAxisrange[iHisto][0] , xAxisrange[iHisto][1] ) 
 
     hstack = ROOT.THStack("bkgs", "")
     if options.allMC :
         hstack.Add( hwjets )
+        hstack.Add( hst )
     hstack.Add( httbar )
    
     # Fitting Preparation 
     ## Only fit the histos of SD jet mass in later stages of selection
-    if (iHisto <2 or iHisto > 12 ) and istage > 7 : 
+    if (iHisto <2 or iHisto > 12 ) and istage >= (options.nstages-2) : 
+        theIndex = iHisto - 13
 
         if options.Type2 :
-            if iHisto == 1 : continue # Don't fit SD subjet mass for type 2
+            if iHisto == 1 or iHisto > 12 : continue # Don't fit SD subjet mass for type 2
             minFit = 55.
             maxFit = 115.
 
@@ -402,18 +442,18 @@ for istage in xrange(13) :
             maxFit = 115.
 
 
-        if options.verbose : print "Fitting range is from {0:2.2f} to {1:2.2f} GeV".format(minFit, maxFit)
+        if options.verbose : print "Fitting range for {0} ,istage {1}, is from {2:2.2f} to {3:2.2f} GeV".format(options.hist, istage, minFit, maxFit)
 
         fitter_data = ROOT.TF1("fitter_data", "gaus", minFit, maxFit)
 
-        ''' # TO-DO : finish adding constraints on the gaussian fitting
-        if options.fixFit :
-            data_meanval = Datameans[iHisto]
-            data_sigmaval = Datasigmas[iHisto] 
+        if options.fixFit and istage ==(options.nstages - 1) :
+            
+            data_meanval = Datameans[theIndex]                                          
+            data_sigmaval = Datasigmas[theIndex] 
 
             fitter_data.FixParameter(1, data_meanval)
             fitter_data.FixParameter(2, data_sigmaval)
-        '''
+        
         fitter_data.SetLineColor(1)
         fitter_data.SetLineWidth(2)
         fitter_data.SetLineStyle(2)
@@ -433,19 +473,16 @@ for istage in xrange(13) :
 
         print 'Combined: amp_data {0:6.3}, eamp_data {1:6.3}, mean_data {2:6.3},emean_data {3:6.3}, width_data {4:6.3}, ewidth_data {5:6.3}  '.format(amp_data , eamp_data , mean_data, emean_data,  width_data, ewidth_data   ) 
 
-        ''' TO-DO : save these values at stage max-1 to use for fixing the fit at final selection stage
-        if options.pre :
-            Datameans[ipt] = mean_data
-            Datasigmas[ipt] = width_data
-        if ipt <=6:
-            mc_meanval = MCmeans[ipt]
-            mc_sigmaval = MCsigmas[ipt]
 
+        if options.fixFit and istage == (options.nstages -2) :
+            Datameans[theIndex] = mean_data
+            Datasigmas[theIndex] = width_data
 
-        if options.fixFit :
+        if options.fixFit and istage == (options.nstages -1):
+            mc_meanval = MCmeans[theIndex]
+            mc_sigmaval = MCsigmas[theIndex]
             fitter_mc.FixParameter(1, mc_meanval)
             fitter_mc.FixParameter(2, mc_sigmaval)
-        '''
 
         fitter_mc = ROOT.TF1("fitter_mc", "gaus", minFit, maxFit)
         fitter_mc.SetLineColor(4)
@@ -464,18 +501,173 @@ for istage in xrange(13) :
         ewidth_mc = fitter_mc.GetParError(2); 
               
         print 'MC : amp_mc {0:6.3}, eamp_mc {1:6.3}, mean_mc {2:6.3},emean_mc {3:6.3}, width_mc {4:6.3}, ewidth_mc {5:6.3}  '.format(amp_mc , eamp_mc , emean_mc, emean_mc,  width_mc, ewidth_mc   ) 
-        '''
-        if options.pre and ipt <=3 :
-            MCmeans[ipt] = mean_mc
-            MCsigmas[ipt] = width_mc
-        '''
+
+        if options.fixFit and istage == (options.nstages -2) :
+            MCmeans[theIndex] = mean_mc
+            MCsigmas[theIndex] = width_mc
+
+        if iHisto > 12 :
+            # define pt of SD subjet 0 for this histo
+            ptIs = [250., 350.,450.,550.,700.]           
+            pt = ptIs[theIndex]
+
+            jmr = 1.0
+            jmr_uncert = jmr
+            jms = 1.0
+            jms_uncert = jms
+            
+            binSizeData = hdata.GetBinWidth(0)
+            binSizeMC = mchist.GetBinWidth(0) 
+
+            if options.verbose : print "Bin size in data {0:1.2f} and MC  {1:1.2f}".format(binSizeData, binSizeMC )
+            mclow = 0. 
+            mchigh = 0.
+
+            datalow = 0.
+            datahigh = 0.
+           
+            mclow = MCmeans[theIndex] - MCsigmas[theIndex] 
+            mchigh = MCmeans[theIndex] + MCsigmas[theIndex] 
+
+            datalow = Datameans[theIndex] - Datasigmas[theIndex] 
+            datahigh = Datameans[theIndex] + Datasigmas[theIndex]
+
+            mcAxis = mchist.GetXaxis()
+            dataAxis = hdata.GetXaxis()
+
+            bminmc = mcAxis.FindBin(mclow)
+            bmaxmc = mcAxis.FindBin(mchigh)
+
+            bmindata = hdata.FindBin(datalow)
+            bmaxdata = hdata.FindBin(datahigh)
+
+            if istage == (options.nstages-2)  :
+                nMCpre[theIndex] = mchist.Integral(bminmc , bmaxmc  ) #/ binSizeMC
+                nDatapre[theIndex] = hdata.Integral(bmindata, bmaxdata  ) #/ binSizeData
+                nMCupre[theIndex] =  math.sqrt( nMCpre[theIndex] )   #mchist.IntegralError(bminmc , bmaxmc  ) / binSizeMC
+                nDataupre[theIndex] = math.sqrt(nDatapre[theIndex] ) #hdata.IntegralError(bmindata, bmaxdata  ) / binSizeData
+            if istage == (options.nstages-1)  :
+                nMCpost[theIndex] = mchist.Integral(bminmc , bmaxmc  ) #/ binSizeMC
+                nDatapost[theIndex] = hdata.Integral(bmindata, bmaxdata  ) #/ binSizeData
+                nMCupost[theIndex] =  math.sqrt( nMCpost[theIndex] )  #mchist.IntegralError(bminmc , bmaxmc  ) / binSizeMC
+                nDataupost[theIndex] = math.sqrt(nDatapost[theIndex] )#hdata.IntegralError(bmindata, bmaxdata  ) / binSizeData
+
+            # compute the jet mass resolution
+            jmr = 0.
+            jmr_uncert = 0.
+            jmrel_uncert = 0.
+            jmrel = 0.
+            jmrmu = 0.
+            jmrmu_uncert = 0.
+            if mean_mc > 0. : 
+                jmr = mean_data / mean_mc
+                jmr_uncert = jmr * math.sqrt( (emean_data/mean_data)**2 + (emean_mc/mean_mc)**2 )
+
+            # compute the jet mass scale
+            jms = 0.
+            jms_uncert = 0.
+            jms_mu = 0.
+            jms_mu_uncert = 0.
+            jms_el = 0.
+            jms_el_uncert = 0.
+            if width_mc > 0. :
+                jms = width_data / width_mc
+                jms_uncert = jms * math.sqrt( (ewidth_data/width_data)**2 + (ewidth_mc/width_mc)**2 )
+
+            ibin = hpeak.GetXaxis().FindBin(pt)
+            hpeak.SetBinContent(ibin, jmr ) 
+            hwidth.SetBinContent(ibin, jms )
+            hpeak.SetBinError(ibin, jmr_uncert)   
+            hwidth.SetBinError(ibin, jms_uncert)
 
 
+            if istage == (options.nstages -2) :
+                ibin = hNpassDataPre.GetXaxis().FindBin(pt)
+                hNpassDataPre.SetBinContent(ibin, nDatapre[theIndex])
+                hNpassMCPre.SetBinContent(ibin, nMCpre[theIndex])
+                hNpassDataPre.SetBinError(ibin, nDataupre[theIndex])
+                hNpassMCPre.SetBinError(ibin, nMCupre[theIndex])
+                hmeanDataPre.SetBinContent(ibin, Datameans[theIndex]) 
+                hmeanMCPre.SetBinContent(ibin, MCmeans[theIndex] )
+                hsigmaDataPre.SetBinContent(ibin, Datasigmas[theIndex])
+                hsigmaMCPre.SetBinContent(ibin,  MCsigmas[theIndex] )
+            if istage == (options.nstages -1) :
+                ibin = hNpassDataPost.GetXaxis().FindBin(pt)
+                hNpassDataPost.SetBinContent(ibin, nDatapost[theIndex])
+                hNpassMCPost.SetBinContent(ibin, nMCpost[theIndex])
+                hNpassDataPost.SetBinError(ibin, nDataupost[theIndex])
+                hNpassMCPost.SetBinError(ibin, nMCupost[theIndex])
 
-        # TO-DO : finish adding gaussian fitting
+                for ipt in xrange(0, len(ptBs)-1 ) :
+                    datapost = nDatapost[ipt] 
+                    datapre  = nDatapre[ipt] 
+                    pt = ptBs[ipt]
+                    ptToFill = float(pt)
+                    if pt > 800. :
+                        ptToFill = 799.
+                    bot = -1.
+                    if float(nMCpre[ipt]) > 0.001 :
+                        bot = ( float(nMCpost[ipt]) / float(nMCpre[ipt]) )
+                    if (nDatapre[ipt] > 0.001 and nMCpre[ipt] > 0.001 and pt >= 201. and float(datapre) > 0.001 and  bot > 0.001) :
+                        print "bot {} datapre {} datapost {}".format(bot, datapre, datapost)
+                        SF =  ( float(datapost) / float(datapre) ) / bot
+                        SF_sd = SF * math.sqrt(   (- float(datapost) + float(datapre) ) / ( float(datapost) * float(datapre) )  + (-float(nMCpost[ipt]) + float(nMCpre[ipt])) / (float(nMCpost[ipt]) * float(nMCpre[ipt]))  )
+                        print "............................................"
+                        print "             SCALE FACTOR                   "
+                        print "............................................"
+                        print "pt Bin lower bound in GeV :  " + str(pt)
+                        print "Preliminary W tagging SF from subjet w : " + str(SF)
+                        print "Data efficiency for this  bin {0:5.3}".format(  float(datapost) / float(datapre) )
+                        print "MC efficiency for this  bin" + str(float(nMCpost[ipt]) / float(nMCpre[ipt]))
+                        print "standard deviation : " + str(SF_sd)
+                        print "............................................"
+                        ibin = hscale.GetXaxis().FindBin(ptToFill)
+                        hscale.SetBinContent(ibin, SF )
+                        hscale.SetBinError(ibin, SF_sd)
+                    else :
+                        ibin = hscale.GetXaxis().FindBin(ptToFill)
+                        hscale.SetBinContent(ibin, 0.0 )
+
+        print "Integrals of fitted mass peak for W subjet of high Pt top:"
 
 
+        print "##################  DATA  #############################"
 
+        print "N pass post W tag Data pt 200-300 : " + str( nDatapost[0])
+        print "N pass pre W tag Data pt 200-300 : " + str(nDatapre[0])
+
+        print "N pass post W tag Data pt 300-400 : " + str(nDatapost[1])
+        print "N pass pre W tag Data pt 300-400 : " + str(nDatapre[1])
+
+        print "N pass post W tag Data pt 400-500 : " + str(nDatapost[2])
+        print "N pass pre W tag Data pt 400-500 : " + str(nDatapre[2])
+
+        print "N pass post W tag Data pt 500-600 : " + str(nDatapost[3])
+        print "N pass pre W tag Data pt 500-600 : " + str(nDatapre[3])
+
+        print "N pass post W tag Data pt 600-800 : " + str(nDatapost[4])
+        print "N pass pre W tag Data pt 600-800 : " + str(nDatapre[4])
+
+        print "##################   MC   #############################"
+
+        print "N pass post W tag MC pt 200-300 : " + str( nMCpost[0])
+        print "N pass pre W tag MC pt 200-300 : " + str(nMCpre[0])
+
+        print "N pass post W tag MC pt 300-400 : " + str(nMCpost[1])
+        print "N pass pre W tag MC pt 300-400 : " + str(nMCpre[1])
+
+        print "N pass post W tag MC pt 400-500 : " + str(nMCpost[2])
+        print "N pass pre W tag MC pt 400-500 : " + str(nMCpre[2])
+
+        print "N pass post W tag MC pt 500-600 : " + str(nMCpost[3])
+        print "N pass pre W tag MC pt 500-600 : " + str(nMCpre[3])
+
+        print "N pass post W tag MC pt 600-800 : " + str(nMCpost[4])
+        print "N pass pre W tag MC pt 600-800 : " + str(nMCpre[4])
+
+        print "###############################################"
+
+    
 
     # TO-DO : Add Ratios to plots
     c1 = ROOT.TCanvas("c" + str(istage), "c" + str(istage) )
@@ -487,9 +679,9 @@ for istage in xrange(13) :
     if options.verbose : print "Setting X axis range to ({0}  ,  {1})".format(xAxisrange[iHisto][0] , xAxisrange[iHisto][1] )
     hstack.Draw("hist same")
     hstack.GetXaxis().SetRangeUser(  xAxisrange[iHisto][0] , xAxisrange[iHisto][1] )
-    #hstack.SetMaximum(   max (max1,max2) * 1.618 )
+    hstack.SetMaximum(   max2 * 1.318 )
     ## Only fit the histos of SD jet mass in later stages of selection
-    if (iHisto <2 or iHisto > 12 ) and istage > 7 : 
+    if (iHisto <2 or iHisto > 12 ) and istage >= (options.nstages -2) : 
         fitter_mc.Draw("same")
         fitter_data.Draw("same")
         #fitter_mc.SetMaximum(   max (max1,max2) * 1.618 )
@@ -514,13 +706,13 @@ for istage in xrange(13) :
     leg.AddEntry( httbar, 't#bar{t}', 'f')
     if options.allMC :
         leg.AddEntry( hwjets, 'W+jets', 'f')
-        #leg.AddEntry( hst, 'ST', 'f')
+        leg.AddEntry( hst, 'ST', 'f')
     leg.Draw()
-    
+    #ROOT.gStyle.SetOptStat(000000)
     c1.Update()
     c1.Draw()
 
-    if options.allMC :    MCs = "_MCIsttbarWjets" # update when adding ST
+    if options.allMC :    MCs = "_MCIsttbarWjetsST"
     else             :    MCs = "_MCIsttbar"
 
     if options.Type2 : typeIs = "_type2Tops"
