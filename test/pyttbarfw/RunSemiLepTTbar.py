@@ -100,6 +100,9 @@ class RunSemiLepTTbar() :
         entries = self.treeobj.tree.GetEntries()
         self.eventsToRun = entries
 
+        ### count number of events with negative weights
+        self.NegWeightsnum = 0.
+
         ### Here is the semileptonic ttbar selection for W jets
 
         if options.Type2 :
@@ -153,8 +156,6 @@ class RunSemiLepTTbar() :
         '''
         self.outfile.cd()
 
-        self.NegWeightsnum = 0.
-
         self.LeptonPtHist = []
         self.LeptonEtaHist = []
         self.METPtHist = []
@@ -169,7 +170,7 @@ class RunSemiLepTTbar() :
         self.AK8MHist = []
         self.AK8MSDHist = []
         self.AK8MSDSJ0Hist = []
-        #self.AK8MSDSJ0PtHist = []          TO-DO : add histo of Pt of SD subjet 0
+        self.AK8SDSJ0PtHist = []          
 
         self.AK8MPt200To300Hist = []
         self.AK8MSDPt200To300Hist = []
@@ -195,6 +196,7 @@ class RunSemiLepTTbar() :
 
         for ival in xrange(self.nstages):
             self.AK8PtHist.append( ROOT.TH1F("AK8PtHist" +  str(ival), "Jet p_{T}, Stage " + str(ival), 1000, 0, 1000) )
+            self.AK8SDSJ0PtHist.append( ROOT.TH1F("AK8SDSJ0PtHist" +  str(ival), "SD subjet 0 P_{T}, Stage " + str(ival), 1000, 0, 1000) )
             self.AK8EtaHist.append( ROOT.TH1F("AK8EtaHist" +  str(ival), "Jet #eta, Stage " + str(ival), 1000, -2.5, 2.5) )
             self.AK8Tau21Hist.append( ROOT.TH1F("AK8Tau21Hist" +  str(ival), "Jet #tau_{21}, Stage " + str(ival), 1000, 0., 1.) )
             self.AK8Tau32Hist.append( ROOT.TH1F("AK8Tau32Hist" +  str(ival), "Jet #tau_{32}, Stage " + str(ival), 1000, 0., 1.) )
@@ -241,41 +243,45 @@ class RunSemiLepTTbar() :
         a = self.lepSelection
         b = self.hadSelection 
   
-        theWeight =  b.EventWeight 
+        theWeight =  b.EventWeight * b.PUWeight
 
         # Deal with negative weights from W+ Jets 
         if theWeight < 0. :
            theWeight *= -1.
            self.NegWeightsnum += 1
+           #print "{} Negative weights present".format(self.NegWeightsnum)
      
         if b.ak8Jet != None :
             self.AK8PtHist[index].Fill( b.ak8Jet.Perp()  , theWeight )
+            self.AK8SDSJ0PtHist[index].Fill( b.ak8SDJet_Subjet0.Perp()  , theWeight )
             self.AK8EtaHist[index].Fill( b.ak8Jet.Eta()  , theWeight )
             self.AK8Tau21Hist[index].Fill( b.tau21  , theWeight )
             self.AK8Tau32Hist[index].Fill( b.tau32  , theWeight )
-            self.AK8MHist[index].Fill( b.ak8Jet.M()  , theWeight )
-            self.AK8MSDHist[index].Fill( b.ak8SDJet.M()  , theWeight )
-            self.AK8MSDSJ0Hist[index].Fill( b.ak8SDJet_Subjet0.M()  , theWeight )
+
+            self.AK8MHist[index].Fill( b.ak8_m  , theWeight )
+            self.AK8MSDHist[index].Fill( b.ak8SD_m  , theWeight )
+            self.AK8MSDSJ0Hist[index].Fill( b.ak8SDsj0_m  , theWeight )
             # Filling jet mass histos binned by pt of the leading SD subjet
-            self.AK8MPt200To300Hist[index].Fill( b.ak8JetM200  , theWeight )
-            self.AK8MSDPt200To300Hist[index].Fill( b.ak8SDJetM200  , theWeight )
-            self.AK8MSDSJ0Pt200To300Hist[index].Fill( b.ak8SDJet_Subjet0M200  , theWeight )
 
-            self.AK8MPt300To400Hist[index].Fill( b.ak8JetM300  , theWeight )
-            self.AK8MSDPt300To400Hist[index].Fill( b.ak8SDJetM300  , theWeight )
-            self.AK8MSDSJ0Pt300To400Hist[index].Fill( b.ak8SDJet_Subjet0M300  , theWeight )
+            self.AK8MPt200To300Hist[index].Fill( b.ak8Jet200.M()  , theWeight )
+            self.AK8MSDPt200To300Hist[index].Fill( b.ak8SDJet200.M()  , theWeight )
+            self.AK8MSDSJ0Pt200To300Hist[index].Fill(  b.ak8SDsj0_m200 , theWeight )
 
-            self.AK8MPt400To500Hist[index].Fill( b.ak8JetM400  , theWeight )
-            self.AK8MSDPt400To500Hist[index].Fill( b.ak8SDJetM400  , theWeight )
-            self.AK8MSDSJ0Pt400To500Hist[index].Fill( b.ak8SDJet_Subjet0M400  , theWeight )
+            self.AK8MPt300To400Hist[index].Fill( b.ak8Jet300.M()  , theWeight )
+            self.AK8MSDPt300To400Hist[index].Fill( b.ak8SDJet300.M()  , theWeight )
+            self.AK8MSDSJ0Pt300To400Hist[index].Fill( b.ak8SDsj0_m300  , theWeight )
 
-            self.AK8MPt500To600Hist[index].Fill( b.ak8JetM500  , theWeight )
-            self.AK8MSDPt500To600Hist[index].Fill( b.ak8SDJetM500  , theWeight )
-            self.AK8MSDSJ0Pt500To600Hist[index].Fill( b.ak8SDJet_Subjet0M500  , theWeight )
+            self.AK8MPt400To500Hist[index].Fill(  b.ak8Jet400.M()  , theWeight )
+            self.AK8MSDPt400To500Hist[index].Fill( b.ak8SDJet400.M()  , theWeight )
+            self.AK8MSDSJ0Pt400To500Hist[index].Fill( b.ak8SDsj0_m400  , theWeight )
 
-            self.AK8MPt600To800Hist[index].Fill( b.ak8JetM600  , theWeight )
-            self.AK8MSDPt600To800Hist[index].Fill( b.ak8SDJetM600  , theWeight )
-            self.AK8MSDSJ0Pt600To800Hist[index].Fill( b.ak8SDJet_Subjet0M600  , theWeight )
+            self.AK8MPt500To600Hist[index].Fill( b.ak8Jet500.M()  , theWeight )
+            self.AK8MSDPt500To600Hist[index].Fill( b.ak8SDJet500.M()  , theWeight )
+            self.AK8MSDSJ0Pt500To600Hist[index].Fill( b.ak8SDsj0_m500  , theWeight )
+
+            self.AK8MPt600To800Hist[index].Fill(  b.ak8Jet600.M()   , theWeight )
+            self.AK8MSDPt600To800Hist[index].Fill( b.ak8SDJet600.M()  , theWeight )
+            self.AK8MSDSJ0Pt600To800Hist[index].Fill(b.ak8SDsj0_m600  , theWeight )
 
 
         if a.leptonP4 != None : 
@@ -286,6 +292,9 @@ class RunSemiLepTTbar() :
             if a.ak4Jet != None : 
                 self.Iso2DHist[index].Fill( a.leptonP4.Perp( a.ak4Jet.Vect() ), a.leptonP4.DeltaR( a.ak4Jet )  , theWeight  )
                 self.AK4BdiscHist[index].Fill(b.ak4JetBdisc , theWeight)
+
+
+
 
 
     def close( self ) :

@@ -26,7 +26,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
             #self.trigMap.HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165_v
             ]
 
-        self.printAK4Warning = True
+        #self.printAK4Warning = True
 
         self.passed = [False] * self.nstages  
 
@@ -47,8 +47,6 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         self.leptonP4.SetPtEtaPhiM( self.tree.LeptonPt[0], self.tree.LeptonEta[0], self.tree.LeptonPhi[0], 0)
         self.nuP4 = ROOT.TLorentzVector( self.tree.SemiLeptMETpt[0], self.tree.SemiLeptMETpx[0], self.tree.SemiLeptMETpy[0], 0. )
         self.ak4Jet = ROOT.TLorentzVector()
-        # INCORRECT: NEED TO FILL JET MASS FOR AK4 JETS
-        # For now it is okay because we only use the 3-vector (delta r to lepton)
         self.ak4Jet.SetPtEtaPhiM( self.tree.AK4_dRminLep_Pt[0], self.tree.AK4_dRminLep_Eta[0], self.tree.AK4_dRminLep_Phi[0], self.tree.AK4_dRminLep_Mass[0] )
         '''
         if self.printAK4Warning :
@@ -80,17 +78,17 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
             return self.passed
         self.passed[2] = True
         
-        if not ( self.nuP4.Perp() > 40.) : return self.passed
+        if not ( self.nuP4.Perp() > 50.) : return self.passed
         self.passed[3] = True
 
         # NOTE: This jet cut was found to be strongly suboptimal by the semileptonic team. They had better performance at pt > 15 GeV, with 
         # delta R < 0.4 and ptrel > 20. For now, we will raise the HTLep cut and ptrel cut but we need to fix this. 
-        if not ( self.ak4Jet.Perp() > 30. and abs(self.ak4Jet.Eta()) < 2.4  ) : return self.passed    
+        if not ( self.ak4Jet.Perp() > 15. and abs(self.ak4Jet.Eta()) < 2.4  ) : return self.passed    
         self.passed[4] = True
         
         # NOTE: I changed this from DeltRJetLep which is dR(lep, AK8) 
         # https://github.com/cmsb2g/B2GTTbar/blob/79ec8fcd1965adb4840b448bfaa4f9049df76f6d/plugins/B2GTTbarTreeMaker.cc#L4621
-        if not  (self.tree.AK4_dRminLep_dRlep[0] > 0.4 or self.tree.PtRel[0] > 40 ) : return self.passed
+        if not  (self.tree.AK4_dRminLep_dRlep[0] > 0.4 or self.tree.PtRel[0] > 20 ) : return self.passed
         self.passed[5] = True
 
         if not ( self.tree.DeltaRJetLep[0] > 1. ) : return self.passed # Hemisphere cut btw lepton and the ak8

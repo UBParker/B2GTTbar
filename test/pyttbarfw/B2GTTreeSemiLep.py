@@ -157,7 +157,7 @@ class B2GTTreeSemiLep( ) :
             ## 'JetPuppiMassCorrFactor':'f',
             ## 'JetPuppiMassCorrFactorUp':'f',
             ## 'JetPuppiMassCorrFactorDn':'f',
-            ## 'JetPuppiCorrFactor':'f',
+            'JetPuppiCorrFactor':'f',
             ## 'JetPuppiCorrFactorUp':'f',
             ## 'JetPuppiCorrFactorDn':'f',
             ## 'JetPuppiPtSmearFactor':'f',
