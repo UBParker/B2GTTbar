@@ -21,7 +21,7 @@ class B2GSelectSemiLepTTbar_IsoStd( ) :
         self.printAK4Warning = True
 
         self.passed = [False] * self.nstages  
-
+        self.passedCount = [0] * self.nstages
     """
         This is the "select" function that does the work for the event selection. If you have any complicated
         stuff to do, do it here and create a class member variable to cache the results. 
@@ -51,8 +51,10 @@ class B2GSelectSemiLepTTbar_IsoStd( ) :
         # Stage 4 : Leptonic-side AK4 jet selection
         # Stage 5 : Wlep pt selection
         self.passed = [False] * self.nstages
+        self.passedCount = [0] * self.nstages
 
         self.passed[0] = True
+        self.passedCount[0] += 1
 
         if not self.ignoreTrig : 
             for itrig in self.trigIndex :
@@ -61,18 +63,23 @@ class B2GSelectSemiLepTTbar_IsoStd( ) :
             if not self.passed[1] : return self.passed
         else :
             self.passed[1] = True
+        self.passedCount[1] += 1
 
-        if not ( self.tree.LeptonIsMu[0] == 1 and self.leptonP4.Perp() > 53. and abs(self.leptonP4.Eta()) < 2.1 and self.tree.MuTight[0] and self.tree.MuIso[0] < 0.1 ) : return self.passed
+        if not (( self.tree.LeptonIsMu[0] == 1 and self.leptonP4.Perp() > 53. and abs(self.leptonP4.Eta()) < 2.1 and self.tree.MuTight[0] and self.tree.MuIso[0] < 0.1 and self.tree.MuHighPt[0] ==1 ) or  (self.tree.LeptonIsMu[0] == 0 and self.leptonP4.Perp() > 120. and (0. < abs(self.leptonP4.Eta()) < 1.442 or 1.56  < abs(self.leptonP4.Eta()) < 2.5 )and self.tree.Electron_noiso_passTight[0] == 1 and  self.tree.Electron_iso_passHEEP[0] ==1  )  ): return self.passed
         self.passed[2] = True
-        
-        if not (self.nuP4.Perp() > 40.) : return self.passed
+        self.passedCount[2] += 1        
+
+        if not ( self.tree.LeptonIsMu[0] == 1 and self.nuP4.Perp() > 40.) or ( self.tree.LeptonIsMu[0] == 0 and self.nuP4.Perp() > 80.) : return self.passed
         self.passed[3] = True
+        self.passedCount[3] += 1
         
         if not ( self.ak4Jet.Perp() > 30. and abs(self.ak4Jet.Eta()) < 2.4  ) : return self.passed
         self.passed[4] = True
+        self.passedCount[4] += 1
         
         if not ( self.tree.DeltaRJetLep[0] > 1. ) : return self.passed # Hemisphere cut btw lepton and W candidate ak8
         self.passed[5] = True
+        self.passedCount[5] += 1
 
         return self.passed
 

@@ -1,0 +1,42 @@
+plots_oct19_ak8pt400_seeCutstxtfile
+
+#  Stage      Name                                Type1                                                     Type2
+
+    0        
+
+
+    1        trigger                       (applied to data and tt but not other MCs for both selection types)
+
+
+    2         muon                      pt>50 , eta <2.1, isTight                             pt>53 , eta <2.1, isTight , Iso <0.1
+
+
+    3          MET                       muon(  Pt > 40)                                                    Pt > 40
+
+
+    4          AK4                       Pt > 15 , eta < 3.0                                          Pt > 30 , eta < 2.4
+
+
+    5      DR(lep, jet)           (dR(lep, AK4) > 0.4 or PtRel >20)                                   DR(lep, AK8 ) > 1
+
+
+    6                                     DR(lep, AK8 ) > 1                                                 no cut
+
+
+    7                                 muon(   Pt(lep + MET) > 150 )                                        AK8 Pt >200, eta < 2.4
+
+
+    8                                          not cut                                                    bdisc < 0.8
+
+
+    9                                    AK8 Pt >250, eta < 2.4                                      30 < AK8 SD mass < 150  
+
+
+    10                                      bdisc < 0.                                                    tau21 < 0.4
+
+
+    11                                  110 < AK8 SD mass < 210                                              no cut
+
+
+    12                                         tau32 < 0.69
+  
