@@ -23,6 +23,16 @@ parser.add_option('--verbose', action='store_true',
                   dest='verbose',
                   help='Do you want to print values of key variables?')
 
+parser.add_option('--Type2', action='store_true',
+                  default=False,
+                  dest='Type2',
+                  help='Do you want to apply selection for type 2 tops as described in AN-16-215 ?')
+
+parser.add_option('--histo', type='string', action='store',
+                  dest='histo',
+                  default = '',
+                  help='Hist string: hpeak, hwidth, hscale')
+
 (options, args) = parser.parse_args(sys.argv)
 argv = []
 
@@ -31,8 +41,9 @@ argv = []
 ptBs =  array.array('d', [200., 300., 400., 500., 800.])
 nptBs = len(ptBs) - 1
 
+if options.Type2 : stageBs = array.array('d',  [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
+else : stageBs = array.array('d',  [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
 
-stageBs = array.array('d',  [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
 nstageBs = len(stageBs) - 1
 
 
@@ -40,7 +51,7 @@ histYTitle =[
                 "#frac{Data}{MC} Scale Factor ",
                 "Jet Mass Resolution",
                 "Jet Mass Scale",
-                "Events Passing Stage 12",
+                "Events Passing Selection Stage",
 ]
 
 histXTitle =[
@@ -60,18 +71,24 @@ histList = [
 ]
 
 # Open input root files
+histName = options.histo
+if histName.find("hpeak" or "hwidth" or "hscale") == -1 : 
+    print "Not using plotstackoutput"
+	filesIn = [ ] #TODO : input filesin list input files
 
-filesIn = [
-                ROOT.TFile('plotstackOutfile_AK8MSDSJ0Pt200To300Hist.root'),
-                ROOT.TFile('plotstackOutfile_AK8MSDSJ0Pt300To400Hist.root'),
-                ROOT.TFile('plotstackOutfile_AK8MSDSJ0Pt400To500Hist.root'),
-                ROOT.TFile('plotstackOutfile_AK8MSDSJ0Pt500To800Hist.root'),
-          ]
+else :           
+	filesIn = [
+		        ROOT.TFile('plotstackOutfile_AK8MSDSJ0Pt200To300Hist.root'),
+		        ROOT.TFile('plotstackOutfile_AK8MSDSJ0Pt300To400Hist.root'),
+		        ROOT.TFile('plotstackOutfile_AK8MSDSJ0Pt400To500Hist.root'),
+		        ROOT.TFile('plotstackOutfile_AK8MSDSJ0Pt500To800Hist.root'),
+		  ]
 
+
+
+for ifile, fileIs in enumerate(filesIn) :
+    fileIs.Get(options.histo)
 '''
-
-#for ifile, fileIs in enumerate(filesIn) :
-
 h_list = []
 h = None
 h_stack = ROOT.TH1f("h_stack", "h_stack")

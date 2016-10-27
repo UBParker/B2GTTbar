@@ -11,6 +11,8 @@ class B2GSelectSemiLepTTbar_Type2( ) :
         self.puppitau21Cut = options.tau21Cut
         self.puppitau32Cut = options.tau32Cut
         self.bdiscmin = options.bdiscmin
+        self.infile = options.infile
+        self.verbose = options.verbose
         self.ignoreTrig = options.ignoreTrig
         self.nstages = 5
         self.tree = tree
@@ -42,6 +44,11 @@ class B2GSelectSemiLepTTbar_Type2( ) :
         self.ak4JetBdisc = None
         self.ak4Jet = None
 
+        self.SDptPuppipt = None
+        self.SDptGenpt = None
+        self.ak8JetHT = None
+        self.SDRhoRatio = None
+
         # PUPPI jet mass corrections
 
         self.finCor1 = ROOT.TFile.Open( "./puppiCorr.root","READ")
@@ -62,6 +69,16 @@ class B2GSelectSemiLepTTbar_Type2( ) :
         self.Corr = self.tree.JetCorrFactor[0]  
         self.CorrL2L3 = self.tree.JetSDptCorrL23[0]  
         self.CorrL2L3SD = self.tree.JetSDmassCorrL23
+
+        if self.verbose : print "The infile is : {}".format(self.infile)
+
+        theFileIs = self.infile
+        if theFileIs.find("Run2016")== -1 : 
+            if self.verbose : print "Not data"
+        else :
+            self.EventWeight = 1.0                                    
+            self.PUWeight = 1.0                        
+            if self.verbose :  print "This is DATA : setting weights to 1."   
 
         self.theNeutrino = None
         self.theLepton = None
@@ -84,6 +101,11 @@ class B2GSelectSemiLepTTbar_Type2( ) :
         self.ak8PuppiSDJet_Subjet0 = None
         self.ak8PuppiSDJet_Subjet1 = None        
         
+        self.SDptPuppipt = None
+        self.SDptGenpt = None
+        self.ak8JetHT = 0.
+        self.SDRhoRatio = None
+
         self.theNeutrino = ROOT.TLorentzVector( )
         self.theNeutrino.SetPxPyPzE(self.tree.SemiLeptMETpx[0], self.tree.SemiLeptMETpy[0], 0.0, self.tree.SemiLeptMETpt[0])
 
@@ -104,7 +126,9 @@ class B2GSelectSemiLepTTbar_Type2( ) :
                                   self.tree.JetMass[0] )        
         self.ak8JetRaw =   self.ak8Jet
         self.ak8Jet =   self.ak8Jet * self.Corr
-        self.ak8_m = self.CorrPUPPIMass( self.ak8JetRaw.Perp() , self.ak8JetRaw.Eta(), self.ak8JetRaw.M()  )
+        if self.ak8JetRaw != None :
+            self.ak8_m = self.CorrPUPPIMass( self.ak8JetRaw.Perp() , self.ak8JetRaw.Eta(), self.ak8JetRaw.M()  )
+            self.ak8JetHT =         self.ak8JetHT + self.ak8Jet.Perp()
 
         self.ak8SDJet = ROOT.TLorentzVector()
         self.ak8SDJet.SetPtEtaPhiM( self.tree.JetSDptRaw[0],
@@ -112,34 +136,62 @@ class B2GSelectSemiLepTTbar_Type2( ) :
                                   self.tree.JetSDphiRaw[0],
                                   self.tree.JetSDmassRaw[0] )      
         self.ak8SDJetRaw =   self.ak8SDJet
-        self.ak8SDJet =   self.ak8SDJet * self.CorrL2L3SD
+        self.ak8SDJet =   self.ak8SDJet * self.Corr
         self.ak8_SDm = self.CorrPUPPIMass( self.ak8SDJetRaw.Perp() , self.ak8SDJetRaw.Eta(), self.ak8SDJetRaw.M()  )
 
 
         self.ak8PuppiJet = ROOT.TLorentzVector()
-        self.ak8PuppiJet.SetPtEtaPhiM( self.tree.JetPuppiPt[0], self.tree.JetPuppiEta[0], self.tree.JetPuppiPhi[0], self.tree.JetPuppiMass[0] )        
+        self.ak8PuppiJet.SetPtEtaPhiM( self.tree.JetPuppiPt[0],
+                                  self.tree.JetPuppiEta[0],
+                                  self.tree.JetPuppiPhi[0],
+                                  self.tree.JetPuppiMass[0] )        
         self.ak8PuppiJetRaw =   self.ak8PuppiJet
         self.ak8PuppiJet =   self.ak8PuppiJet * self.PuppiCorr
+        if self.ak8PuppiJetRaw != None :
+            self.ak8_Puppim = self.CorrPUPPIMass( self.ak8PuppiJetRaw.Perp() , self.ak8PuppiJetRaw.Eta(), self.ak8PuppiJetRaw.M()  )
+            # Pt Responses
+            self.SDptGenpt = float(self.ak8SDJet.Perp())  / float(self.ak8Jet.Perp() ) 
+            if self.ak8PuppiJetRaw != None :
+                self.SDptPuppipt = float(self.ak8SDJet.Perp())  / float(self.ak8PuppiJet.Perp() ) 
+
 
         self.ak8PuppiSDJet_Subjet0 = ROOT.TLorentzVector()
         self.ak8PuppiSDJet_Subjet1 = ROOT.TLorentzVector()
-        self.ak8PuppiSDJet_Subjet0.SetPtEtaPhiM( self.tree.JetPuppiSDsubjet0pt[0], self.tree.JetPuppiSDsubjet0eta[0], self.tree.JetPuppiSDsubjet0phi[0], self.tree.JetPuppiSDsubjet0mass[0] )
-        self.ak8PuppiSDJet_Subjet1.SetPtEtaPhiM( self.tree.JetPuppiSDsubjet1pt[0], self.tree.JetPuppiSDsubjet1eta[0], self.tree.JetPuppiSDsubjet1phi[0], self.tree.JetPuppiSDsubjet1mass[0] )
+        self.ak8PuppiSDJet_Subjet0.SetPtEtaPhiM( 
+                                                self.tree.JetPuppiSDsubjet0pt[0],
+                                                self.tree.JetPuppiSDsubjet0eta[0], 
+                                                self.tree.JetPuppiSDsubjet0phi[0], 
+                                                self.tree.JetPuppiSDsubjet0mass[0] )
+        self.ak8PuppiSDJet_Subjet1.SetPtEtaPhiM( 
+                                                self.tree.JetPuppiSDsubjet1pt[0],
+                                                self.tree.JetPuppiSDsubjet1eta[0],
+                                                self.tree.JetPuppiSDsubjet1phi[0],
+                                                self.tree.JetPuppiSDsubjet1mass[0] )
 
         if self.ak8PuppiSDJet_Subjet0.M() < self.ak8PuppiSDJet_Subjet1.M() : 
             self.ak8PuppiSDJet_Subjet1,self.ak8PuppiSDJet_Subjet0 = self.ak8PuppiSDJet_Subjet0,self.ak8PuppiSDJet_Subjet1
         self.ak8PuppiSDJet =  self.ak8PuppiSDJet_Subjet0 +  self.ak8PuppiSDJet_Subjet1
 
         self.ak8PuppiSDJetRaw =   self.ak8PuppiSDJet
+        if self.ak8PuppiSDJetRaw !=None :
+            if self.ak8PuppiSDJet.Perp() > 0.001 :
+                self.SDRhoRatio = pow( self.ak8PuppiSDJet.M() / (self.ak8PuppiSDJet.Perp()*0.8) , 2)
+            self.ak8PuppiSD_m = self.CorrPUPPIMass( 
+                                                   self.ak8PuppiSDJetRaw.Perp(),
+                                                   self.ak8PuppiSDJetRaw.Eta(),
+                                                   self.ak8PuppiSDJetRaw.M()  )
+
         self.ak8PuppiSDJet_Subjet0Raw =   self.ak8PuppiSDJet_Subjet0 
         self.ak8PuppiSDJet_Subjet1Raw =   self.ak8PuppiSDJet_Subjet1 
 
         self.ak8PuppiSDJet =   self.ak8PuppiSDJet * self.PuppiCorr
         self.ak8PuppiSDJet_Subjet0 =   self.ak8PuppiSDJet_Subjet0 * self.PuppiCorr
         self.ak8PuppiSDJet_Subjet1 =   self.ak8PuppiSDJet_Subjet1 * self.PuppiCorr
-        # mass is initially Raw, multiply by correction factor to give corrected mass (check on this)
-        self.ak8PuppiJet = self.CorrPUPPIMass( self.ak8PuppiJetRaw.Perp() , self.ak8PuppiJetRaw.Eta(), self.ak8PuppiJetRaw.M()  )
-        self.ak8PuppiSD_m = self.CorrPUPPIMass( self.ak8PuppiSDJetRaw.Perp() , self.ak8PuppiSDJetRaw.Eta(), self.ak8PuppiSDJetRaw.M()  )
+
+        if self.verbose : print 'ak8PuppiSDJet = (%6.2f,%8.3f,%8.3f,%6.2f)' % ( self.ak8PuppiSDJet.Perp(), self.ak8PuppiSDJet.Eta(), self.ak8PuppiSDJet.Phi(), self.ak8PuppiSDJet.M() )
+
+        self.ak8PuppiJet_m = self.CorrPUPPIMass( self.ak8PuppiJetRaw.Perp() , self.ak8PuppiJetRaw.Eta(), self.ak8PuppiJetRaw.M()  )
+
         self.ak8SDsj0_m = self.CorrPUPPIMass( self.ak8PuppiSDJet_Subjet0Raw.Perp() , self.ak8PuppiSDJet_Subjet0Raw.Eta(), self.ak8PuppiSDJet_Subjet0Raw.M()  )
 
 
@@ -203,8 +255,15 @@ class B2GSelectSemiLepTTbar_Type2( ) :
 
         self.puppitau21 = self.tree.JetPuppiTau21[0]
         self.puppitau32 = self.tree.JetPuppiTau32[0]
-        #print 'ak8PuppiSDJet = (%6.2f,%8.3f,%8.3f,%6.2f)' % ( self.ak8PuppiSDJet.Perp(), self.ak8PuppiSDJet.Eta(), self.ak8PuppiSDJet.Phi(), self.ak8PuppiSDJet.M() )
 
+
+        self.ak8SDsubjet0tau1 = self.tree.JetSDsubjet0tau1[0]
+        self.ak8SDsubjet0tau2 = self.tree.JetSDsubjet0tau2[0]
+
+        self.ak8SDsubjet0tau21 = 1.0
+        if self.ak8SDsubjet0tau1 > 0.001:
+            self.ak8SDsubjet0tau21 = self.ak8SDsubjet0tau2 / self.ak8SDsubjet0tau1
+            if self.verbose : print "SD subjet 0 tau21 is: {}".format(self.ak8SDsubjet0tau21)
 
         # Work the cut flow
         self.passed = [False] * self.nstages
