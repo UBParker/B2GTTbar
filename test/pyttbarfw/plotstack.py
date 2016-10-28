@@ -38,7 +38,7 @@ parser.add_option('--rebinNum', type='float', action='store',
 
 parser.add_option('--nstages', type='int', action='store',
                   dest='nstages',
-                  default = 15,
+                  default = 16,
                   help='number of stages of selection (sum of nstages from lept and had selections)')
 
 parser.add_option('--Type2', action='store_true',
@@ -102,7 +102,7 @@ if options.noData : print "WARNING : noData option is ON so the data wil not be 
 
 # Open output root file to store SF, JMR, JMS 
 
-fileout = "plotstackoutfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_" + options.hist + ".root"
+fileout = "plotstackoutfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_" + options.hist + ".root"
 
 fout = ROOT.TFile( fileout, "RECREATE") 
 
@@ -193,7 +193,7 @@ else:
                           [  0.0  ,   300. ], # AK8MHist
                           [0.0    ,   600. ], # LeptonPtHist
                           [2.5    ,  -2.5  ], # LeptonEtaHist
-                          [0.     ,   300. ], # METPtHist
+                          [0.     ,   1000. ], # METPtHist
                           [0.     ,   700. ], # HTLepHist
                           [0.     ,   300. ], # Iso2DHist
                           [0.     ,     1. ], # AK4BdiscHist
@@ -213,6 +213,7 @@ else:
                           [0.    ,   300.   ], # AK8MSDPt300To400Hist
                           [0.    ,   300.   ], # AK8MSDPt400To500Hist
                           [0.    ,   300.   ], # AK8MSDPt500To800Hist
+                          [0.0    ,    1.0 ], # AK8Tau32Hist
 
                  ]
 
@@ -246,6 +247,7 @@ Histos = [  "AK8MSDHist", #0
 "AK8MSDPt300To400Hist", #26
 "AK8MSDPt400To500Hist", #27
 "AK8MSDPt500To800Hist", #28 
+"AK8Tau32Hist",         #29
     ]
 
 # TO-DO : Add all below histo names to Histos and HistoTitle
@@ -257,8 +259,8 @@ HistoTitle =            [           "AK8 Jet SD Mass (GeV)",
                              "Leading Subjet SD Mass (GeV)",
                                                 "AK8 Jet P_{T} (GeV)",
                                                  "AK8 Jet #eta", 
-                                            "AK8 Jet #tau_{21}",
-                                            "AK8 Jet #tau_{32}",
+                                            "AK8 puppi Jet #tau_{21}",
+                                            "AK8 puppi Jet #tau_{32}",
                                                  "AK8 Jet Mass (GeV)",
                                                  "Lepton P_{T} (GeV)",
                                                   "Lepton #eta",
@@ -282,6 +284,7 @@ HistoTitle =            [           "AK8 Jet SD Mass (GeV)",
                              "(300<P_{t}<400)  AK8 SD Jet Mass (GeV)", # TO-DO : move pt label elsewhere on canvas
                              "(400<P_{t}<500)  AK8 SD Jet Mass (GeV)", # TO-DO : move pt label elsewhere on canvas
                              "(500<P_{t}<800)  AK8 SD Jet Mass (GeV)", # TO-DO : move pt label elsewhere on canvas
+                                            "AK8 Jet #tau_{32}",
 ]
 
 
@@ -292,7 +295,7 @@ if options.verbose : print "Histo name in options was {0}, index number {1:0.0f}
 #set the tdr style
 tdrstyle.setTDRStyle()
 
-xs_ttbar = 831.
+xs_ttbar = 831.76
 nev_ttbar = 92925926.
 lumi = 12900. # pb-1
 
@@ -301,18 +304,18 @@ kfactortt = 1. #0.94
 ttSFfromAllHad = 1. #0.89*0.89
 
 xs_wjets = [
-    1345.,     #100To200  
-    359.7,     #200To400  
-    48.91,     #400To600  
-    12.05,     #600To800  
-    5.501,     #800To1200 
-    1.329,     #1200To2500
-    0.03216,   #2500ToInf 
+    1629.87,  #1345.,     #100To200  
+    435.6,    #359.7,     #200To400  
+    59.27,    #48.91,     #400To600  
+    14.58,    #12.05,     #600To800  
+    6.656,    #5.501,     #800To1200 
+    1.608,    #1.329,     #1200To2500
+    0.039,    #0.03216,   #2500ToInf 
     ]
 
 nev_wjets = [
     27529599., #100To200   1 / 642 failed      CORRECT
-    4963240.,  #200To400  # fix this: update to new numbers after crab report
+    4963240.,  #200To400  # fix this: update to new numbers BEFORE crab report
     1963464.,  #400To600 
     3722395.,  #600To800
     6314257.,  #800To1200 
@@ -328,7 +331,7 @@ xs_st = [
     47.13,     #ST s-channel            fix this: NOT SURE https://twiki.cern.ch/twiki/bin/view/LHCPhysics/SingleTopRefXsec#Single_top_s_channel_cross_secti Thea used  47.13 but website says 10.32
     ]
 
-nev_st = [                                      # fix this :add event counts from crab report
+nev_st = [                                     
    2990400.,     #ST t-channel top  1/41 incomplete
    1682400.,     #ST t-channel antitop  
     998400.,     #ST tW top     
@@ -367,40 +370,40 @@ if options.noData :
 else :
     if options.Type2 :
         print "Type 2 selection"
-        datafile = ROOT.TFile('data_BCD_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_type2.root')
+        datafile = ROOT.TFile('data_BCD_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type2.root')
     else :
         print "Type 1 selection"
-        datafile = ROOT.TFile('data_BCD_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_type1.root')
+        datafile = ROOT.TFile('data_BCD_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type1.root')
 
 if options.Type2 :
     print "Type 2 selection"
-    ttbarfile = ROOT.TFile('ttjets_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_type2.root')
+    ttbarfile = ROOT.TFile('ttjets_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type2.root')
 else :
     print "Type 1 selection"
-    ttbarfile = ROOT.TFile('ttjets_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_type1.root')
+    ttbarfile = ROOT.TFile('ttjets_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type1.root')
 
 
 
 if options.allMC :
     if options.Type2 :
         wjetsfiles = [
-            ROOT.TFile('wjets1_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_type2.root'),
-            ROOT.TFile('wjets2_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_type2.root'),
-            ROOT.TFile('wjets3_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_type2.root'),
-            ROOT.TFile('wjets4_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_type2.root'),
-            ROOT.TFile('wjets5_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_type2.root'),
-            ROOT.TFile('wjets6_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_type2.root'),
-            ROOT.TFile('wjets7_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_type2.root'),
+            ROOT.TFile('wjets1_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type2.root'),
+            ROOT.TFile('wjets2_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type2.root'),
+            ROOT.TFile('wjets3_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type2.root'),
+            ROOT.TFile('wjets4_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type2.root'),
+            ROOT.TFile('wjets5_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type2.root'),
+            ROOT.TFile('wjets6_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type2.root'),
+            ROOT.TFile('wjets7_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type2.root'),
             ]
     else :
         wjetsfiles = [
-            ROOT.TFile('wjets1_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_type1.root'),
-            ROOT.TFile('wjets2_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_type1.root'),
-            ROOT.TFile('wjets3_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_type1.root'),
-            ROOT.TFile('wjets4_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_type1.root'),
-            ROOT.TFile('wjets5_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_type1.root'),
-            ROOT.TFile('wjets6_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_type1.root'),
-            ROOT.TFile('wjets7_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_type1.root'),
+            ROOT.TFile('wjets1_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type1.root'),
+            ROOT.TFile('wjets2_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type1.root'),
+            ROOT.TFile('wjets3_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type1.root'),
+            ROOT.TFile('wjets4_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type1.root'),
+            ROOT.TFile('wjets5_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type1.root'),
+            ROOT.TFile('wjets6_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type1.root'),
+            ROOT.TFile('wjets7_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type1.root'),
             ]
 
     wjets_colors = [   
@@ -408,44 +411,44 @@ if options.allMC :
 
     if options.Type2 :
         stfiles = [
-                ROOT.TFile('st1_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_type2.root'),
-                ROOT.TFile('st2_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_type2.root'),
-                ROOT.TFile('st3_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_type2.root'),
-                ROOT.TFile('st4_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_type2.root'),
-                ROOT.TFile('st5_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_type2.root') ]
+                ROOT.TFile('st1_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type2.root'),
+                ROOT.TFile('st2_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type2.root'),
+                ROOT.TFile('st3_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type2.root'),
+                ROOT.TFile('st4_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type2.root'),
+                ROOT.TFile('st5_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type2.root') ]
     else:        
         stfiles = [
-                ROOT.TFile('st1_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_type1.root'),
-                ROOT.TFile('st2_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_type1.root'),
-                ROOT.TFile('st3_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_type1.root'),
-                ROOT.TFile('st4_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_type1.root'),
-                ROOT.TFile('st5_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_type1.root'),
+                ROOT.TFile('st1_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type1.root'),
+                ROOT.TFile('st2_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type1.root'),
+                ROOT.TFile('st3_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type1.root'),
+                ROOT.TFile('st4_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type1.root'),
+                ROOT.TFile('st5_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type1.root'),
             ]
 
     st_colors = [  ROOT.kWhite,ROOT.kCyan - 9, ROOT.kCyan - 7, ROOT.kCyan - 4, ROOT.kCyan  ]
  
     if options.Type2 :
         QCDfiles = [
-                ROOT.TFile('QCD1_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_type2.root'),
-                ROOT.TFile('QCD2_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_type2.root'),
-                ROOT.TFile('QCD3_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_type2.root'),
-                ROOT.TFile('QCD4_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_type2.root'),
-                ROOT.TFile('QCD5_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_type2.root'),
-                ROOT.TFile('QCD6_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_type2.root'),
-                ROOT.TFile('QCD7_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_type2.root'),
-                ROOT.TFile('QCD8_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_type2.root'),
-                ROOT.TFile('QCD9_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_type2.root') ]
+                ROOT.TFile('QCD1_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type2.root'),
+                ROOT.TFile('QCD2_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type2.root'),
+                ROOT.TFile('QCD3_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type2.root'),
+                ROOT.TFile('QCD4_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type2.root'),
+                ROOT.TFile('QCD5_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type2.root'),
+                ROOT.TFile('QCD6_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type2.root'),
+                ROOT.TFile('QCD7_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type2.root'),
+                ROOT.TFile('QCD8_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type2.root'),
+                ROOT.TFile('QCD9_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type2.root') ]
     else:        
         QCDfiles = [
-                ROOT.TFile('QCD1_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_type1.root'),
-                ROOT.TFile('QCD2_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_type1.root'),
-                ROOT.TFile('QCD3_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_type1.root'),
-                ROOT.TFile('QCD4_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_type1.root'),
-                ROOT.TFile('QCD5_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_type1.root'),
-                ROOT.TFile('QCD6_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_type1.root'),
-                ROOT.TFile('QCD7_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_type1.root'),
-                ROOT.TFile('QCD8_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_type1.root'),
-                ROOT.TFile('QCD9_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt150_tau32BEFOREmSD_type1.root') ]
+                ROOT.TFile('QCD1_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type1.root'),
+                ROOT.TFile('QCD2_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type1.root'),
+                ROOT.TFile('QCD3_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type1.root'),
+                ROOT.TFile('QCD4_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type1.root'),
+                ROOT.TFile('QCD5_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type1.root'),
+                ROOT.TFile('QCD6_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type1.root'),
+                ROOT.TFile('QCD7_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type1.root'),
+                ROOT.TFile('QCD8_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type1.root'),
+                ROOT.TFile('QCD9_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type1.root') ]
 
     QCD_colors = [  ROOT.kWhite,ROOT.kYellow - 9, ROOT.kYellow - 8, ROOT.kYellow - 7,  ROOT.kYellow - 6,  ROOT.kYellow - 5, ROOT.kYellow - 4, ROOT.kYellow ,  ROOT.kYellow + 1 ]
 
@@ -489,7 +492,7 @@ for istage in xrange(options.nstages) :
             hwjets_stack.Add( htemp )
         #hwjets_stack.Draw("hist")
         hwjets.SetFillColor( ROOT.kRed )
-        hwjets.Rebin(rebinNum)
+        if iHisto != 11: hwjets.Rebin(rebinNum)
         
         # ST stack (t-channel top, t-channel antitop, tW top, tW antitop, s-channel)
         hst = None
@@ -507,7 +510,7 @@ for istage in xrange(options.nstages) :
                 hst.Add( htemp )
             hst_stack.Add( htemp )
         hst.SetFillColor( ROOT.kCyan)
-        hst.Rebin(rebinNum)
+        if iHisto != 11:        hst.Rebin(rebinNum)
         #hwjets_stack.Draw("hist")
 
         if options.includeQCD :
@@ -531,16 +534,16 @@ for istage in xrange(options.nstages) :
                 hQCD_stack.Add( htemp )
             hQCD.Sumw2()
             hQCD.SetFillColor( ROOT.kYellow )
-            hQCD.Rebin(rebinNum)
+            if iHisto != 11:  hQCD.Rebin(rebinNum)
         
 
     httbar = ttbarfile.Get(options.hist + str(istage))
     httbar.Sumw2()
     httbar.Scale(kfactortt *ttSFfromAllHad * (xs_ttbar / nev_ttbar) * lumi   )
     httbar.SetFillColor(ROOT.kGreen + 2)
-    httbar.Rebin(rebinNum)
+    if iHisto != 11:    httbar.Rebin(rebinNum)
 
-    if not options.noData:
+    if not options.noData and  iHisto != 11:
         hdata.Rebin(rebinNum)
 
     mchist = httbar.Clone()
@@ -548,29 +551,30 @@ for istage in xrange(options.nstages) :
         if options.verbose : print "About to ADD hwjets to httbar histo" 
         mchist.Add( hwjets )
         mchist.Add( hst )
-        if options.includeQCD :
-            mchist.Add( hQCD )
+        #if options.includeQCD :
+        #    mchist.Add( hQCD )
 
-    if not options.noData:
+    #if not options.noData and iHisto != 11:
         #Scale ttbar MC by ratio of integrals of data MC
-        httbar = ScalettMC(httbar, hdata, mchist ,  xAxisrange[iHisto][0] , xAxisrange[iHisto][1] ) 
+        #httbar = ScalettMC(httbar, hdata, mchist ,  xAxisrange[iHisto][0] , xAxisrange[iHisto][1] ) 
 
-    hstack = ROOT.THStack("bkgs", "")
-    if options.allMC :
-        hstack.Add( hwjets )
-        hstack.Add( hst )
-        if options.includeQCD :
-            hstack.Add( hQCD )
-    hstack.Add( httbar )
+    if iHisto != 11:
+        hstack = ROOT.THStack("bkgs", "")
+        if options.allMC :
+            hstack.Add( hwjets )
+            hstack.Add( hst )
+            if options.includeQCD :
+                hstack.Add( hQCD )
+        hstack.Add( httbar )
    
     theIndex = None 
     # Fitting Preparation 
     ## Only fit the histos of SD jet mass in later stages of selection
-    if (iHisto <2 or iHisto > 12 ) and istage >= (options.nstages-2) : 
+    if (iHisto <17 and iHisto > 12 ) and istage >= (options.nstages-2) : 
         theIndex = iHisto - 13
-
+        
         if options.Type2 :
-            if iHisto == 1 or iHisto > 12 : continue # Don't fit SD subjet mass for type 2
+            if iHisto > 12 : continue # Don't fit SD subjet mass for type 2
             minFitMC = 65.
             maxFitMC = 105.
 
@@ -578,14 +582,14 @@ for istage in xrange(options.nstages) :
             maxFitData = 105.
 
         else :
-            if iHisto == 0 : continue # Don't fit AK8 jet mass for type 1 
+            #if iHisto == 0 : continue # Don't fit AK8 jet mass for type 1 
             minFitMC = 55.
             maxFitMC = 115.
 
             minFitData = 55.
             maxFitData = 115.
 
-    if not options.noData and (  (iHisto <2 or iHisto > 12 ) and istage >= (options.nstages-2) ) :
+    if not options.noData and (  (iHisto <17 and iHisto > 12 )  and istage >= (options.nstages-2) ) :
 
         if options.verbose : print "Fitting range for {0} ,istage {1}, is from {2:2.2f} to {3:2.2f} GeV for data and {2:2.2f} to {3:2.2f} GeV for MC".format(options.hist, istage, minFitData, maxFitData,  minFitMC, maxFitMC)
  
@@ -630,7 +634,7 @@ for istage in xrange(options.nstages) :
             Datasigmas[theIndex] = width_data
             if options.verbose : print "The mean of the gaussian fit to data is {0:3.3f} +/- {1:3.3f} with fit range ({2}, {3} ) ".format(mean_data , width_data , minFitData, maxFitData )
 
-    if (iHisto <2 or iHisto > 12 ) and istage >= (options.nstages-2) : 
+    if (iHisto <17 and iHisto > 12 )  and istage >= (options.nstages-2) : 
         fitter_mc = ROOT.TF1("fitter_mc", "gaus", minFitMC, maxFitMC)
         fitter_mc.SetLineColor(4)
         fitter_mc.SetLineWidth(2)
@@ -666,7 +670,7 @@ for istage in xrange(options.nstages) :
             MCsigmas[theIndex] = width_mc
             if options.verbose : print "The mean of the gaussian fit to mchist MC is {0:3.3f} +/- {1:3.3f} with fit range ({2}, {3} ) ".format(mean_mc, width_mc, minFitMC, maxFitMC )
 
-    if iHisto > 12 and not options.noData and theIndex != None :
+    if (iHisto <17 and iHisto > 12 ) and not options.noData and theIndex != None :
         # define pt of SD subjet 0 for this histo
         ptIs = [250., 350.,450.,550.,700.]           
         pt = ptIs[theIndex]
@@ -717,7 +721,7 @@ for istage in xrange(options.nstages) :
             nMCupost[theIndex] =  math.sqrt( nMCpost[theIndex] )  #mchist.IntegralError(bminmc , bmaxmc  ) / binSizeMC
             nDataupost[theIndex] = math.sqrt(nDatapost[theIndex] )#hdata.IntegralError(bmindata, bmaxdata  ) / binSizeData
             if options.verbose : 
-                print "Integral +/- 1 sigma from peak AFTER tau21 cut is : "
+                print "Integral +/- 1 sigma from peak BEFORE tau21 cut is : "
                 print "MC : {}".format(nMCpost[theIndex])
                 print "Data : {}".format(nDatapost[theIndex])
 
@@ -743,14 +747,14 @@ for istage in xrange(options.nstages) :
             jms = width_data / width_mc
             jms_uncert = jms * math.sqrt( (ewidth_data/width_data)**2 + (ewidth_mc/width_mc)**2 )
 
-            
-        peakAxis = hpeak.GetXaxis()
-        ibin = peakAxis.FindBin(pt)
-        hpeak.SetBinContent(ibin, jmr ) 
-        hwidth.SetBinContent(ibin, jms )
-        hpeak.SetBinError(ibin, jmr_uncert)   
-        hwidth.SetBinError(ibin, jms_uncert)
-        #else: print "hpeak is ZERO, unable to fill it or hwidth"
+        if hpeak != None :    
+            peakAxis = hpeak.GetXaxis()
+            ibin = peakAxis.FindBin(pt)
+            hpeak.SetBinContent(ibin, jmr ) 
+            hwidth.SetBinContent(ibin, jms )
+            hpeak.SetBinError(ibin, jmr_uncert)   
+            hwidth.SetBinError(ibin, jms_uncert)
+            #else: print "hpeak is ZERO, unable to fill it or hwidth"
 
         if istage == (options.nstages -2) :
             ibin = hNpassDataPre.GetXaxis().FindBin(pt)
@@ -840,233 +844,261 @@ for istage in xrange(options.nstages) :
     c1.SetBottomMargin(0.15)
     c1.SetFrameFillStyle(0)
     c1.SetFrameBorderMode(0)
-
-      
-    pad1 = ROOT.TPad("pad1", "pad1",0,0.3333333,1,1)
-    pad1.Draw()
-    pad1.cd()
-    ## pad1.Range(-0.1792683,-2.983224,1.10122,146.183)
-    pad1.SetFillColor(0)
-    pad1.SetBorderMode(0)
-    pad1.SetBorderSize(2)
-    pad1.SetTickx(1)
-    pad1.SetTicky(1)
-    pad1.SetLeftMargin(0.14)
-    pad1.SetRightMargin(0.04)
-    pad1.SetTopMargin(0.12)
-    pad1.SetBottomMargin(0.02)
-    pad1.SetFrameFillStyle(0)
-    pad1.SetFrameBorderMode(0)
-    pad1.SetFrameFillStyle(0)
-    pad1.SetFrameBorderMode(0)
-
-    if options.noData:
-        httbar.GetXaxis().SetRangeUser(  xAxisrange[iHisto][0] , xAxisrange[iHisto][1] )
-        httbar.SetMaximum(y_max_scale * httbar.GetMaximum() )
-        httbar.SetXTitle(HistoTitle[iHisto]+" , Stage "+str(istage))
-    if not options.noData:
-        hdata.GetXaxis().SetRangeUser(  xAxisrange[iHisto][0] , xAxisrange[iHisto][1] )
-        hdata.SetMaximum(y_max_scale * hdata.GetMaximum() )
-        hdata.SetMinimum(0.0001 )
-        hdata.GetYaxis().SetTitle("Events")
-        hdata.GetYaxis().SetTitleSize(0.065)
-        hdata.GetYaxis().SetTitleOffset(0.9) ## 0.7)
-        hdata.GetYaxis().SetLabelSize(0.06)
-        ## hdata.SetMarkerStyle(20)
-        ## hdata.SetMarkerSize(0.8)
-        hdata.SetLineColor(1)
-        hdata.SetFillColor(1)
-        hdata.SetFillStyle(0)
-        hdata.SetLineWidth(2)
-        hdata.SetMarkerStyle(20)
-        hdata.SetMarkerSize(0.8)
-
-        hdata.GetXaxis().SetNdivisions(506)
-        hdata.GetXaxis().SetLabelFont(42)
-        hdata.GetXaxis().SetLabelSize(0)
-        hdata.GetXaxis().SetTitleSize(0.0475)
-        hdata.GetXaxis().SetTickLength(0.045)
-        hdata.GetXaxis().SetTitleOffset(1.15)
-        hdata.GetXaxis().SetTitleFont(42)
-        hdata.GetYaxis().SetTitle("Events")
-        hdata.GetYaxis().SetNdivisions(506)
-        hdata.GetYaxis().SetLabelFont(42)
-        hdata.GetYaxis().SetLabelSize(0.06375)
-        hdata.GetYaxis().SetTitleSize(0.07125)
-        hdata.GetYaxis().SetTitleOffset(0.9)
-        hdata.GetYaxis().SetTitleFont(42)
-        hdata.GetZaxis().SetLabelFont(42)
-        hdata.GetZaxis().SetLabelSize(0.0425)
-        hdata.GetZaxis().SetTitleSize(0.0475)
-        hdata.GetZaxis().SetTitleFont(42)
-        hdata.SetXTitle(HistoTitle[iHisto]+" , Stage "+str(istage))
-
-
-    if options.noData:
-        httbar.Draw("e x0")
-    if not options.noData:
-        hdata.Draw("e x0")
-
-
-    hstack.Draw("hist same")
-
-
-
-    ## Only fit the histos of SD jet mass in later stages of selection
-    if (iHisto <2 or iHisto > 12 ) and istage >= (options.nstages-2) : 
-        tempCloneMC.Draw("axis same")
-        fitter_mc.Draw("same")
+    if iHisto == 11:
         if not options.noData:
-            tempCloneData.Draw("axis same")
-            fitter_data.Draw("same")
+            '''
+            hdata.GetXaxis().SetRangeUser(  xAxisrange[iHisto][0] , xAxisrange[iHisto][1] )
+            hdata.SetMaximum(y_max_scale * hdata.GetMaximum() )
+            hdata.SetMinimum(0.0001 )
+            hdata.GetYaxis().SetTitle("Events")
+            hdata.GetYaxis().SetTitleSize(0.065)
+            hdata.GetYaxis().SetTitleOffset(0.9) ## 0.7)
+            hdata.GetYaxis().SetLabelSize(0.06)
+            ## hdata.SetMarkerStyle(20)
+            ## hdata.SetMarkerSize(0.8)
+            '''
+            hdata.SetLineColor(1)
+            hdata.SetFillColor(1)
+            hdata.SetFillStyle(0)
+            hdata.SetLineWidth(2)
+            hdata.SetMarkerStyle(20)
+            hdata.SetMarkerSize(0.8)
+        mchist.SetLineColor(4)
+        mchist.SetFillColor(4)
+        mchist.SetFillStyle(0)
+        mchist.SetLineWidth(2)
+        mchist.SetMarkerStyle(20)
+        mchist.SetMarkerSize(0.8)
 
-    if options.noData:
-        httbar.Draw("e same x0")
-    if not options.noData:
-        hdata.Draw("e same x0")
+        mchist.Draw()
+        hdata.Draw("e0 same")
 
+    if iHisto != 11:      
+        pad1 = ROOT.TPad("pad1", "pad1",0,0.3333333,1,1)
+        pad1.Draw()
+        pad1.cd()
+        ## pad1.Range(-0.1792683,-2.983224,1.10122,146.183)
+        pad1.SetFillColor(0)
+        pad1.SetBorderMode(0)
+        pad1.SetBorderSize(2)
+        pad1.SetTickx(1)
+        pad1.SetTicky(1)
+        pad1.SetLeftMargin(0.14)
+        pad1.SetRightMargin(0.04)
+        pad1.SetTopMargin(0.12)
+        pad1.SetBottomMargin(0.02)
+        pad1.SetFrameFillStyle(0)
+        pad1.SetFrameBorderMode(0)
+        pad1.SetFrameFillStyle(0)
+        pad1.SetFrameBorderMode(0)
 
-    if options.verbose : 
-        print "Setting X axis range to ({0}  ,  {1})".format(xAxisrange[iHisto][0] , xAxisrange[iHisto][1] )
+        if options.noData:
+            httbar.GetXaxis().SetRangeUser(  xAxisrange[iHisto][0] , xAxisrange[iHisto][1] )
+            httbar.SetMaximum(y_max_scale * httbar.GetMaximum() )
+            httbar.SetXTitle(HistoTitle[iHisto]+" , Stage "+str(istage))
         if not options.noData:
-            print "Setting Y axis range to ({0}  ,  {1})".format(0. ,y_max_scale * hdata.GetMaximum() )
+            hdata.GetXaxis().SetRangeUser(  xAxisrange[iHisto][0] , xAxisrange[iHisto][1] )
+            hdata.SetMaximum(y_max_scale * hdata.GetMaximum() )
+            hdata.SetMinimum(0.0001 )
+            hdata.GetYaxis().SetTitle("Events")
+            hdata.GetYaxis().SetTitleSize(0.065)
+            hdata.GetYaxis().SetTitleOffset(0.9) ## 0.7)
+            hdata.GetYaxis().SetLabelSize(0.06)
+            ## hdata.SetMarkerStyle(20)
+            ## hdata.SetMarkerSize(0.8)
+            hdata.SetLineColor(1)
+            hdata.SetFillColor(1)
+            hdata.SetFillStyle(0)
+            hdata.SetLineWidth(2)
+            hdata.SetMarkerStyle(20)
+            hdata.SetMarkerSize(0.8)
 
-    words = ROOT.TLatex(0.14,0.916,"#font[62]{CMS} #font[52]{Preliminary}")
-    words.SetNDC()
-    words.SetTextFont(42)
-    words.SetTextSize(0.0825)
-    words.SetLineWidth(2)
-    words.Draw()
-    words1 = ROOT.TLatex(0.9,0.916,"12.9 fb^{-1} (13 TeV)")
-    words1.SetNDC()
-    words1.SetTextAlign(31)
-    words1.SetTextFont(42)
-    words1.SetTextSize(0.0825)
-    words1.SetLineWidth(2)
-    words1.Draw()
-    words2 = ROOT.TLatex(0.181,0.82225,"")
-    words2.SetNDC()
-    words2.SetTextAlign(13)
-    words2.SetTextFont(42)
-    words2.SetTextSize(0.045)
-    words2.SetLineWidth(2)
-    words2.Draw()
+            hdata.GetXaxis().SetNdivisions(506)
+            hdata.GetXaxis().SetLabelFont(42)
+            hdata.GetXaxis().SetLabelSize(0)
+            hdata.GetXaxis().SetTitleSize(0.0475)
+            hdata.GetXaxis().SetTickLength(0.045)
+            hdata.GetXaxis().SetTitleOffset(1.15)
+            hdata.GetXaxis().SetTitleFont(42)
+            hdata.GetYaxis().SetTitle("Events")
+            hdata.GetYaxis().SetNdivisions(506)
+            hdata.GetYaxis().SetLabelFont(42)
+            hdata.GetYaxis().SetLabelSize(0.06375)
+            hdata.GetYaxis().SetTitleSize(0.07125)
+            hdata.GetYaxis().SetTitleOffset(0.9)
+            hdata.GetYaxis().SetTitleFont(42)
+            hdata.GetZaxis().SetLabelFont(42)
+            hdata.GetZaxis().SetLabelSize(0.0425)
+            hdata.GetZaxis().SetTitleSize(0.0475)
+            hdata.GetZaxis().SetTitleFont(42)
+            hdata.SetXTitle(HistoTitle[iHisto]+" , Stage "+str(istage))
 
-    leg = ROOT.TLegend(0.63,0.5,0.78,0.8)
-    leg.SetFillColor(0)
-    leg.SetBorderSize(0)
-    leg.SetTextSize(0.036)
 
-    leg.AddEntry( httbar, 't#bar{t} (80X Powheg + Pythia 8 )', 'f')
-    if options.allMC :
-        leg.AddEntry( hst, 'Single Top', 'f')
-        leg.AddEntry( hwjets, 'W+jets', 'f')
-        if options.includeQCD :
-            leg.AddEntry( hQCD, 'QCD', 'f')
-    if not options.noData:
-        leg.AddEntry( hdata, 'Data', 'p')
-    leg.Draw()
+        if options.noData:
+            httbar.Draw("e x0")
+        if not options.noData:
+            hdata.Draw("e x0")
+
+
+        hstack.Draw("hist same")
+
+
+
+        ## Only fit the histos of SD jet mass in later stages of selection
+        if (iHisto <17 and iHisto > 12 )  and istage >= (options.nstages-2) : 
+            tempCloneMC.Draw("axis same")
+            fitter_mc.Draw("same")
+            if not options.noData:
+                tempCloneData.Draw("axis same")
+                fitter_data.Draw("same")
+
+        if options.noData:
+            httbar.Draw("e same x0")
+        if not options.noData:
+            hdata.Draw("e same x0")
+
+
+        if options.verbose : 
+            print "Setting X axis range to ({0}  ,  {1})".format(xAxisrange[iHisto][0] , xAxisrange[iHisto][1] )
+            if not options.noData:
+                print "Setting Y axis range to ({0}  ,  {1})".format(0. ,y_max_scale * hdata.GetMaximum() )
+    if iHisto != 11:
+        words = ROOT.TLatex(0.14,0.916,"#font[62]{CMS} #font[52]{Preliminary}")
+        words.SetNDC()
+        words.SetTextFont(42)
+        words.SetTextSize(0.0825)
+        words.SetLineWidth(2)
+        words.Draw()
+        words1 = ROOT.TLatex(0.9,0.916,"12.9 fb^{-1} (13 TeV)")
+        words1.SetNDC()
+        words1.SetTextAlign(31)
+        words1.SetTextFont(42)
+        words1.SetTextSize(0.0825)
+        words1.SetLineWidth(2)
+        words1.Draw()
+        words2 = ROOT.TLatex(0.181,0.82225,"")
+        words2.SetNDC()
+        words2.SetTextAlign(13)
+        words2.SetTextFont(42)
+        words2.SetTextSize(0.045)
+        words2.SetLineWidth(2)
+        words2.Draw()
+
+        leg = ROOT.TLegend(0.63,0.5,0.78,0.8)
+        leg.SetFillColor(0)
+        leg.SetBorderSize(0)
+        leg.SetTextSize(0.036)
+
+        leg.AddEntry( httbar, 't#bar{t} (80X Powheg + Pythia 8 )', 'f')
+        if options.allMC :
+            leg.AddEntry( hst, 'Single Top', 'f')
+            leg.AddEntry( hwjets, 'W+jets', 'f')
+            if options.includeQCD :
+                leg.AddEntry( hQCD, 'QCD', 'f')
+        if not options.noData:
+            leg.AddEntry( hdata, 'Data', 'p')
+        leg.Draw()
 
     ROOT.gPad.RedrawAxis()
 
-
-    pad1.Modified()
-    c1.cd()
-    if not options.noData:
-        pad2 = ROOT.TPad("pad2", "pad2",0,0,1,0.3333333)
-        pad2.Draw()
-        pad2.cd()
-        ## pad2.Range(-0.1792683,-1.370091,1.10122,1.899)
-        pad2.SetFillColor(0)
-        pad2.SetBorderMode(0)
-        pad2.SetBorderSize(2)
-        pad2.SetTickx(1)
-        pad2.SetTicky(1)
-        pad2.SetLeftMargin(0.14)
-        pad2.SetRightMargin(0.04)
-        pad2.SetTopMargin(0)
-        pad2.SetBottomMargin(0.45)
-        pad2.SetFrameFillStyle(0)
-        pad2.SetFrameBorderMode(0)
-        pad2.SetFrameFillStyle(0)
-        pad2.SetFrameBorderMode(0)
-
-        hRatio = hdata.Clone()
-        hRatio.SetName('hRatio')
-        hRatio.Sumw2()
-        hRatio.SetStats(0)
-        hRatio.Divide(mchist)
-
-
-        hRatio.GetYaxis().SetRangeUser(0.01,1.99)
-        ## hRatio.GetYaxis().SetTitle("Data / Bkgd")
-        ## hRatio.GetYaxis().SetTitleOffset(0.3)
-        ## hRatio.GetYaxis().SetTitleSize(0.17)
-        ## hRatio.GetYaxis().SetNdivisions(205)
-        ## hRatio.GetYaxis().SetLabelSize(0.11)
-        ## hRatio.GetXaxis().SetLabelSize(0.11)
-        ## hRatio.GetXaxis().SetTitleSize(0.17)
-        hRatio.GetXaxis().SetTitle(  HistoTitle[iHisto]+" , Stage "+str(istage)  )
-
-        hRatio.SetStats(0)
-        hRatio.SetFillColor(1)
-        hRatio.SetFillStyle(0)
-        hRatio.SetLineWidth(2)
-        hRatio.SetLineColor(1)
-        hRatio.SetMarkerStyle(20)
-        hRatio.SetMarkerSize(0.8)
-        hRatio.GetXaxis().SetNdivisions(506)
-        hRatio.GetXaxis().SetLabelFont(42)
-        hRatio.GetXaxis().SetLabelOffset(0.015)
-        hRatio.GetXaxis().SetLabelSize(0.1275)
-        hRatio.GetXaxis().SetTitleSize(0.1425)
-        hRatio.GetXaxis().SetTickLength(0.09)
-        hRatio.GetXaxis().SetTitleOffset(1.15)
-        hRatio.GetXaxis().SetTitleFont(42)
-        hRatio.GetYaxis().SetTitle("#frac{Data}{MC}")
-        #hRatio.GetYaxis().CenterTitle(true)
-        hRatio.GetYaxis().SetNdivisions(304)
-        hRatio.GetYaxis().SetLabelFont(42)
-        hRatio.GetYaxis().SetLabelSize(0.1275)
-        hRatio.GetYaxis().SetTitleSize(0.1425)
-        hRatio.GetYaxis().SetTickLength(0.045)
-        hRatio.GetYaxis().SetTitleOffset(0.45)
-        hRatio.GetYaxis().SetTitleFont(42)
-        hRatio.GetZaxis().SetLabelFont(42)
-        hRatio.GetZaxis().SetLabelSize(0.0425)
-        hRatio.GetZaxis().SetTitleSize(0.0475)
-        hRatio.GetZaxis().SetTitleFont(42)
-
-        hRatio.Draw("lepe0")
-
-        lineup = ROOT.TF1("lineup", "1.5", -7000, 7000)
-        lineup.SetLineColor(1)
-        lineup.SetLineStyle(2)
-        lineup.SetLineWidth(2)
-        lineup.Draw("same")
-        hRatio.Draw("e same x0")
-
-        line = ROOT.TF1("line", "1", -7000, 7000)
-        line.SetLineColor(1)
-        line.SetLineStyle(1)
-        line.SetLineWidth(3)
-        line.Draw("same")
-        hRatio.Draw("e same x0")
-
-        lined = ROOT.TF1("lined", "0.5", -7000, 7000)
-        lined.SetLineColor(1)
-        lined.SetLineStyle(2)
-        lined.SetLineWidth(2)
-        lined.Draw("same")
-        hRatio.Draw("e same x0")
-        ROOT.gPad.RedrawAxis()
-         
-        pad2.Modified()
+    if iHisto != 11:
+        pad1.Modified()
         c1.cd()
-        c1.Modified()
+        if not options.noData:
+            pad2 = ROOT.TPad("pad2", "pad2",0,0,1,0.3333333)
+            pad2.Draw()
+            pad2.cd()
+            ## pad2.Range(-0.1792683,-1.370091,1.10122,1.899)
+            pad2.SetFillColor(0)
+            pad2.SetBorderMode(0)
+            pad2.SetBorderSize(2)
+            pad2.SetTickx(1)
+            pad2.SetTicky(1)
+            pad2.SetLeftMargin(0.14)
+            pad2.SetRightMargin(0.04)
+            pad2.SetTopMargin(0)
+            pad2.SetBottomMargin(0.45)
+            pad2.SetFrameFillStyle(0)
+            pad2.SetFrameBorderMode(0)
+            pad2.SetFrameFillStyle(0)
+            pad2.SetFrameBorderMode(0)
 
-        c1.cd()
-        c1.SetSelected(c1)     
+            hRatio = hdata.Clone()
+            hRatio.SetName('hRatio')
+            hRatio.Sumw2()
+            hRatio.SetStats(0)
+            hRatio.Divide(mchist)
+
+
+            hRatio.GetYaxis().SetRangeUser(0.01,1.99)
+            ## hRatio.GetYaxis().SetTitle("Data / Bkgd")
+            ## hRatio.GetYaxis().SetTitleOffset(0.3)
+            ## hRatio.GetYaxis().SetTitleSize(0.17)
+            ## hRatio.GetYaxis().SetNdivisions(205)
+            ## hRatio.GetYaxis().SetLabelSize(0.11)
+            ## hRatio.GetXaxis().SetLabelSize(0.11)
+            ## hRatio.GetXaxis().SetTitleSize(0.17)
+            hRatio.GetXaxis().SetTitle(  HistoTitle[iHisto]+" , Stage "+str(istage)  )
+
+            hRatio.SetStats(0)
+            hRatio.SetFillColor(1)
+            hRatio.SetFillStyle(0)
+            hRatio.SetLineWidth(2)
+            hRatio.SetLineColor(1)
+            hRatio.SetMarkerStyle(20)
+            hRatio.SetMarkerSize(0.8)
+            hRatio.GetXaxis().SetNdivisions(506)
+            hRatio.GetXaxis().SetLabelFont(42)
+            hRatio.GetXaxis().SetLabelOffset(0.015)
+            hRatio.GetXaxis().SetLabelSize(0.1275)
+            hRatio.GetXaxis().SetTitleSize(0.1425)
+            hRatio.GetXaxis().SetTickLength(0.09)
+            hRatio.GetXaxis().SetTitleOffset(1.15)
+            hRatio.GetXaxis().SetTitleFont(42)
+            hRatio.GetYaxis().SetTitle("#frac{Data}{MC}")
+            #hRatio.GetYaxis().CenterTitle(true)
+            hRatio.GetYaxis().SetNdivisions(304)
+            hRatio.GetYaxis().SetLabelFont(42)
+            hRatio.GetYaxis().SetLabelSize(0.1275)
+            hRatio.GetYaxis().SetTitleSize(0.1425)
+            hRatio.GetYaxis().SetTickLength(0.045)
+            hRatio.GetYaxis().SetTitleOffset(0.45)
+            hRatio.GetYaxis().SetTitleFont(42)
+            hRatio.GetZaxis().SetLabelFont(42)
+            hRatio.GetZaxis().SetLabelSize(0.0425)
+            hRatio.GetZaxis().SetTitleSize(0.0475)
+            hRatio.GetZaxis().SetTitleFont(42)
+
+            hRatio.Draw("lepe0")
+
+            lineup = ROOT.TF1("lineup", "1.5", -7000, 7000)
+            lineup.SetLineColor(1)
+            lineup.SetLineStyle(2)
+            lineup.SetLineWidth(2)
+            lineup.Draw("same")
+            hRatio.Draw("e same x0")
+
+            line = ROOT.TF1("line", "1", -7000, 7000)
+            line.SetLineColor(1)
+            line.SetLineStyle(1)
+            line.SetLineWidth(3)
+            line.Draw("same")
+            hRatio.Draw("e same x0")
+
+            lined = ROOT.TF1("lined", "0.5", -7000, 7000)
+            lined.SetLineColor(1)
+            lined.SetLineStyle(2)
+            lined.SetLineWidth(2)
+            lined.Draw("same")
+            hRatio.Draw("e same x0")
+            ROOT.gPad.RedrawAxis()
+             
+            pad2.Modified()
+            c1.cd()
+            c1.Modified()
+
+            c1.cd()
+            c1.SetSelected(c1)     
 
 
     if options.allMC :    MCs = "_MCIsttbarWjetsST"
@@ -1089,15 +1121,15 @@ for istage in xrange(options.nstages) :
            "_PuppiCorr",     # Puppi corrections from Thea]
 
     ''' 
-    CorrIs = "_PUreweight"
+    CorrIs = "_PUreweight_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD"
     if options.allMC and options.ttSF : 
-        CorrIs = "_PUreweight_ttSF"
-        if options.includeQCD : CorrIs = "_PUreweight_ttSF_QCD"
+        CorrIs = "_PUreweight_ttSF_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_"
+    if options.allMC and options.includeQCD : CorrIs = "_PUreweight_QCD_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD"
 
-    c1.Print("./plots_Oct27/" + options.hist + str(istage) + typeIs + MCs + CorrIs + ".pdf", "pdf")
+    c1.Print("./plots_Oct28th/" + options.hist + str(istage) + typeIs + MCs + CorrIs + ".pdf", "pdf")
     #c1.Print("./plots_Oct25/" + options.hist + str(istage) + typeIs + MCs + CorrIs + ".png", "png")
     #c1.Print("plot_" + options.hist + str(istage) + MCs + ".root", "root")
-    if not options.noData :  
+    if not options.noData and not iHisto ==11 :  
         objs.append( [hdata, httbar, c1, hstack, leg] )
         if options.allMC :
             #objs.append( [hdata, httbar, hwjets, c1, hstack, leg] )
