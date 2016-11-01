@@ -97,18 +97,12 @@ class RunSemiLepTTbar(OptionParser) :
         self.treeobj = B2GTTreeSemiLep( options )
 
         self.options = options
+        self.verbose = options.verbose
+        self.infile = options.infile
 
         print 'Getting entries'
         entries = self.treeobj.tree.GetEntries()
         self.eventsToRun = entries
-        ### Save event weights for negative weight rescaling of MC
-        self.theWeightList = []
-
-        ###  Count number of events with negative weights
-        self.NegWeightsnum = 0.
-
-        ###  Sum all weights in event
-        self.Weightssum = 0.
 
         ### Here is the semileptonic ttbar selection for W jets
         if options.Type2 :
@@ -119,8 +113,7 @@ class RunSemiLepTTbar(OptionParser) :
             self.hadSelection = B2GSelectSemiLepTTbar_Type1.B2GSelectSemiLepTTbar_Type1( options, self.treeobj, self.lepSelection )
         self.nstages = self.lepSelection.nstages + self.hadSelection.nstages
 
-        ### Array to count events passing each stage Fix this: auto set to correct nstages total
-
+        ### Array to count events passing each stage 
         self.passedCutCount = [] 
         for count in xrange(0, self.lepSelection.nstages):
             self.passedCutCount.append(    self.lepSelection.passedCount[count]            )
@@ -178,18 +171,26 @@ class RunSemiLepTTbar(OptionParser) :
         self.AK4BdiscHist = []        
 
         self.AK8PtHist = []
+        self.AK8HTHist = []
         self.AK8SDPtHist = [] 
         self.AK8PuppiSDPtHist = [] 
         self.AK8PuppiPtHist = [] 
 
-        self.AK8PuppiSDPtoverPuppiPtvsPuppiPttHist = []
-        self.AK8SDPtovergenPtvsGenPttHist = []
+        self.AK8PuppiSDPtResponse = []
+        self.AK8SDPtResponse = []
 
-        self.AK8EtaHist = []
+
         self.AK8puppitau21Hist = []
         self.AK8puppitau32Hist = []
+        self.AK8Tau21Hist      = []
+        self.AK8Tau32Hist      = []
+
+        self.AK8EtaHist = []
         self.AK8MHist = []
         self.AK8MSDHist = []
+        self.AK8SDRhoRatioHist = []
+
+
         self.AK8MSDSJ0Hist = []
         self.AK8SDSJ0PtHist = []          
 
@@ -216,20 +217,25 @@ class RunSemiLepTTbar(OptionParser) :
 
         for ival in xrange(self.nstages):
             self.AK8PtHist.append( ROOT.TH1F("AK8PtHist" +  str(ival), "Jet p_{T}, Stage " + str(ival), 1000, 0, 1000) )
+            self.AK8HTHist.append( ROOT.TH1F("AK8HTHist" +  str(ival), "Jet H_{T}, Stage " + str(ival), 4000, 0, 4000) )
             self.AK8SDPtHist.append( ROOT.TH1F("AK8SDPtHist" +  str(ival), "Jet SD p_{T}, Stage " + str(ival), 1000, 0, 1000) )
             self.AK8PuppiSDPtHist.append( ROOT.TH1F("AK8PuppiSDPtHist" +  str(ival), "Jet Puppi SD p_{T}, Stage " + str(ival), 1000, 0, 1000) )
             self.AK8PuppiPtHist.append( ROOT.TH1F("AK8PuppiPtHist" +  str(ival), "Jet p_{T}, Stage " + str(ival), 1000, 0, 1000) )
 
-            self.AK8PuppiSDPtoverPuppiPtvsPuppiPttHist.append( ROOT.TH1F("AK8PuppiSDPtoverPuppiPtvsPuppiPttHist" +  str(ival), "Jet p_{T}, Stage " + str(ival), 1000, 0, 1000) )
-            self.AK8SDPtovergenPtvsGenPttHist.append( ROOT.TH1F("AK8SDPtovergenPtvsGenPttHist" +  str(ival), "Jet p_{T}, Stage " + str(ival), 1000, 0, 1000) )
+            self.AK8PuppiSDPtResponse.append( ROOT.TH1F("AK8PuppiSDPtResponse" +  str(ival), "Jet p_{T}, Stage " + str(ival), 1000, 0, 1000) )
+            self.AK8SDPtResponse.append( ROOT.TH1F("AK8SDPtResponse" +  str(ival), "Jet p_{T}, Stage " + str(ival), 1000, 0, 1000) )
 
             self.AK8SDSJ0PtHist.append( ROOT.TH1F("AK8SDSJ0PtHist" +  str(ival), "SD subjet 0 P_{T}, Stage " + str(ival), 1000, 0, 1000) )
             self.AK8EtaHist.append( ROOT.TH1F("AK8EtaHist" +  str(ival), "Jet #eta, Stage " + str(ival), 1000, -2.5, 2.5) )
             self.AK8puppitau21Hist.append( ROOT.TH1F("AK8puppitau21Hist" +  str(ival), "Jet #tau_{21}, Stage " + str(ival), 1000, 0., 1.) )
             self.AK8puppitau32Hist.append( ROOT.TH1F("AK8puppitau32Hist" +  str(ival), "Jet #tau_{32}, Stage " + str(ival), 1000, 0., 1.) )
+            self.AK8Tau21Hist.append( ROOT.TH1F("AK8Tau21Hist" +  str(ival), "Jet #tau_{21}, Stage " + str(ival), 1000, 0., 1.) )
+            self.AK8Tau32Hist.append( ROOT.TH1F("AK8Tau32Hist" +  str(ival), "Jet #tau_{32}, Stage " + str(ival), 1000, 0., 1.) )
+
 
             self.AK8MHist.append( ROOT.TH1F("AK8MHist" +  str(ival), "Jet Mass, Stage " + str(ival), 1000, 0, 500) )
             self.AK8MSDHist.append( ROOT.TH1F("AK8MSDHist" +  str(ival), "Jet Soft Dropped Mass, Stage " + str(ival), 1000, 0, 500) )
+            self.AK8SDRhoRatioHist.append( ROOT.TH1F("AK8SDRhoRatioHist" +  str(ival), "SD Rho Ratio, Stage " + str(ival), 1000, 0., 1.) )
             self.AK8MSDSJ0Hist.append( ROOT.TH1F("AK8MSDSJ0Hist" +  str(ival), "Leading Subjet Soft Dropped Mass, Stage " + str(ival), 1000, 0, 500) )
 
             self.LeptonPtHist.append( ROOT.TH1F("LeptonPtHist" +  str(ival), "Lepton p_{T}, Stage " + str(ival), 1000, 0, 1000) )
@@ -271,18 +277,7 @@ class RunSemiLepTTbar(OptionParser) :
         b = self.hadSelection 
 
         theWeight =  b.EventWeight * b.PUWeight
-        self.theWeightList.append(theWeight)
-        self.Weightssum += theWeight
-        #print "Event weight * PU weight is {} ".format(theWeight)
-
-        if 0. < theWeight < 0.000158828959689 : 
-            theWeight =1. #setting data weight to 1  fix this : make options available within this function- if options.infile == 'data.root' :
-            #print "set weight to 1"
-
-        # Deal with negative weights 
-        if theWeight < 0. :
-           theWeight *= -1.
-           self.NegWeightsnum += 1
+        #if self.verbose : print "Event weight * PU weight is {} ".format(theWeight)
 
         self.hCutFlow[index].Fill(self.passedCutCount[index])
 
@@ -299,19 +294,14 @@ class RunSemiLepTTbar(OptionParser) :
         self.ak8PuppiSDJet = None
         self.ak8PuppiSDJetRaw = None
 
-        self.AK8PuppiSDPtoverPuppiPtvsPuppiPttHist = None
-        self.AK8SDPtovergenPtvsGenPttHist = None
-
-        self.SDptPuppipt = None
-        self.SDptGenpt = None
 
         if b.ak8Jet != None :
             self.AK8PtHist[index].Fill( b.ak8Jet.Perp()  , theWeight )
-            if b.ak8SDJet != None :
-                # Pt Response Plot 1
-                self.SDptGenpt = float(b.ak8SDJet.Perp())  / float(b.ak8Jet.Perp() ) 
-                #self.AK8SDPtovergenPtvsGenPttHist[index].Fill( b.ak8SDJet.Perp() , b.ak8Jet.Perp() )    # /b.ak8Jet.Perp() 
-                # Fix this : fill response histos
+            self.AK8HTHist[index].Fill( b.ak8JetHT  , theWeight )
+            self.AK8Tau32Hist[index].Fill( b.tau32  , theWeight )
+            self.AK8Tau21Hist[index].Fill( b.tau21  , theWeight )
+            if b.ak8SDJet != None and b.SDptGenpt != None :
+                self.AK8SDPtResponse[index].Fill( b.SDptGenpt , b.ak8Jet.Perp() )    
 
         if b.ak8SDJet != None :
             self.AK8SDPtHist[index].Fill( b.ak8SDJet.Perp()  , theWeight )
@@ -328,37 +318,39 @@ class RunSemiLepTTbar(OptionParser) :
 
             self.AK8MHist[index].Fill( b.ak8_Puppim  , theWeight )
             if b.ak8PuppiSDJet != None :
-                # Pt Response Plot 2
-                self.SDptPuppipt = float(b.ak8PuppiSDJet.Perp())  / float(b.ak8PuppiJet.Perp() ) 
-                #self.AK8PuppiSDPtoverPuppiPtvsPuppiPttHist[index].Fill( self.SDptPuppipt  , b.ak8PuppiJet.Perp() )  
-                # Fix this : fill response histos
+                if b.ak8PuppiJet != None and b.SDptPuppipt != None :
+                    self.AK8PuppiSDPtResponse[index].Fill(b.SDptPuppipt  , b.ak8PuppiJet.Perp() )  
 
         if b.ak8PuppiSDJet != None :
             self.AK8MSDHist[index].Fill( b.ak8PuppiSD_m  , theWeight )
+            if  b.SDRhoRatio  != None :
+                self.AK8SDRhoRatioHist[index].Fill(b.SDRhoRatio  , theWeight ) 
+
             self.AK8MSDSJ0Hist[index].Fill( b.ak8SDsj0_m  , theWeight )
 
 
             # Filling jet mass histos binned by pt of the leading SD subjet
-
-            self.AK8MPt200To300Hist[index].Fill( b.ak8PuppiJet200.M()  , theWeight )
-            self.AK8MSDPt200To300Hist[index].Fill( b.ak8PuppiSDJet200.M()  , theWeight )
+            if  b.ak8PuppiJet200.M() > 0.0001:
+                self.AK8MPt200To300Hist[index].Fill( b.ak8PuppiJet200.M()  , theWeight )
+                self.AK8MSDPt200To300Hist[index].Fill( b.ak8PuppiSDJet200.M()  , theWeight )
             if  b.ak8SDsj0_m200 > 0.0001:
                 self.AK8MSDSJ0Pt200To300Hist[index].Fill(  b.ak8SDsj0_m200 , theWeight )
 
-            self.AK8MPt300To400Hist[index].Fill( b.ak8PuppiJet300.M()  , theWeight )
-            self.AK8MSDPt300To400Hist[index].Fill( b.ak8PuppiSDJet300.M()  , theWeight )
+            if  b.ak8PuppiJet300.M() > 0.0001:
+                self.AK8MPt300To400Hist[index].Fill( b.ak8PuppiJet300.M()  , theWeight )
+                self.AK8MSDPt300To400Hist[index].Fill( b.ak8PuppiSDJet300.M()  , theWeight )
             if  b.ak8SDsj0_m300 > 0.0001:
                 self.AK8MSDSJ0Pt300To400Hist[index].Fill(  b.ak8SDsj0_m300 , theWeight )
 
-
-            self.AK8MPt400To500Hist[index].Fill(  b.ak8PuppiJet400.M()  , theWeight )
-            self.AK8MSDPt400To500Hist[index].Fill( b.ak8PuppiSDJet400.M()  , theWeight )
+            if  b.ak8PuppiJet400.M() > 0.0001:
+                self.AK8MPt400To500Hist[index].Fill(  b.ak8PuppiJet400.M()  , theWeight )
+                self.AK8MSDPt400To500Hist[index].Fill( b.ak8PuppiSDJet400.M()  , theWeight )
             if  b.ak8SDsj0_m400 > 0.0001:
                 self.AK8MSDSJ0Pt400To500Hist[index].Fill(  b.ak8SDsj0_m400 , theWeight )
 
-
-            self.AK8MPt500To800Hist[index].Fill( b.ak8PuppiJet500.M()  , theWeight )
-            self.AK8MSDPt500To800Hist[index].Fill( b.ak8PuppiSDJet500.M()  , theWeight )
+            if  b.ak8PuppiJet500.M() > 0.0001:
+                self.AK8MPt500To800Hist[index].Fill( b.ak8PuppiJet500.M()  , theWeight )
+                self.AK8MSDPt500To800Hist[index].Fill( b.ak8PuppiSDJet500.M()  , theWeight )
             if  b.ak8SDsj0_m500 > 0.0001:
                 self.AK8MSDSJ0Pt500To800Hist[index].Fill(  b.ak8SDsj0_m500 , theWeight )
 
@@ -368,8 +360,8 @@ class RunSemiLepTTbar(OptionParser) :
             self.LeptonEtaHist[index].Fill( a.leptonP4.Eta()  , theWeight )
             self.METPtHist[index].Fill( a.nuP4.Perp() , theWeight  )
             self.HTLepHist[index].Fill( a.leptonP4.Perp() + a.nuP4.Perp()  , theWeight )
-            if a.ak4Jet != None : 
-                self.Iso2DHist[index].Fill( a.leptonP4.Perp( a.ak4Jet.Vect() ), a.leptonP4.DeltaR( a.ak4Jet )  , theWeight  )
+            if a.ak4Jet0 != None : 
+                self.Iso2DHist[index].Fill( a.leptonP4.Perp( a.ak4Jet0.Vect() ), a.leptonP4.DeltaR( a.ak4Jet0 )  , theWeight  )
                 self.AK4BdiscHist[index].Fill(b.ak4JetBdisc , theWeight)
 
 
@@ -380,9 +372,6 @@ class RunSemiLepTTbar(OptionParser) :
         '''
         Wrap it up. 
         '''
-        self.negfrac = float(self.NegWeightsnum) / float(self.eventsToRun)
-        print "{0:1.0f} Negative weights/ {1:10.0f} total events: fraction {2:3.4f}".format(self.NegWeightsnum, self.eventsToRun, self.negfrac)
-        
 
         self.ts = (time.time() - self.startTime)
 

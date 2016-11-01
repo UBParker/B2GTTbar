@@ -31,6 +31,11 @@ parser.add_option('--includeQCD', action='store_true',
                   dest='includeQCD',
                   help='Do you want to add QCD MC? (or just ttjets, W+Jets and ST)')
 
+parser.add_option('--drawOnlyQCD', action='store_true',
+                  default=False,
+                  dest='drawOnlyQCD',
+                  help='Do you want to draw QCD MC only? (or the usual stack of all MC)')
+
 parser.add_option('--rebinNum', type='float', action='store',
                   dest='rebinNum',
                   default = 20,
@@ -38,7 +43,7 @@ parser.add_option('--rebinNum', type='float', action='store',
 
 parser.add_option('--nstages', type='int', action='store',
                   dest='nstages',
-                  default = 16,
+                  default = 15,
                   help='number of stages of selection (sum of nstages from lept and had selections)')
 
 parser.add_option('--Type2', action='store_true',
@@ -69,40 +74,42 @@ parser.add_option('--noData', action='store_true',
 (options, args) = parser.parse_args(sys.argv)
 argv = []
 
-
-def ScalettMC(httbar__, hdata__ , hMC__, intMin, intMax ) :
+'''
+def ScalettMC(tthisto, datahisto , MChisto, intMin, intMax ) :
     # Find the tt scale factor
     if not options.ttSF: 
         sf = 1.
-        return httbar__
+        return tthisto
     sf = 0.
     scalefactortt = 0.
 
-    intMinbin = hMC__.FindBin(intMin)
-    intMaxbin = hMC__.FindBin(intMax)
+    intMinbin = MChisto.FindBin(intMin)
+    intMaxbin = MChisto.FindBin(intMax)
 
-    if (hdata__.Integral() > 0.) and (hMC__.Integral() > 0.) and options.ttSF: 
-        diff = float(hdata__.Integral(intMinbin, intMaxbin))- float(  hMC__.Integral(intMinbin, intMaxbin)  )
-        sf = abs(    diff/ float(  httbar__.Integral(intMinbin, intMaxbin)     ) +1.       )     
+    if (datahisto.Integral() > 0.) and (MChisto.Integral() > 0.) and options.ttSF: 
+        diff = float(datahisto.Integral(intMinbin, intMaxbin))- float(  MChisto.Integral(intMinbin, intMaxbin)  )
+        sf = abs(    diff/ float(  tthisto.Integral(intMinbin, intMaxbin)     ) +1.       )     
 
 
     scalefactortt = sf 
     if options.ttSF and options.verbose: print "tt SCALE FACTOR APPLIED : {0:2.2f} based on integral of range ({1},{2})".format(scalefactortt, intMin, intMax)
 
-    if httbar__.Integral() > 0 : 
-        httbar__.Scale( scalefactortt ) 
+    if tthisto.Integral() > 0 : 
+        tthisto.Scale( scalefactortt ) 
     else :
         print "tt bin  empty when using scalettMC() "
-        httbar__.Scale( 0.)
+        tthisto.Scale( 0.)
 
-    return httbar__ 
+    return tthisto 
+# } ### End Scale of tt MC function definition
+'''
 
 
 if options.noData : print "WARNING : noData option is ON so the data wil not be plotted !!! "
 
 # Open output root file to store SF, JMR, JMS 
 
-fileout = "plotstackoutfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_" + options.hist + ".root"
+fileout = "plotstackoutfile_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_" + options.hist + ".root"
 
 fout = ROOT.TFile( fileout, "RECREATE") 
 
@@ -296,12 +303,13 @@ if options.verbose : print "Histo name in options was {0}, index number {1:0.0f}
 tdrstyle.setTDRStyle()
 
 xs_ttbar = 831.76
-nev_ttbar = 92925926.
-lumi = 12900. # pb-1
-
+nev_ttbar =   92925926. #
+print "nev_ttbar = {}".format(nev_ttbar)
+lumi = 27220./1.618 #12300. #12900./1.618    # pb-1
+print "lumi (fb-1) = {}".format(lumi/1000.)
 kfactorW = 1.21
-kfactortt = 1. #0.94
-ttSFfromAllHad = 1. #0.89*0.89
+
+#ttSFfromAllHad = 1. #0.89*0.89
 
 xs_wjets = [
     1629.87,  #1345.,     #100To200  
@@ -326,9 +334,9 @@ nev_wjets = [
 xs_st = [
     136.02*0.322,     #ST t-channel top  
     80.95*0.322 ,     #ST t-channel antitop   
-    71.7/2.,     #ST tW top                       xsec given for top + antitop https://twiki.cern.ch/twiki/bin/view/LHCPhysics/SingleTopRefXsec#Single_top_Wt
-    71.7/2.,     #ST tW antitop                         
-    47.13,     #ST s-channel            fix this: NOT SURE https://twiki.cern.ch/twiki/bin/view/LHCPhysics/SingleTopRefXsec#Single_top_s_channel_cross_secti Thea used  47.13 but website says 10.32
+    35.6,     #ST tW top  xsec given for top + antitop https://twiki.cern.ch/twiki/bin/view/LHCPhysics/SingleTopRefXsec#Single_top_Wt
+    35.6,     #ST tW antitop                         
+     3.36 , # 47.13,     #ST s-channel  CONSIDERING only leptonic decays https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#QCD
     ]
 
 nev_st = [                                     
@@ -341,18 +349,26 @@ nev_st = [
 
 
 xs_QCD = [
-    7475.,
-    587.1,
-    167.,
-    28.25,
-    8.195,
-    0.7346,
-    0.102,
-    0.00644,
-    0.000163, 
+    2758420. ,  #80 
+    469797.  ,  #120
+    117989.  ,  #170
+    7820.25  ,  #300
+    645.528  ,  #470
+    187.109  ,  #600
+    32.3486  ,  #800
+    9.4183,    #1000
+    0.84265,   #1400
+    .12163,    #1800
+    0.00682981,  #2400
+    0.000165445 , #3200
     ] 
 
+
+
 nev_QCD = [
+    699511.,
+    466890.,
+    699973.,
     2482816., 
     1998648.,  
     1377400., 
@@ -366,44 +382,44 @@ nev_QCD = [
 
 
 if options.noData : 
-    print "WARNING : noData option is ON so the data wil not be plotted !!! "
+    print "WARNING : noData option is ON !!! "
 else :
     if options.Type2 :
         print "Type 2 selection"
-        datafile = ROOT.TFile('data_BCD_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type2.root')
+        datafile = ROOT.TFile('data_BCDEFG_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type2.root')
     else :
         print "Type 1 selection"
-        datafile = ROOT.TFile('data_BCD_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type1.root')
+        datafile = ROOT.TFile('data_BCDEFG_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root')
 
 if options.Type2 :
     print "Type 2 selection"
-    ttbarfile = ROOT.TFile('ttjets_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type2.root')
+    ttbarfile = ROOT.TFile('ttjets_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type2.root')
 else :
     print "Type 1 selection"
-    ttbarfile = ROOT.TFile('ttjets_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type1.root')
+    ttbarfile = ROOT.TFile('ttjets_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root')
 
 
 
 if options.allMC :
     if options.Type2 :
         wjetsfiles = [
-            ROOT.TFile('wjets1_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type2.root'),
-            ROOT.TFile('wjets2_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type2.root'),
-            ROOT.TFile('wjets3_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type2.root'),
-            ROOT.TFile('wjets4_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type2.root'),
-            ROOT.TFile('wjets5_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type2.root'),
-            ROOT.TFile('wjets6_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type2.root'),
-            ROOT.TFile('wjets7_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type2.root'),
+            ROOT.TFile('wjets1_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type2.root'),
+            ROOT.TFile('wjets2_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type2.root'),
+            ROOT.TFile('wjets3_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type2.root'),
+            ROOT.TFile('wjets4_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type2.root'),
+            ROOT.TFile('wjets5_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type2.root'),
+            ROOT.TFile('wjets6_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type2.root'),
+            ROOT.TFile('wjets7_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type2.root'),
             ]
     else :
         wjetsfiles = [
-            ROOT.TFile('wjets1_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type1.root'),
-            ROOT.TFile('wjets2_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type1.root'),
-            ROOT.TFile('wjets3_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type1.root'),
-            ROOT.TFile('wjets4_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type1.root'),
-            ROOT.TFile('wjets5_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type1.root'),
-            ROOT.TFile('wjets6_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type1.root'),
-            ROOT.TFile('wjets7_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type1.root'),
+            ROOT.TFile('wjets1_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root'),
+            ROOT.TFile('wjets2_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root'),
+            ROOT.TFile('wjets3_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root'),
+            ROOT.TFile('wjets4_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root'),
+            ROOT.TFile('wjets5_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root'),
+            ROOT.TFile('wjets6_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root'),
+            ROOT.TFile('wjets7_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root'),
             ]
 
     wjets_colors = [   
@@ -411,47 +427,53 @@ if options.allMC :
 
     if options.Type2 :
         stfiles = [
-                ROOT.TFile('st1_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type2.root'),
-                ROOT.TFile('st2_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type2.root'),
-                ROOT.TFile('st3_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type2.root'),
-                ROOT.TFile('st4_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type2.root'),
-                ROOT.TFile('st5_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type2.root') ]
+                ROOT.TFile('st1_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type2.root'),
+                ROOT.TFile('st2_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type2.root'),
+                ROOT.TFile('st3_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type2.root'),
+                ROOT.TFile('st4_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type2.root'),
+                ROOT.TFile('st5_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type2.root') ]
     else:        
         stfiles = [
-                ROOT.TFile('st1_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type1.root'),
-                ROOT.TFile('st2_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type1.root'),
-                ROOT.TFile('st3_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type1.root'),
-                ROOT.TFile('st4_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type1.root'),
-                ROOT.TFile('st5_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type1.root'),
+                ROOT.TFile('st1_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root'),
+                ROOT.TFile('st2_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root'),
+                ROOT.TFile('st3_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root'),
+                ROOT.TFile('st4_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root'),
+                ROOT.TFile('st5_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root'),
             ]
 
     st_colors = [  ROOT.kWhite,ROOT.kCyan - 9, ROOT.kCyan - 7, ROOT.kCyan - 4, ROOT.kCyan  ]
  
     if options.Type2 :
         QCDfiles = [
-                ROOT.TFile('QCD1_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type2.root'),
-                ROOT.TFile('QCD2_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type2.root'),
-                ROOT.TFile('QCD3_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type2.root'),
-                ROOT.TFile('QCD4_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type2.root'),
-                ROOT.TFile('QCD5_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type2.root'),
-                ROOT.TFile('QCD6_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type2.root'),
-                ROOT.TFile('QCD7_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type2.root'),
-                ROOT.TFile('QCD8_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type2.root'),
-                ROOT.TFile('QCD9_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type2.root') ]
+                ROOT.TFile('QCD-2_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type2.root'),
+                ROOT.TFile('QCD-1_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type2.root'),
+                ROOT.TFile('QCD0_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type2.root'),
+                ROOT.TFile('QCD1_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type2.root'),
+                ROOT.TFile('QCD2_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type2.root'),
+                ROOT.TFile('QCD3_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type2.root'),
+                ROOT.TFile('QCD4_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type2.root'),
+                ROOT.TFile('QCD5_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type2.root'),
+                ROOT.TFile('QCD6_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type2.root'),
+                ROOT.TFile('QCD7_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type2.root'),
+                ROOT.TFile('QCD8_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type2.root'),
+                ROOT.TFile('QCD9_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type2.root') ]
     else:        
         QCDfiles = [
-                ROOT.TFile('QCD1_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type1.root'),
-                ROOT.TFile('QCD2_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type1.root'),
-                ROOT.TFile('QCD3_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type1.root'),
-                ROOT.TFile('QCD4_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type1.root'),
-                ROOT.TFile('QCD5_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type1.root'),
-                ROOT.TFile('QCD6_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type1.root'),
-                ROOT.TFile('QCD7_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type1.root'),
-                ROOT.TFile('QCD8_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type1.root'),
-                ROOT.TFile('QCD9_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_type1.root') ]
+                ROOT.TFile('QCD-2_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root'),
+                ROOT.TFile('QCD-1_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root'),
+                ROOT.TFile('QCD0_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root'),
+                ROOT.TFile('QCD1_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root'),
+                ROOT.TFile('QCD2_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root'),
+                ROOT.TFile('QCD3_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root'),
+                ROOT.TFile('QCD4_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root'),
+                ROOT.TFile('QCD5_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root'),
+                ROOT.TFile('QCD6_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root'),
+                ROOT.TFile('QCD7_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root'),
+                ROOT.TFile('QCD8_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root'),
+                ROOT.TFile('QCD9_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root') ]
 
-    QCD_colors = [  ROOT.kWhite,ROOT.kYellow - 9, ROOT.kYellow - 8, ROOT.kYellow - 7,  ROOT.kYellow - 6,  ROOT.kYellow - 5, ROOT.kYellow - 4, ROOT.kYellow ,  ROOT.kYellow + 1 ]
-
+    #QCD_colors = [  ROOT.kWhite,ROOT.kYellow - 9, ROOT.kYellow - 8, ROOT.kYellow - 7,  ROOT.kYellow - 6,  ROOT.kYellow - 5, ROOT.kYellow - 4, ROOT.kYellow ,  ROOT.kYellow + 1, ROOT.kYellow + 2, ROOT.kYellow + 3, ROOT.kYellow + 4 ]
+    QCD_colors = [ ROOT.kRed + 7, ROOT.kRed + 3,  ROOT.kOrange + 2, ROOT.kYellow + 6 ,ROOT.kYellow + 1 , ROOT.kGreen + 2, ROOT.kCyan + 6, ROOT.kCyan+1, ROOT.kBlue + 2, ROOT.kBlue + 6, ROOT.kMagenta + 2, ROOT.kMagenta + 7 ]
    
 objs = []
 
@@ -465,52 +487,66 @@ for istage in xrange(options.nstages) :
     # Get and scale the stored histos
     if options.noData : 
         print "WARNING : noData option is ON !!! "
-        #hdata = ttbarfile.Get(options.hist + str(istage))
+        hdata = ttbarfile.Get(options.hist + str(istage))
+        hdata.Sumw2()
     else :
         hdata = datafile.Get(options.hist + str(istage))
-        hdata.SetMarkerStyle(20)
-
-    hwjets_list = []
-    hst_list = []
-    hQCD_list = []
+        hdata.SetName('hdata')
+        tempdata = hdata.Clone('tempdata')
+        tempdata2 = hdata.Clone('tempdata2')
+        hdata.Sumw2()
+        tempdata.Sumw2()
+        tempdata2.Sumw2()
 
     if options.allMC :
+
+        hwjets_list = []
+        hst_list = []
+        hQCD_list = []
+
         # W + Jets MC Stack
         hwjets = None
         hwjets_stack = ROOT.THStack("hwjets_stack", "hwjets_stack")
 
         for iwjet in xrange(len(wjetsfiles)) :
-            htemp = wjetsfiles[iwjet].Get(options.hist + str(istage))
-            htemp.Scale( ( kfactorW * ttSFfromAllHad * xs_wjets[iwjet] ) / nev_wjets[iwjet] * lumi )
-            hwjets_list.append( htemp )
-            htemp.SetFillColor( wjets_colors[iwjet] )
+            htempw = wjetsfiles[iwjet].Get(options.hist + str(istage))
+            wscaleIs =  kfactorW *  xs_wjets[iwjet] / nev_wjets[iwjet] * lumi
+            print "wscaleIs {}".format(wscaleIs)
+            htempw.Scale( wscaleIs   )
+            hwjets_list.append( htempw )
+            htempw.SetFillColor( wjets_colors[iwjet] )
             if iwjet == 0 :
-                hwjets = htemp.Clone('hwjets')
+                hwjets = htempw.Clone('hwjets')
             else :
                 if options.verbose : print "Adding w+jets histos" 
-                hwjets.Add( htemp )
-            hwjets_stack.Add( htemp )
+                hwjets.Add( htempw )
+            hwjets_stack.Add( htempw )
         #hwjets_stack.Draw("hist")
+        hwjets.Sumw2()
+        hwjets.SetName('hwjets')
         hwjets.SetFillColor( ROOT.kRed )
-        if iHisto != 11: hwjets.Rebin(rebinNum)
-        
+
         # ST stack (t-channel top, t-channel antitop, tW top, tW antitop, s-channel)
         hst = None
         hst_stack = ROOT.THStack("hst_stack", "hst_stack")
 
         for ist in xrange(len(stfiles)) :
-            htemp = stfiles[ist].Get(options.hist + str(istage))
-            htemp.Scale(ttSFfromAllHad * xs_st[ist] / nev_st[ist] * lumi )
-            hst_list.append( htemp )
-            htemp.SetFillColor( st_colors[ist] )
+            htemps = stfiles[ist].Get(options.hist + str(istage))
+            stscaleIs = xs_st[ist]     /  nev_st[ist]   * lumi 
+            print "stscaleIs {}".format(stscaleIs)
+            htemps.Scale( stscaleIs   )
+            hst_list.append( htemps )
+            htemps.SetFillColor( st_colors[ist] )
             if ist == 0 :
-                hst = htemp.Clone('hst')
+                hst = htemps.Clone('hst')
             else :
                 if options.verbose : print "Adding ST histos" 
-                hst.Add( htemp )
-            hst_stack.Add( htemp )
+                hst.Add( htemps )
+            hst_stack.Add( htemps )
+        hst.Sumw2()
+        hst.SetName('hst')
         hst.SetFillColor( ROOT.kCyan)
-        if iHisto != 11:        hst.Rebin(rebinNum)
+
         #hwjets_stack.Draw("hist")
 
         if options.includeQCD :
@@ -518,48 +554,62 @@ for istage in xrange(options.nstages) :
             hQCD = None
             hQCD_stack = ROOT.THStack("hQCD_stack","hQCD_stack")
             for iQCD in xrange(len(QCDfiles)):
-                if options.verbose : print "About to Get QCD histo" 
-                htemp = QCDfiles[iQCD].Get(options.hist + str(istage))
-                if options.verbose : print "About to scale QCD histo" 
-                htemp.Scale(ttSFfromAllHad * xs_QCD[iQCD] / nev_QCD[iQCD] * lumi )
-                if options.verbose : print "About to append QCD histo" 
-                hQCD_list.append( htemp )
-                htemp.SetFillColor( QCD_colors[iQCD] )
+                htempq = QCDfiles[iQCD].Get(options.hist + str(istage))
+                qcdscaleIs = xs_QCD[iQCD]     /  nev_QCD[iQCD]   * lumi 
+                print "qcdscaleIs {}".format(qcdscaleIs)
+                htempq.Scale( qcdscaleIs   )
+                htempq.SetFillColor( QCD_colors[iQCD] )
+                hQCD_list.append( htempq )
                 if iQCD == 0 :
-                    hQCD = htemp.Clone('hQCD')
+                    hQCD = htempq.Clone('hQCD')
                 else :
-                    if options.verbose : print "About to ADD QCD histos" 
-                    hQCD.Add( htemp )
+                    hQCD.Add( htempq )
                     if options.verbose : print "Adding QCD histos" 
-                hQCD_stack.Add( htemp )
+                htempq.Rebin(rebinNum)
+                hQCD_stack.Add( htempq )
             hQCD.Sumw2()
+            hQCD.SetName('hQCD')
             hQCD.SetFillColor( ROOT.kYellow )
-            if iHisto != 11:  hQCD.Rebin(rebinNum)
-        
+
 
     httbar = ttbarfile.Get(options.hist + str(istage))
+    httbar.SetName('httbar')
+    ttscaleIs = xs_ttbar/ nev_ttbar  * lumi 
+    print "ttscaleIs {}".format(ttscaleIs)
+    httbar.Scale(  ttscaleIs )
     httbar.Sumw2()
-    httbar.Scale(kfactortt *ttSFfromAllHad * (xs_ttbar / nev_ttbar) * lumi   )
     httbar.SetFillColor(ROOT.kGreen + 2)
-    if iHisto != 11:    httbar.Rebin(rebinNum)
 
-    if not options.noData and  iHisto != 11:
-        hdata.Rebin(rebinNum)
+    if iHisto != 11:    
+        httbar.Rebin(rebinNum)
+        if options.allMC :
+            hwjets.Rebin(rebinNum)
+            hst.Rebin(rebinNum)
+            if options.includeQCD :
+                hQCD.Rebin(rebinNum) 
+        if not options.noData:
+            hdata.Rebin(rebinNum)
+            tempdata.Rebin(rebinNum)
+            tempdata2.Rebin(rebinNum)
 
-    mchist = httbar.Clone()
+    hMC = httbar.Clone('hMC')   
     if options.allMC : 
         if options.verbose : print "About to ADD hwjets to httbar histo" 
-        mchist.Add( hwjets )
-        mchist.Add( hst )
-        #if options.includeQCD :
-        #    mchist.Add( hQCD )
+        hMC.Add( hwjets )
+        hMC.Add( hst )
+        if options.includeQCD :
+            hMC.Add( hQCD )
+
+    tempMC = hMC.Clone('tempMC')
+    tempMC2 = hMC.Clone('tempMC2')
+
 
     #if not options.noData and iHisto != 11:
         #Scale ttbar MC by ratio of integrals of data MC
-        #httbar = ScalettMC(httbar, hdata, mchist ,  xAxisrange[iHisto][0] , xAxisrange[iHisto][1] ) 
+        #httbar = ScalettMC(httbar, hdata, hMC ,  xAxisrange[iHisto][0] , xAxisrange[iHisto][1] ) 
 
     if iHisto != 11:
-        hstack = ROOT.THStack("bkgs", "")
+        hstack = ROOT.THStack("hstack", "hstack")
         if options.allMC :
             hstack.Add( hwjets )
             hstack.Add( hst )
@@ -609,14 +659,11 @@ for istage in xrange(options.nstages) :
         fitter_data.SetLineColor(1)
         fitter_data.SetLineWidth(2)
         fitter_data.SetLineStyle(2)
-   
-        tempCloneData = hdata.Clone()
-        tempCloneData.SetName("tempCloneData")
 
         if options.fixFit and istage == (options.nstages -1):
-            tempCloneData.Fit(fitter_data,'B' )
+            tempdata.Fit(fitter_data,'B' )
         else :
-            tempCloneData.Fit(fitter_data,'R' )
+            tempdata.Fit(fitter_data,'R' )
 
 
         amp_data    = fitter_data.GetParameter(0);
@@ -648,13 +695,10 @@ for istage in xrange(options.nstages) :
         if options.fixFit  :
             fitter_mc.SetParLimits(1,76.,86.)
 
-        tempCloneMC = mchist.Clone()
-        tempCloneMC.SetName("tempCloneMC")
-
         if options.fixFit and istage ==(options.nstages - 1):
-            tempCloneMC.Fit(fitter_mc,'B' )
+            tempMC.Fit(fitter_mc,'B' )
         else :
-            tempCloneMC.Fit(fitter_mc,'R' )
+            tempMC.Fit(fitter_mc,'R' )
 
         amp_mc    = fitter_mc.GetParameter(0);
         eamp_mc   = fitter_mc.GetParError(0); 
@@ -668,7 +712,7 @@ for istage in xrange(options.nstages) :
         if options.fixFit and istage == (options.nstages -2) :
             MCmeans[theIndex] = mean_mc
             MCsigmas[theIndex] = width_mc
-            if options.verbose : print "The mean of the gaussian fit to mchist MC is {0:3.3f} +/- {1:3.3f} with fit range ({2}, {3} ) ".format(mean_mc, width_mc, minFitMC, maxFitMC )
+            if options.verbose : print "The mean of the gaussian fit to hMC MC is {0:3.3f} +/- {1:3.3f} with fit range ({2}, {3} ) ".format(mean_mc, width_mc, minFitMC, maxFitMC )
 
     if (iHisto <17 and iHisto > 12 ) and not options.noData and theIndex != None :
         # define pt of SD subjet 0 for this histo
@@ -681,7 +725,7 @@ for istage in xrange(options.nstages) :
         jms_uncert = jms
         
         binSizeData = hdata.GetBinWidth(0)
-        binSizeMC = mchist.GetBinWidth(0) 
+        binSizeMC = hMC.GetBinWidth(0) 
 
         if options.verbose : print "Bin size in data {0:1.2f} and MC  {1:1.2f}".format(binSizeData, binSizeMC )
         mclow = 0. 
@@ -696,19 +740,19 @@ for istage in xrange(options.nstages) :
         datalow = Datameans[theIndex] - Datasigmas[theIndex] 
         datahigh = Datameans[theIndex] + Datasigmas[theIndex]
 
-        mcAxis = mchist.GetXaxis()
+        mcAxis = hMC.GetXaxis()
         dataAxis = hdata.GetXaxis()
 
         bminmc = mcAxis.FindBin(mclow)
         bmaxmc = mcAxis.FindBin(mchigh)
 
-        bmindata = hdata.FindBin(datalow)
-        bmaxdata = hdata.FindBin(datahigh)
+        bmindata = dataAxis.FindBin(datalow)
+        bmaxdata = dataAxis.FindBin(datahigh)
 
         if istage == (options.nstages-2)  :
-            nMCpre[theIndex] = mchist.Integral(bminmc , bmaxmc  ) #/ binSizeMC
+            nMCpre[theIndex] = hMC.Integral(bminmc , bmaxmc  ) #/ binSizeMC
             nDatapre[theIndex] = hdata.Integral(bmindata, bmaxdata  ) #/ binSizeData
-            nMCupre[theIndex] =  math.sqrt( nMCpre[theIndex] )   #mchist.IntegralError(bminmc , bmaxmc  ) / binSizeMC
+            nMCupre[theIndex] =  math.sqrt( nMCpre[theIndex] )   #hMC.IntegralError(bminmc , bmaxmc  ) / binSizeMC
             nDataupre[theIndex] = math.sqrt(nDatapre[theIndex] ) #hdata.IntegralError(bmindata, bmaxdata  ) / binSizeData
             if options.verbose : 
                 print "Integral +/- 1 sigma from peak BEFORE tau21 cut is : "
@@ -716,9 +760,9 @@ for istage in xrange(options.nstages) :
                 print "Data : {}".format(nDatapre[theIndex])
 
         if istage == (options.nstages-1)  :
-            nMCpost[theIndex] = mchist.Integral(bminmc , bmaxmc  ) #/ binSizeMC
+            nMCpost[theIndex] = hMC.Integral(bminmc , bmaxmc  ) #/ binSizeMC
             nDatapost[theIndex] = hdata.Integral(bmindata, bmaxdata  ) #/ binSizeData
-            nMCupost[theIndex] =  math.sqrt( nMCpost[theIndex] )  #mchist.IntegralError(bminmc , bmaxmc  ) / binSizeMC
+            nMCupost[theIndex] =  math.sqrt( nMCpost[theIndex] )  #hMC.IntegralError(bminmc , bmaxmc  ) / binSizeMC
             nDataupost[theIndex] = math.sqrt(nDatapost[theIndex] )#hdata.IntegralError(bmindata, bmaxdata  ) / binSizeData
             if options.verbose : 
                 print "Integral +/- 1 sigma from peak BEFORE tau21 cut is : "
@@ -826,7 +870,7 @@ for istage in xrange(options.nstages) :
 
     ROOT.gStyle.SetOptStat(000000)
     #Set multiple of maximum to scale y axis by
-    y_max_scale = 1.618 +1.
+    y_max_scale = 1.
 
     c1 = ROOT.TCanvas("c" + str(istage), "c" + str(istage),1,1,745,701)
     #gStyle.SetOptFit(1)
@@ -863,14 +907,14 @@ for istage in xrange(options.nstages) :
             hdata.SetLineWidth(2)
             hdata.SetMarkerStyle(20)
             hdata.SetMarkerSize(0.8)
-        mchist.SetLineColor(4)
-        mchist.SetFillColor(4)
-        mchist.SetFillStyle(0)
-        mchist.SetLineWidth(2)
-        mchist.SetMarkerStyle(20)
-        mchist.SetMarkerSize(0.8)
+        hMC.SetLineColor(4)
+        hMC.SetFillColor(4)
+        hMC.SetFillStyle(0)
+        hMC.SetLineWidth(2)
+        hMC.SetMarkerStyle(20)
+        hMC.SetMarkerSize(0.8)
 
-        mchist.Draw()
+        hMC.Draw()
         hdata.Draw("e0 same")
 
     if iHisto != 11:      
@@ -892,70 +936,59 @@ for istage in xrange(options.nstages) :
         pad1.SetFrameFillStyle(0)
         pad1.SetFrameBorderMode(0)
 
-        if options.noData:
-            httbar.GetXaxis().SetRangeUser(  xAxisrange[iHisto][0] , xAxisrange[iHisto][1] )
-            httbar.SetMaximum(y_max_scale * httbar.GetMaximum() )
-            httbar.SetXTitle(HistoTitle[iHisto]+" , Stage "+str(istage))
-        if not options.noData:
-            hdata.GetXaxis().SetRangeUser(  xAxisrange[iHisto][0] , xAxisrange[iHisto][1] )
-            hdata.SetMaximum(y_max_scale * hdata.GetMaximum() )
-            hdata.SetMinimum(0.0001 )
-            hdata.GetYaxis().SetTitle("Events")
-            hdata.GetYaxis().SetTitleSize(0.065)
-            hdata.GetYaxis().SetTitleOffset(0.9) ## 0.7)
-            hdata.GetYaxis().SetLabelSize(0.06)
-            ## hdata.SetMarkerStyle(20)
-            ## hdata.SetMarkerSize(0.8)
-            hdata.SetLineColor(1)
-            hdata.SetFillColor(1)
-            hdata.SetFillStyle(0)
-            hdata.SetLineWidth(2)
-            hdata.SetMarkerStyle(20)
-            hdata.SetMarkerSize(0.8)
+        hdata.GetXaxis().SetRangeUser(  xAxisrange[iHisto][0] , xAxisrange[iHisto][1] )
+        hdata.SetMaximum(y_max_scale * hdata.GetMaximum() )
+        hdata.SetMinimum(0.0001 )
+        hdata.GetYaxis().SetTitle("Events")
+        hdata.GetYaxis().SetTitleSize(0.065)
+        hdata.GetYaxis().SetTitleOffset(0.9) ## 0.7)
+        hdata.GetYaxis().SetLabelSize(0.06)
+        hdata.SetLineColor(1)
+        hdata.SetFillColor(1)
+        hdata.SetFillStyle(0)
+        hdata.SetLineWidth(2)
+        hdata.SetMarkerStyle(20)
+        hdata.SetMarkerSize(0.8)
 
-            hdata.GetXaxis().SetNdivisions(506)
-            hdata.GetXaxis().SetLabelFont(42)
-            hdata.GetXaxis().SetLabelSize(0)
-            hdata.GetXaxis().SetTitleSize(0.0475)
-            hdata.GetXaxis().SetTickLength(0.045)
-            hdata.GetXaxis().SetTitleOffset(1.15)
-            hdata.GetXaxis().SetTitleFont(42)
-            hdata.GetYaxis().SetTitle("Events")
-            hdata.GetYaxis().SetNdivisions(506)
-            hdata.GetYaxis().SetLabelFont(42)
-            hdata.GetYaxis().SetLabelSize(0.06375)
-            hdata.GetYaxis().SetTitleSize(0.07125)
-            hdata.GetYaxis().SetTitleOffset(0.9)
-            hdata.GetYaxis().SetTitleFont(42)
-            hdata.GetZaxis().SetLabelFont(42)
-            hdata.GetZaxis().SetLabelSize(0.0425)
-            hdata.GetZaxis().SetTitleSize(0.0475)
-            hdata.GetZaxis().SetTitleFont(42)
-            hdata.SetXTitle(HistoTitle[iHisto]+" , Stage "+str(istage))
+        hdata.GetXaxis().SetNdivisions(506)
+        hdata.GetXaxis().SetLabelFont(42)
+        hdata.GetXaxis().SetLabelSize(0)
+        hdata.GetXaxis().SetTitleSize(0.0475)
+        hdata.GetXaxis().SetTickLength(0.045)
+        hdata.GetXaxis().SetTitleOffset(1.15)
+        hdata.GetXaxis().SetTitleFont(42)
+        hdata.GetYaxis().SetTitle("Events")
+        hdata.GetYaxis().SetNdivisions(506)
+        hdata.GetYaxis().SetLabelFont(42)
+        hdata.GetYaxis().SetLabelSize(0.06375)
+        hdata.GetYaxis().SetTitleSize(0.07125)
+        hdata.GetYaxis().SetTitleOffset(0.9)
+        hdata.GetYaxis().SetTitleFont(42)
+        '''
+        hdata.GetZaxis().SetLabelFont(42)
+        hdata.GetZaxis().SetLabelSize(0.0425)
+        hdata.GetZaxis().SetTitleSize(0.0475)
+        hdata.GetZaxis().SetTitleFont(42)
+        '''
+        hdata.SetXTitle(HistoTitle[iHisto]+" , Stage "+str(istage))
 
 
-        if options.noData:
-            httbar.Draw("e x0")
-        if not options.noData:
-            hdata.Draw("e x0")
+        hdata.Draw("e x0")
 
-
-        hstack.Draw("hist same")
-
-
+        if options.drawOnlyQCD :
+            hQCD_stack.Draw("hist same")
+        else :
+            hstack.Draw("hist same")
 
         ## Only fit the histos of SD jet mass in later stages of selection
         if (iHisto <17 and iHisto > 12 )  and istage >= (options.nstages-2) : 
-            tempCloneMC.Draw("axis same")
+            tempMC.Draw("axis same")
             fitter_mc.Draw("same")
             if not options.noData:
-                tempCloneData.Draw("axis same")
+                tempdata.Draw("axis same")
                 fitter_data.Draw("same")
 
-        if options.noData:
-            httbar.Draw("e same x0")
-        if not options.noData:
-            hdata.Draw("e same x0")
+        hdata.Draw("e same x0")
 
 
         if options.verbose : 
@@ -969,7 +1002,7 @@ for istage in xrange(options.nstages) :
         words.SetTextSize(0.0825)
         words.SetLineWidth(2)
         words.Draw()
-        words1 = ROOT.TLatex(0.9,0.916,"12.9 fb^{-1} (13 TeV)")
+        words1 = ROOT.TLatex(0.9,0.916,"27.22  fb^{-1} (13 TeV)")
         words1.SetNDC()
         words1.SetTextAlign(31)
         words1.SetTextFont(42)
@@ -984,22 +1017,39 @@ for istage in xrange(options.nstages) :
         words2.SetLineWidth(2)
         words2.Draw()
 
-        leg = ROOT.TLegend(0.63,0.5,0.78,0.8)
+        leg = ROOT.TLegend(0.63,0.4,0.78,0.84)
         leg.SetFillColor(0)
         leg.SetBorderSize(0)
         leg.SetTextSize(0.036)
 
-        leg.AddEntry( httbar, 't#bar{t} (80X Powheg + Pythia 8 )', 'f')
-        if options.allMC :
-            leg.AddEntry( hst, 'Single Top', 'f')
-            leg.AddEntry( hwjets, 'W+jets', 'f')
-            if options.includeQCD :
-                leg.AddEntry( hQCD, 'QCD', 'f')
-        if not options.noData:
-            leg.AddEntry( hdata, 'Data', 'p')
-        leg.Draw()
+        if options.drawOnlyQCD :
+            leg.AddEntry( hQCD_list[0] , 'QCD Pt 80-120', 'f')
+            leg.AddEntry( hQCD_list[1] , 'QCD Pt 120-170', 'f')
+            leg.AddEntry( hQCD_list[2] , 'QCD Pt 170-300', 'f')
+            leg.AddEntry( hQCD_list[3] , 'QCD Pt 300-470', 'f')
+            leg.AddEntry( hQCD_list[4] , 'QCD Pt 470-600', 'f')
+            leg.AddEntry( hQCD_list[5] , 'QCD Pt 600-800', 'f')
+            leg.AddEntry( hQCD_list[6] , 'QCD Pt 800-1000', 'f')
+            leg.AddEntry( hQCD_list[7] , 'QCD Pt 1000-1400', 'f')
+            leg.AddEntry( hQCD_list[8] , 'QCD Pt 1400-1800', 'f')
+            leg.AddEntry( hQCD_list[9] , 'QCD Pt 1800-2400', 'f')
+            leg.AddEntry( hQCD_list[10] , 'QCD Pt 2400-3200', 'f')
+            leg.AddEntry( hQCD_list[11] , 'QCD Pt 3200-Inf', 'f')
+            if not options.noData:
+                leg.AddEntry( hdata, 'Data', 'p')
+                leg.Draw()
+        else :
+            leg.AddEntry( httbar, 't#bar{t} (80X Powheg + Pythia 8 )', 'f')
+            if options.allMC :
+                leg.AddEntry( hst, 'Single Top', 'f')
+                leg.AddEntry( hwjets, 'W+jets', 'f')
+                if options.includeQCD :
+                    leg.AddEntry( hQCD, 'QCD', 'f')
+            if not options.noData:
+                leg.AddEntry( hdata, 'Data', 'p')
+            leg.Draw()
 
-    ROOT.gPad.RedrawAxis()
+    #ROOT.gPad.RedrawAxis()
 
     if iHisto != 11:
         pad1.Modified()
@@ -1023,24 +1073,20 @@ for istage in xrange(options.nstages) :
             pad2.SetFrameFillStyle(0)
             pad2.SetFrameBorderMode(0)
 
-            hRatio = hdata.Clone()
+            hRatio = tempdata2.Clone('hRatio')
             hRatio.SetName('hRatio')
             hRatio.Sumw2()
             hRatio.SetStats(0)
-            hRatio.Divide(mchist)
+            if options.drawOnlyQCD :
+                hRatio.Divide(hQCD)#(tempMC2)
+            else :
+                hRatio.Divide(tempMC2)
 
-
-            hRatio.GetYaxis().SetRangeUser(0.01,1.99)
-            ## hRatio.GetYaxis().SetTitle("Data / Bkgd")
-            ## hRatio.GetYaxis().SetTitleOffset(0.3)
-            ## hRatio.GetYaxis().SetTitleSize(0.17)
-            ## hRatio.GetYaxis().SetNdivisions(205)
-            ## hRatio.GetYaxis().SetLabelSize(0.11)
-            ## hRatio.GetXaxis().SetLabelSize(0.11)
-            ## hRatio.GetXaxis().SetTitleSize(0.17)
+            hRatio.GetYaxis().SetRangeUser(0.01,1.99)   #(-1.01, 2.99)#
+            hRatio.GetXaxis().SetRangeUser(  xAxisrange[iHisto][0] , xAxisrange[iHisto][1] )
             hRatio.GetXaxis().SetTitle(  HistoTitle[iHisto]+" , Stage "+str(istage)  )
 
-            hRatio.SetStats(0)
+
             hRatio.SetFillColor(1)
             hRatio.SetFillStyle(0)
             hRatio.SetLineWidth(2)
@@ -1064,10 +1110,6 @@ for istage in xrange(options.nstages) :
             hRatio.GetYaxis().SetTickLength(0.045)
             hRatio.GetYaxis().SetTitleOffset(0.45)
             hRatio.GetYaxis().SetTitleFont(42)
-            hRatio.GetZaxis().SetLabelFont(42)
-            hRatio.GetZaxis().SetLabelSize(0.0425)
-            hRatio.GetZaxis().SetTitleSize(0.0475)
-            hRatio.GetZaxis().SetTitleFont(42)
 
             hRatio.Draw("lepe0")
 
@@ -1121,12 +1163,15 @@ for istage in xrange(options.nstages) :
            "_PuppiCorr",     # Puppi corrections from Thea]
 
     ''' 
-    CorrIs = "_PUreweight_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD"
+    CorrIs = "_PUreweight_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30"
+    if options.drawOnlyQCD : CorrIs = "_PUreweight_drawONLYQCD_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30"
     if options.allMC and options.ttSF : 
-        CorrIs = "_PUreweight_ttSF_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_"
-    if options.allMC and options.includeQCD : CorrIs = "_PUreweight_QCD_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD"
+        CorrIs = "_PUreweight_ttSF_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30"
+    if options.allMC and options.includeQCD : 
+        CorrIs = "_PUreweight_QCD_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30"
+        if options.drawOnlyQCD : CorrIs = "_PUreweight_drawOnlyQCD_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30"
 
-    c1.Print("./plots_Oct28th/" + options.hist + str(istage) + typeIs + MCs + CorrIs + ".pdf", "pdf")
+    c1.Print("./plots_Oct30th/" + options.hist + str(istage) + typeIs + MCs + CorrIs + ".pdf", "pdf")
     #c1.Print("./plots_Oct25/" + options.hist + str(istage) + typeIs + MCs + CorrIs + ".png", "png")
     #c1.Print("plot_" + options.hist + str(istage) + MCs + ".root", "root")
     if not options.noData and not iHisto ==11 :  

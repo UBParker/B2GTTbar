@@ -13,7 +13,10 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.bdiscmin = options.bdiscmin
         self.ignoreTrig = options.ignoreTrig
         self.verbose = options.verbose
+
         self.infile = options.infile
+        if self.verbose : print "The infile is : {}".format(self.infile)
+
         self.nstages = 7
         self.tree = tree
         self.lepsel = lepsel
@@ -106,7 +109,19 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.ak8JetHT = None
         self.SDRhoRatio = None
 
-        # PUPPI jet mass corrections
+        ### Flag to distinguish data from MC
+        self.itIsData = None
+        theFileIs = self.infile
+        if theFileIs.find("Run2016")== -1 : 
+            self.itIsData = False
+            if self.verbose :  
+                print "MC : Event and PU weights != 1"
+
+        else : 
+            self.itIsData = True                     
+            if self.verbose : print "DATA : weights = 1" 
+ 
+        ### PUPPI jet mass corrections
 
         self.finCor1 = ROOT.TFile.Open( "./puppiCorr.root","READ")
         self.puppisd_corrGEN      = self.finCor1.Get("puppiJECcorr_gen")
@@ -121,19 +136,12 @@ class B2GSelectSemiLepTTbar_Type1( ) :
 
         self.passedCount = [0] * self.nstages
 
-        self.EventWeight = self.tree.SemiLeptEventWeight[0]
-        self.PUWeight = self.tree.SemiLeptPUweight[0]  
-        if self.verbose : print "The infile is : {}".format(self.infile)
-
-        #if ("root://cmseos.fnal.gov//store/user/asparker/B2G2016/haddFiles/b2gtree_SingleMuon_Run2016BCD.root" or "root://cmseos.fnal.gov//store/user/asparker/B2G2016/haddFiles/b2gtree_SingleMuon_Run2016BCDEFG.root") 
-
-        theFileIs = self.infile
-        if theFileIs.find("Run2016")== -1 : 
-            if self.verbose :  print "Not data"
-        else :
-            self.EventWeight = 1.0                                    
-            self.PUWeight = 1.0                        
-            if self.verbose : print "This is DATA : setting weights to 1."               
+        if self.itIsData :
+            self.EventWeight = 1.0
+            self.PUWeight = 1.0
+        else:
+            self.EventWeight = self.tree.SemiLeptEventWeight[0]
+            self.PUWeight = self.tree.SemiLeptPUweight[0]               
 
         self.PuppiCorr = self.tree.JetPuppiCorrFactor[0]  
         self.Corr = self.tree.JetCorrFactor[0]  
@@ -404,7 +412,7 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.ak8SDsubjet0tau21 = 1.0
         if self.ak8SDsubjet0tau1 > 0.001:
             self.ak8SDsubjet0tau21 = self.ak8SDsubjet0tau2 / self.ak8SDsubjet0tau1
-            if self.verbose : print "SD subjet 0 tau21 is: {0:2.2f}".format(self.ak8SDsubjet0tau21)
+            #if self.verbose : print "SD subjet 0 tau21 is: {0:2.2f}".format(self.ak8SDsubjet0tau21)
 
 
         # Work the cut flow
@@ -413,12 +421,12 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.passed[0] = self.lepsel.passed[ len(self.lepsel.passed) - 1]
         if not self.passed[0] : return self.passed
         self.passedCount[0] += 1
-        if self.verbose : print "Stage 9 : Event passed leptonic selection"
+        if self.verbose : print "Stage 8 : Event passed leptonic selection"
 
         if not (self.ak8Jet.Perp() > self.AK8PtCut and abs(self.ak8Jet.Eta()) < self.AK8EtaCut ) : return self.passed
         self.passed[1] = True
         self.passedCount[1] += 1
-        if self.verbose : print "Stage 10 : AK8 Pt  {0:2.2f}  > ( {1:2.2f} GeV) and eta {2:2.2f} < ( {3:2.2f} )".format( 
+        if self.verbose : print "Stage 9 : AK8 Pt  {0:2.2f}  > ( {1:2.2f} GeV) and eta {2:2.2f} < ( {3:2.2f} )".format( 
                                                                                                                    self.ak8Jet.Perp(),
                                                                                                                         self.AK8PtCut,
                                                                                                                     self.ak8Jet.Eta(),
@@ -426,7 +434,7 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         if not ( self.ak4JetBdisc >  self.bdiscmin  ) : return self.passed
         self.passed[2] = True
         self.passedCount[2] += 1
-        if self.verbose : print "Stage 11 :AK4 bdisc {0:2.2f}  > ( {1:2.2f} ) ".format(  self.ak4JetBdisc , self.bdiscmin )
+        if self.verbose : print "Stage 10 :AK4 bdisc {0:2.2f}  > ( {1:2.2f} ) ".format(  self.ak4JetBdisc , self.bdiscmin )
         
         if not ( self.minAK8Mass < self.ak8SDJet.M() < self.maxAK8Mass ) : return self.passed
         self.passed[3] = True
@@ -438,10 +446,7 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         if not ( self.tau32 < self.tau32Cut ) : return self.passed
         self.passed[4] = True
         self.passedCount[4] += 1
-        if self.verbose : print "Stage 13: AK8 tau32  {0:2.2f}  > ( {1:2.2f} ) [For comparison puppi tau32 is  {2:2.2f} ]".format(  self.tau32 , self.tau32Cut, self.puppitau32)
-
-
-
+        if self.verbose : print "Stage 11: AK8 tau32  {0:2.2f}  > ( {1:2.2f} ) [For comparison puppi tau32 is  {2:2.2f} ]".format(  self.tau32 , self.tau32Cut, self.puppitau32)
 
 
 
@@ -450,12 +455,12 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         if not ( self.minAK8sjMass <  self.ak8PuppiSD_subjet0_m  <  self.maxAK8sjMass) : return self.passed
         self.passed[5] = True
         self.passedCount[5] += 1
-        if self.verbose : print "Stage 14: AK8 SD subjet 0 mass  ({0}) < {1:2.2f} GeV < ({2})  [mass is after puppi mass corr]".format( self.minAK8sjMass ,  self.ak8PuppiSD_subjet0_m  , self.maxAK8sjMass)
+        if self.verbose : print "Stage 13: AK8 SD subjet 0 mass  ({0}) < {1:2.2f} GeV < ({2})  [mass is after puppi mass corr]".format( self.minAK8sjMass ,  self.ak8PuppiSD_subjet0_m  , self.maxAK8sjMass)
 
         if self.verbose : print "mass of sd subjet 0 after puppi corr in bin 200-300 {0:2.3f}, 300-400 {1:2.3f}, 400-500 {2:2.3f}, 500-800 {3:2.3f}".format(self.ak8SDsj0_m200,self.ak8SDsj0_m300,self.ak8SDsj0_m400,self.ak8SDsj0_m500)
 
 
-        if self.verbose :print "Stage 15: tau21 of SD subjet 0 is: {0:2.2f}".format( float( self.ak8SDsubjet0tau21) )
+        if self.verbose :print "Stage 14: tau21 of SD subjet 0 is: {0:2.2f}".format( float( self.ak8SDsubjet0tau21) )
         if not ( self.ak8SDsubjet0tau21 < self.tau21Cut ) : return self.passed
         self.passed[6] = True
         self.passedCount[6] += 1
