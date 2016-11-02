@@ -108,6 +108,13 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.SDptGenpt = None
         self.ak8JetHT = None
         self.SDRhoRatio = None
+ 
+        ### PUPPI jet mass corrections
+
+        self.finCor1 = ROOT.TFile.Open( "./puppiCorr.root","READ")
+        self.puppisd_corrGEN      = self.finCor1.Get("puppiJECcorr_gen")
+        self.puppisd_corrRECO_cen = self.finCor1.Get("puppiJECcorr_reco_0eta1v3")
+        self.puppisd_corrRECO_for = self.finCor1.Get("puppiJECcorr_reco_1v3eta2v5")
 
         ### Flag to distinguish data from MC
         self.itIsData = None
@@ -120,14 +127,6 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         else : 
             self.itIsData = True                     
             if self.verbose : print "DATA : weights = 1" 
- 
-        ### PUPPI jet mass corrections
-
-        self.finCor1 = ROOT.TFile.Open( "./puppiCorr.root","READ")
-        self.puppisd_corrGEN      = self.finCor1.Get("puppiJECcorr_gen")
-        self.puppisd_corrRECO_cen = self.finCor1.Get("puppiJECcorr_reco_0eta1v3")
-        self.puppisd_corrRECO_for = self.finCor1.Get("puppiJECcorr_reco_1v3eta2v5")
-
     """
         This is the "select" function that does the work for the event selection. If you have any complicated
         stuff to do, do it here and create a class member variable to cache the results. 
@@ -146,7 +145,7 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.PuppiCorr = self.tree.JetPuppiCorrFactor[0]  
         self.Corr = self.tree.JetCorrFactor[0]  
         self.CorrL2L3 = self.tree.JetSDptCorrL23[0]  
-        self.CorrL2L3SD = self.tree.JetSDmassCorrL23
+        self.CorrL2L3SD = self.tree.JetSDmassCorrL23[0]
 
         self.ak8Jet = None
         self.ak8JetRaw = None

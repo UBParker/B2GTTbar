@@ -303,9 +303,9 @@ if options.verbose : print "Histo name in options was {0}, index number {1:0.0f}
 tdrstyle.setTDRStyle()
 
 xs_ttbar = 831.76
-nev_ttbar =   92925926. #
+nev_ttbar =   92925926.  #
 print "nev_ttbar = {}".format(nev_ttbar)
-lumi = 27220./1.618 #12300. #12900./1.618    # pb-1
+lumi = 27220. #12300. #12900./1.618    # pb-1
 print "lumi (fb-1) = {}".format(lumi/1000.)
 kfactorW = 1.21
 
@@ -870,7 +870,7 @@ for istage in xrange(options.nstages) :
 
     ROOT.gStyle.SetOptStat(000000)
     #Set multiple of maximum to scale y axis by
-    y_max_scale = 1.
+    y_max_scale = 1.+1.618
 
     c1 = ROOT.TCanvas("c" + str(istage), "c" + str(istage),1,1,745,701)
     #gStyle.SetOptFit(1)

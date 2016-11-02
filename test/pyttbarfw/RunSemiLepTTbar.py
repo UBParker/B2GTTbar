@@ -100,6 +100,18 @@ class RunSemiLepTTbar(OptionParser) :
         self.verbose = options.verbose
         self.infile = options.infile
 
+        ### Flag to distinguish data from MC
+        self.itIsData = None
+        theFileIs = self.infile
+        if theFileIs.find("Run2016")== -1 : 
+            self.itIsData = False
+            if self.verbose :  
+                print "MC : Event and PU weights != 1"
+
+        else : 
+            self.itIsData = True                     
+            if self.verbose : print "DATA : weights = 1" 
+
         print 'Getting entries'
         entries = self.treeobj.tree.GetEntries()
         self.eventsToRun = entries

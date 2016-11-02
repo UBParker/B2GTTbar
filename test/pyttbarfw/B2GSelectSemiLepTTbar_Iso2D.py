@@ -11,7 +11,8 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
     def __init__(self, options, tree ):
         self.ignoreTrig = options.ignoreTrig
         self.verbose = options.verbose
- 
+        self.infile = options.infile
+
         self.nstages = 8
         if self.verbose: print "Begin leptonic top selection with {} stages".format(self.nstages)
         self.tree = tree        
@@ -69,6 +70,24 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         self.passed = [False] * self.nstages  
         self.passedCount = [0] * self.nstages
 
+        ### Muon trigger efficiency corrections
+  
+        self.TriggEffIs = 1.0  
+        self.finCor1 = ROOT.TFile.Open( "./SingleMuonTrigger_Z_RunBCD_prompt80X_7p65.root","READ")
+        self.etaPtTriggEff      = self.finCor1.Get("Mu45_eta2p1_PtEtaBins_Run274094_to_276097/efficienciesDATA/pt_abseta_DATA")
+
+        ### Flag to distinguish data from MC
+        self.itIsData = None
+        theFileIs = self.infile
+        if theFileIs.find("Run2016")== -1 : 
+            self.itIsData = False
+            if self.verbose :  
+                print "MC : Event and PU weights != 1"
+
+        else : 
+            self.itIsData = True                     
+            if self.verbose : print "DATA : weights = 1" 
+
     """
         This is the "select" function that does the work for the event selection. If you have any complicated
         stuff to do, do it here and create a class member variable to cache the results. 
@@ -88,6 +107,9 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
                                    self.tree.LeptonEta[0],
                                    self.tree.LeptonPhi[0], 
                                                        0. )
+        if self.tree.LeptonIsMu[0] == 1 and not self.itIsData :
+            self.TriggEffIs = self.MuonTriggEff( self.leptonP4.Perp() , abs(self.leptonP4.Eta())   )
+            if self.verbose : "Muon trigger eff is {0:2.2f} for pt {1:2.2f} and abs(eta) {2:2.2f}".format(self.TriggEffIs,self.leptonP4.Perp() , abs(self.leptonP4.Eta())  )
 
         self.nuP4 = ROOT.TLorentzVector()
         self.nuP4 = ROOT.TLorentzVector( 
@@ -213,4 +235,18 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         if self.verbose : print "Stage 7: Leptonic W Pt (Lepton Pt + MET Pt ) {0:2.2f} > ( {1:2.2f} GeV )".format( (self.leptonP4 + self.nuP4).Perp(), self.MuonHtLepCut )
 
         return self.passed
+
+    def MuonTriggEff(self, muonpt, muoneta) : #{ROOT file from
+        #https://twiki.cern.ch/twiki/bin/view/CMS/MuonWorkInProgressAndPagResults
+        if muonpt >= 500. :
+            TriggEff = 0.0
+        else :
+            binx = self.etaPtTriggEff.GetXaxis().FindBin(  muoneta )
+            biny = self.etaPtTriggEff.GetYaxis().FindBin(  muonpt)
+            TriggEff = self.etaPtTriggEff.GetBinContent(binx, biny )
+            if self.verbose : print "get bin: x (using eta) {}, y (using pt) {},".format(binx, biny )
+        return TriggEff      
+  
+
+
 
