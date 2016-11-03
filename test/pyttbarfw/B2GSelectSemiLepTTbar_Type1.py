@@ -116,6 +116,16 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.puppisd_corrRECO_cen = self.finCor1.Get("puppiJECcorr_reco_0eta1v3")
         self.puppisd_corrRECO_for = self.finCor1.Get("puppiJECcorr_reco_1v3eta2v5")
 
+        ### B tag weights       TO-DO: Apply the B tag SFs
+        
+        #ROOT.gROOT.ProcessLine('.L BTagCalibrationStandalone.cc+') 
+        #calib = ROOT.BTagCalibration("CSVv2_ichep", "CSVv2_ichep.csv")
+        #reader = ROOT.BTagCalibrationReader(calib, 1, "lt", "central") 
+        # (, operating point 0=loose 1=medium, measurementType="lt", central up or down)
+        
+        #self.BtagWeight = 1.0
+
+
         ### Flag to distinguish data from MC
         self.itIsData = None
         theFileIs = self.infile
@@ -206,6 +216,8 @@ class B2GSelectSemiLepTTbar_Type1( ) :
                                   self.tree.AK4_dRminLep_Phi[0],
                                   self.tree.AK4_dRminLep_Mass[0] )
         self.ak4JetBdisc = self.tree.AK4_dRminLep_Bdisc[0]
+        #self.BtagWeight = reader.eval( csvscore,  ak4Jet.Eta(),  ak4Jet.Perp() )
+
 
         self.ak8Jet = ROOT.TLorentzVector()
         self.ak8Jet.SetPtEtaPhiM( self.tree.JetPt[0],
@@ -431,14 +443,14 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         if not ( self.minAK8Mass < self.ak8SDJet.M() < self.maxAK8Mass ) : return self.passed
         self.passed[3] = True
         self.passedCount[3] += 1
-        if self.verbose : print "Stage 12: AK8 SD mass  ({0:2.2f}) < {1:2.2f} GeV < ({2:2.2f})  [For comparison SD Puppi mass after puppi corr is  {2:2.2f} ]".format(  self.minAK8Mass , self.ak8SDJet.M() , self.maxAK8Mass, self.ak8PuppiSD_m)
+        if self.verbose : print "Stage 11: AK8 SD mass  ({0:2.2f}) < {1:2.2f} GeV < ({2:2.2f})  [For comparison SD Puppi mass after puppi corr is  {2:2.2f} ]".format(  self.minAK8Mass , self.ak8SDJet.M() , self.maxAK8Mass, self.ak8PuppiSD_m)
 
 
 
         if not ( self.tau32 < self.tau32Cut ) : return self.passed
         self.passed[4] = True
         self.passedCount[4] += 1
-        if self.verbose : print "Stage 11: AK8 tau32  {0:2.2f}  > ( {1:2.2f} ) [For comparison puppi tau32 is  {2:2.2f} ]".format(  self.tau32 , self.tau32Cut, self.puppitau32)
+        if self.verbose : print "Stage 12: AK8 tau32  {0:2.2f}  > ( {1:2.2f} ) [For comparison puppi tau32 is  {2:2.2f} ]".format(  self.tau32 , self.tau32Cut, self.puppitau32)
 
 
 
@@ -479,4 +491,5 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         return self.puppim
         #}                  
 
-    
+
+  
