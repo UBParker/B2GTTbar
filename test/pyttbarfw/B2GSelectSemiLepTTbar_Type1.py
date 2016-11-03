@@ -119,25 +119,26 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         ### B tag weights       
         ### TO-DO: Apply the B tag SFs 
         ### Adapted from example https://twiki.cern.ch/twiki/bin/view/CMS/BTagCalibration#Code_example_in_Python
-        
-        ROOT.gSystem.Load('libCondFormatsBTauObjects') 
-        ROOT.gSystem.Load('libCondToolsBTau') 
+        ### Applied work around 2. listed here  https://twiki.cern.ch/twiki/bin/view/CMS/BTagCalibration#Additional_scripts
 
-        ROOT.gROOT.ProcessLine('.L BTagCalibrationStandalone.cc') 
+        ROOT.gSystem.Load('libCondFormatsBTagObjects') 
+        ROOT.gSystem.Load('libCondToolsBTau')
+
         calib = ROOT.BTagCalibration("csvv2_ichep", "CSVv2_ichep.csv")
+
         # making a std::vector<std::string>> in python is a bit awkward, 
         # but works with root (needed to load other sys types):
-        v_sys = getattr(ROOT, 'vector<string>')()
-        v_sys.push_back('up')
-        v_sys.push_back('down')
+        self.v_sys = getattr(ROOT, 'vector<string>')()
+        self.v_sys.push_back('up')
+        self.v_sys.push_back('down')
 
         # make a reader instance and load the sf data
-        reader = ROOT.BTagCalibrationReader(
+        self.reader = ROOT.BTagCalibrationReader(
             1,              # 0 is for loose op, 1: medium, 2: tight, 3: discr. reshaping
             "central",      # central systematic type
-            v_sys,          # vector of other sys. types
+            self.v_sys,          # vector of other sys. types
         )    
-        reader.load(
+        self.reader.load(
             calib, 
             0,          # 0 is for b flavour, 1: FLAV_C, 2: FLAV_UDSG 
             "comb"      # measurement type
@@ -239,13 +240,15 @@ class B2GSelectSemiLepTTbar_Type1( ) :
                                   self.tree.AK4_dRminLep_Phi[0],
                                   self.tree.AK4_dRminLep_Mass[0] )
         self.ak4JetBdisc = self.tree.AK4_dRminLep_Bdisc[0]
-        self.BtagWeight = reader.eval_auto_bounds(
+        self.BtagWeight = self.reader.eval_auto_bounds(
                                                         'central',      # systematic (here also 'up'/'down' possible)
                                                         0,              # jet flavor (0 for b jets)
                                                         self.ak4Jet.Eta() ,            # eta
                                                         self.ak4Jet.Perp()            # pt
                                                     )
 
+        self.theWeight =  self.EventWeight * self.PUWeight * self.TriggEffIs * self.CutIDScaleFIs *self.MuonHIPScaleFIs * self.BtagWeight
+        if self.verbose : print "Total Weight {0:2.4f} = Event weight {1:2.4f} * PU weight {2:2.4f} *Trigger Eff. {3:2.4f} * Cut ID {4:2.4f} * HIP SF {5:2.4f} * Btag SF {6:2.4f}".format(self.theWeight, self.EventWeight , self.PUWeight , self.TriggEffIs , self.CutIDScaleFIs, self.MuonHIPScaleFIs, self.BtagWeight)
 
 
         self.ak8Jet = ROOT.TLorentzVector()
