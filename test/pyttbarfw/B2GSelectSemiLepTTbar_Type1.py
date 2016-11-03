@@ -135,13 +135,6 @@ class B2GSelectSemiLepTTbar_Type1( ) :
 
         self.passedCount = [0] * self.nstages
 
-        if self.itIsData :
-            self.EventWeight = 1.0
-            self.PUWeight = 1.0
-        else:
-            self.EventWeight = self.tree.SemiLeptEventWeight[0]
-            self.PUWeight = self.tree.SemiLeptPUweight[0]               
-
         self.PuppiCorr = self.tree.JetPuppiCorrFactor[0]  
         self.Corr = self.tree.JetCorrFactor[0]  
         self.CorrL2L3 = self.tree.JetSDptCorrL23[0]  
