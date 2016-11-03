@@ -1,4 +1,4 @@
-ifndef BTagEntry_H
+#ifndef BTagEntry_H
 #define BTagEntry_H
 
 /**
