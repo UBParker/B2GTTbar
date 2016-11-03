@@ -121,10 +121,15 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         ### Adapted from example https://twiki.cern.ch/twiki/bin/view/CMS/BTagCalibration#Code_example_in_Python
         ### Applied work around 2. listed here  https://twiki.cern.ch/twiki/bin/view/CMS/BTagCalibration#Additional_scripts
 
-        ROOT.gSystem.Load('libCondFormatsBTagObjects') 
-        ROOT.gSystem.Load('libCondToolsBTau')
+        # from within CMSSW:
+        ROOT.gSystem.Load('libCondFormatsBTauObjects') 
+        ROOT.gSystem.Load('libCondToolsBTau') 
 
-        calib = ROOT.BTagCalibration("csvv2_ichep", "CSVv2_ichep.csv")
+        # OR using standalone code:
+        #ROOT.gROOT.ProcessLine('.L BTagCalibrationStandalone.cpp+') 
+
+        # get the sf data loaded
+        self.calib = ROOT.BTagCalibration('csvv2_ichep', 'CSVv2_ichep.csv')
 
         # making a std::vector<std::string>> in python is a bit awkward, 
         # but works with root (needed to load other sys types):
@@ -134,19 +139,15 @@ class B2GSelectSemiLepTTbar_Type1( ) :
 
         # make a reader instance and load the sf data
         self.reader = ROOT.BTagCalibrationReader(
-            1,              # 0 is for loose op, 1: medium, 2: tight, 3: discr. reshaping
+            0,              # 0 is for loose op, 1: medium, 2: tight, 3: discr. reshaping
             "central",      # central systematic type
             self.v_sys,          # vector of other sys. types
         )    
         self.reader.load(
-            calib, 
+            self.calib, 
             0,          # 0 is for b flavour, 1: FLAV_C, 2: FLAV_UDSG 
             "comb"      # measurement type
-        )
-
-        #reader = ROOT.BTagCalibrationReader(calib, 1, "lt", "central") 
-        # (, operating point 0=loose 1=medium, measurementType="lt", central up or down)
-        
+        )        
         self.BtagWeight = 1.0
 
 
@@ -246,10 +247,6 @@ class B2GSelectSemiLepTTbar_Type1( ) :
                                                         self.ak4Jet.Eta() ,            # eta
                                                         self.ak4Jet.Perp()            # pt
                                                     )
-
-        self.theWeight =  self.EventWeight * self.PUWeight * self.TriggEffIs * self.CutIDScaleFIs *self.MuonHIPScaleFIs * self.BtagWeight
-        if self.verbose : print "Total Weight {0:2.4f} = Event weight {1:2.4f} * PU weight {2:2.4f} *Trigger Eff. {3:2.4f} * Cut ID {4:2.4f} * HIP SF {5:2.4f} * Btag SF {6:2.4f}".format(self.theWeight, self.EventWeight , self.PUWeight , self.TriggEffIs , self.CutIDScaleFIs, self.MuonHIPScaleFIs, self.BtagWeight)
-
 
         self.ak8Jet = ROOT.TLorentzVector()
         self.ak8Jet.SetPtEtaPhiM( self.tree.JetPt[0],
