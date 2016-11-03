@@ -336,3 +336,45 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         if self.verbose : print "(using eta) {}, HIP SF is {}".format(muoneta,  MuonHIPScaleF )
         return float(MuonHIPScaleF)    
 
+
+    ### TO-DO: Eventually apply Kalman corrections
+    '''
+    if options.isMC :
+        c=ROOT.KalmanMuonCalibrator("MC_80X_13TeV")
+    else :
+        c=ROOT.KalmanMuonCalibrator("DATA_80X_13TeV")
+    def getKalmanMuonCorr(pt, eta, phi, charge) : #{
+        # apply muon corrections as described here https://twiki.cern.ch/twiki/bin/viewauth/CMS/MuonScaleResolKalman
+        if pt > 200. : return pt # shoulld add inner tracker eta cut
+        if options.verbose : print 'HIP Correcting Muon Pt = {0:4.3f} GeV'.format(pt)
+        if charge < 0. :
+            chargeSign = -1 
+        if charge > 0. :
+            chargeSign = 1    
+        CorrMuPt =c.getCorrectedPt(pt, eta, phi, chargeSign)
+        if options.verbose : print 'After HIP Correcting Muon Pt = {0:4.3f} GeV'.format(CorrMuPt)
+        dpt = abs( pt- CorrMuPt )
+        dptopt = dpt/ pt
+        CorrMuPtError = c.getCorrectedError(CorrMuPt , eta, dptopt)#'Recall! This correction is only valid after smearing'
+        CorrMuPt = c.smear(CorrMuPt , eta)
+        
+        #print 'propagate the statistical error of the calibration
+        #print 'first get number of parameters'
+        #N=c.getN()
+        #print N,'parameters'
+        #for i in range(0,N):
+            #c.vary(i,+1)
+            #print 'variation',i,'ptUp', c.getCorrectedPt(pt, eta phi, charge)
+            #c.vary(i,-1)
+            #print 'variation',i,'ptDwn', c.getCorrectedPt(pt, eta phi, charge)
+        #c.reset()
+        #print 'propagate the closure error 
+        #c.varyClosure(+1)
+        
+        #newpt =  c.getCorrectedPt(pt, eta, phi, chargeSign)
+        if options.verbose : print 'After HIP Correcting Muon Pt and vary closure and smear  = {0:4.3f}'.format(CorrMuPt)
+        #newpt2 = c.smear(pt , eta)
+        #if options.verbose : print 'After HIP Correcting Muon Pt and vary closure and smear  = {0:4.3f}'.format(newpt2)
+
+        return CorrMuPt
+    '''

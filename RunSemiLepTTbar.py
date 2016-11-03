@@ -105,6 +105,7 @@ class RunSemiLepTTbar(OptionParser) :
         self.infile = options.infile
         self.maxevents = options.maxevents
 
+        
         print 'Getting entries'
         entries = self.treeobj.tree.GetEntries()
         self.eventsToRun = entries
@@ -286,6 +287,9 @@ class RunSemiLepTTbar(OptionParser) :
         '''
         a = self.lepSelection
         b = self.hadSelection 
+
+        #self.totalWeight = a.theWeight #* b.BtagWeight
+        #print "totalweight is : {}".format(self.totalWeight)
 
         self.hCutFlow[index].Fill(self.passedCutCount[index])
         self.WeightHist[index].Fill(a.theWeight )

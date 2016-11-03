@@ -116,6 +116,16 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.puppisd_corrRECO_cen = self.finCor1.Get("puppiJECcorr_reco_0eta1v3")
         self.puppisd_corrRECO_for = self.finCor1.Get("puppiJECcorr_reco_1v3eta2v5")
 
+        ### B tag weights       TO-DO: Apply the B tag SFs
+        '''
+        ROOT.gROOT.ProcessLine('.L BTagCalibrationStandalone.cc+') 
+        calib = ROOT.BTagCalibration("csvv1", "CSVV1.csv")
+        reader = ROOT.BTagCalibrationReader(calib, 1, "lt", "central") 
+        # (, operating point 0=loose 1=medium, measurementType="lt", central up or down)
+        '''
+        self.BtagWeight = 1.0
+
+
         ### Flag to distinguish data from MC
         self.itIsData = None
         theFileIs = self.infile
@@ -206,6 +216,8 @@ class B2GSelectSemiLepTTbar_Type1( ) :
                                   self.tree.AK4_dRminLep_Phi[0],
                                   self.tree.AK4_dRminLep_Mass[0] )
         self.ak4JetBdisc = self.tree.AK4_dRminLep_Bdisc[0]
+        #self.BtagWeight = reader.eval( csvscore,  ak4Jet.Eta(),  ak4Jet.Perp() )
+
 
         self.ak8Jet = ROOT.TLorentzVector()
         self.ak8Jet.SetPtEtaPhiM( self.tree.JetPt[0],
@@ -479,4 +491,5 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         return self.puppim
         #}                  
 
-    
+
+  
