@@ -9,6 +9,7 @@ class B2GSelectSemiLepTTbar_Type1( ) :
     """
     def __init__(self, options, tree, lepsel ):
         self.tau21Cut = options.tau21Cut
+        self.Subjettau21Cut = self.tau21Cut
         self.tau32Cut = options.tau32Cut
         self.bdiscmin = options.bdiscmin
         self.ignoreTrig = options.ignoreTrig
@@ -17,36 +18,38 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.infile = options.infile
         if self.verbose : print "The infile is : {}".format(self.infile)
 
-        self.nstages = 7
+        self.nstages = 8
         self.tree = tree
         self.lepsel = lepsel
         self.passed = [False] * self.nstages
         self.passedCount = [0] * self.nstages
 
 
-        # Stage 0 - Pass Leptonic Selection
+        # Stage 0 (10)- Pass Leptonic Selection
 
-        # Stage 1 - AK8 Jet Pt and eta cut
+        # Stage 1 (11)- AK8 Jet Pt and eta cut
         self.AK8PtCut = 500.
         self.AK8EtaCut = 2.4
 
-        # Stage 2 - AK4 Jet bdisc cut
+        # Stage 2 (12) - AK4 Jet bdisc cut
         # see self.bdiscmin above
 
-        # Stage 3 - AK8 Jet tau32 cut
+        # Stage 3 (13) - AK8 Jet tau32 cut
         #  see self.tau32Cut above
 
-        # Stage 4 - AK8 SD Jet mass cut
+        # Stage 4 (14) - AK8 SD Jet mass cut
         self.minAK8Mass = 110.
         self.maxAK8Mass = 210.
 
-        # Stage 5 - AK8 SD Subjet 0 mass cut
+        # Stage 5 (15) - AK8 SD Subjet 0 mass cut
         self.minAK8sjMass = 55.
         self.maxAK8sjMass = 115.
 
-        #Stage 6 - AK8 SD Subjt 0 tau21 cut
+        #Stage 6 (16) - AK8 SD Subjt 0 tau21 cut
         # see self.tau21Cut above
 
+        #Stage 7 (17) - AK8 SD subjet 1 bdisc cut
+        # see self.bdiscmin above
 
         # Cached class member variables for plotting
 
@@ -115,15 +118,6 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.puppisd_corrGEN      = self.finCor1.Get("puppiJECcorr_gen")
         self.puppisd_corrRECO_cen = self.finCor1.Get("puppiJECcorr_reco_0eta1v3")
         self.puppisd_corrRECO_for = self.finCor1.Get("puppiJECcorr_reco_1v3eta2v5")
-
-        ### B tag weights       TO-DO: Apply the B tag SFs
-        '''
-        ROOT.gROOT.ProcessLine('.L BTagCalibrationStandalone.cc+') 
-        calib = ROOT.BTagCalibration("csvv1", "CSVV1.csv")
-        reader = ROOT.BTagCalibrationReader(calib, 1, "lt", "central") 
-        # (, operating point 0=loose 1=medium, measurementType="lt", central up or down)
-        '''
-        self.BtagWeight = 1.0
 
 
         ### Flag to distinguish data from MC
@@ -216,8 +210,6 @@ class B2GSelectSemiLepTTbar_Type1( ) :
                                   self.tree.AK4_dRminLep_Phi[0],
                                   self.tree.AK4_dRminLep_Mass[0] )
         self.ak4JetBdisc = self.tree.AK4_dRminLep_Bdisc[0]
-        #self.BtagWeight = reader.eval( csvscore,  ak4Jet.Eta(),  ak4Jet.Perp() )
-
 
         self.ak8Jet = ROOT.TLorentzVector()
         self.ak8Jet.SetPtEtaPhiM( self.tree.JetPt[0],
@@ -248,7 +240,7 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.ak8SDJetRaw =   self.ak8SDJet
         self.ak8SDJet =   self.ak8SDJet * self.Corr
         if self.ak8SDJetRaw != None :
-            self.ak8_SDm = self.CorrPUPPIMass( self.ak8SDJetRaw.Perp() , self.ak8SDJetRaw.Eta(), self.ak8SDJetRaw.M()  )
+            self.ak8_SDm = self.ak8SDJet.M()
             # Pt Responses
             self.SDptGenpt = float(self.ak8SDJet.Perp())  / float(self.ak8Jet.Perp() ) 
             if self.ak8PuppiJetRaw != None :
@@ -273,7 +265,7 @@ class B2GSelectSemiLepTTbar_Type1( ) :
                                             self.tree.JetPuppiSDsubjet1mass[0] )
         self.ak8PuppiSDJet_Subjet1Raw =   self.ak8PuppiSDJet_Subjet1 
         self.ak8PuppiSDJet_Subjet1 =   self.ak8PuppiSDJet_Subjet1 * self.PuppiCorr
-
+        self.ak8PuppiSDsubjet1Bdisc = self.tree.JetPuppiSDsubjet1bdisc[0]
 
         self.ak8PuppiSDJet =  self.ak8PuppiSDJet_Subjet0 +  self.ak8PuppiSDJet_Subjet1
         self.ak8PuppiSDJetRaw =   self.ak8PuppiSDJet
@@ -423,14 +415,16 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.passedCount = [0] * self.nstages
         self.passed = [False] * self.nstages
         self.passed[0] = self.lepsel.passed[ len(self.lepsel.passed) - 1]
+
+
         if not self.passed[0] : return self.passed
         self.passedCount[0] += 1
-        if self.verbose : print "Stage 8 : Event passed leptonic selection"
+        if self.verbose : print "Stage 10 : Event passed leptonic selection"
 
         if not (self.ak8Jet.Perp() > self.AK8PtCut and abs(self.ak8Jet.Eta()) < self.AK8EtaCut ) : return self.passed
         self.passed[1] = True
         self.passedCount[1] += 1
-        if self.verbose : print "Stage 9 : AK8 Pt  {0:2.2f}  > ( {1:2.2f} GeV) and eta {2:2.2f} < ( {3:2.2f} )".format( 
+        if self.verbose : print "Stage 11 : AK8 Pt  {0:2.2f}  > ( {1:2.2f} GeV) and eta {2:2.2f} < ( {3:2.2f} )".format( 
                                                                                                                    self.ak8Jet.Perp(),
                                                                                                                         self.AK8PtCut,
                                                                                                                     self.ak8Jet.Eta(),
@@ -438,19 +432,19 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         if not ( self.ak4JetBdisc >  self.bdiscmin  ) : return self.passed
         self.passed[2] = True
         self.passedCount[2] += 1
-        if self.verbose : print "Stage 10 :AK4 bdisc {0:2.2f}  > ( {1:2.2f} ) ".format(  self.ak4JetBdisc , self.bdiscmin )
+        if self.verbose : print "Stage 12 :AK4 bdisc {0:2.2f}  > ( {1:2.2f} ) ".format(  self.ak4JetBdisc , self.bdiscmin )
         
-        if not ( self.minAK8Mass < self.ak8SDJet.M() < self.maxAK8Mass ) : return self.passed
+        if not ( self.minAK8Mass < self.ak8_SDm < self.maxAK8Mass ) : return self.passed
         self.passed[3] = True
         self.passedCount[3] += 1
-        if self.verbose : print "Stage 12: AK8 SD mass  ({0:2.2f}) < {1:2.2f} GeV < ({2:2.2f})  [For comparison SD Puppi mass after puppi corr is  {2:2.2f} ]".format(  self.minAK8Mass , self.ak8SDJet.M() , self.maxAK8Mass, self.ak8PuppiSD_m)
+        if self.verbose : print "Stage 13: AK8 SD mass  ({0:2.2f}) < {1:2.2f} GeV < ({2:2.2f})  [For comparison SD Puppi mass after puppi corr is  {2:2.2f} ]".format(  self.minAK8Mass , self.ak8SDJet.M() , self.maxAK8Mass, self.ak8PuppiSD_m)
 
 
 
         if not ( self.tau32 < self.tau32Cut ) : return self.passed
         self.passed[4] = True
         self.passedCount[4] += 1
-        if self.verbose : print "Stage 11: AK8 tau32  {0:2.2f}  > ( {1:2.2f} ) [For comparison puppi tau32 is  {2:2.2f} ]".format(  self.tau32 , self.tau32Cut, self.puppitau32)
+        if self.verbose : print "Stage 14: AK8 tau32  {0:2.2f}  < ( {1:2.2f} ) [For comparison puppi tau32 is  {2:2.2f} ]".format(  self.tau32 , self.tau32Cut, self.puppitau32)
 
 
 
@@ -459,16 +453,25 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         if not ( self.minAK8sjMass <  self.ak8PuppiSD_subjet0_m  <  self.maxAK8sjMass) : return self.passed
         self.passed[5] = True
         self.passedCount[5] += 1
-        if self.verbose : print "Stage 13: AK8 SD subjet 0 mass  ({0}) < {1:2.2f} GeV < ({2})  [mass is after puppi mass corr]".format( self.minAK8sjMass ,  self.ak8PuppiSD_subjet0_m  , self.maxAK8sjMass)
+        if self.verbose : print "Stage 15: AK8 SD subjet 0 mass  ({0}) < {1:2.2f} GeV < ({2})  [mass is after puppi mass corr]".format( self.minAK8sjMass ,  self.ak8PuppiSD_subjet0_m  , self.maxAK8sjMass)
 
         if self.verbose : print "mass of sd subjet 0 after puppi corr in bin 200-300 {0:2.3f}, 300-400 {1:2.3f}, 400-500 {2:2.3f}, 500-800 {3:2.3f}".format(self.ak8SDsj0_m200,self.ak8SDsj0_m300,self.ak8SDsj0_m400,self.ak8SDsj0_m500)
 
 
-        if self.verbose :print "Stage 14: tau21 of SD subjet 0 is: {0:2.2f}".format( float( self.ak8SDsubjet0tau21) )
+        if self.verbose :print " tau21 of SD subjet 0 is: {0:2.2f}".format( float( self.ak8SDsubjet0tau21) )
         if not ( self.ak8SDsubjet0tau21 < self.tau21Cut ) : return self.passed
         self.passed[6] = True
         self.passedCount[6] += 1
-        if self.verbose : print "AK8 SD subjet 0 tau21  {0:2.2f}  < ( {1} ) ".format( self.ak8SDsubjet0tau21 , self.tau21Cut )
+        if self.verbose : print "Stage 16: AK8 SD subjet 0 tau21  {0:2.2f}  < ( {1} ) ".format( self.ak8SDsubjet0tau21 , self.tau21Cut )
+
+        if self.verbose :print "Bdisc of SD subjet 1 is: {0:2.2f}".format( float( self.ak8PuppiSDsubjet1Bdisc) )
+        if not ( self.ak8PuppiSDsubjet1Bdisc >  self.bdiscmin ) : return self.passed
+        self.passed[7] = True
+        self.passedCount[7] += 1
+        if self.verbose : 
+            print "Stage 17: Bdisc of SD subjet 1 {0:2.2f}  < ( {1} ) ".format( float( self.ak8PuppiSDsubjet1Bdisc) ,   self.Subjettau21Cut )
+
+
 
         return self.passed
 
