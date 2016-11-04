@@ -111,6 +111,8 @@ class RunSemiLepTTbar(OptionParser) :
         self.eventsToRun = entries
 
         ### Create empty weights used for histo filling
+        ### The total weight
+        self.theWeight = 1.
         self.EventWeight = None
         self.PUWeight = None
         self.TriggEffIs  = None
@@ -299,22 +301,44 @@ class RunSemiLepTTbar(OptionParser) :
         a = self.lepSelection
         b = self.hadSelection 
 
-        #self.totalWeight = self.theWeight #* b.BtagWeight
-
 
         ### Define the weights used for histo filling
         self.EventWeight = self.lepSelection.EventWeight
         self.PUWeight = self.lepSelection.PUWeight
         self.TriggEffIs  = self.lepSelection.TriggEffIs
         self.CutIDScaleFIs = self.lepSelection.CutIDScaleFIs
+        self.CutIDScaleFLooseIs = self.lepSelection.CutIDScaleFLooseIs
         self.MuonHIPScaleFIs = self.lepSelection.MuonHIPScaleFIs
-        self.BtagWeight =  self.hadSelection.BtagWeight
+        self.BtagWeight =  self.lepSelection.BtagWeight
 
-        ### The total weight
-        self.theWeight = None
-        self.theWeight =  self.EventWeight * self.PUWeight * self.TriggEffIs * self.CutIDScaleFIs *self.MuonHIPScaleFIs * self.BtagWeight
-        if self.verbose : print "Total Weight {0:2.4f} = Event weight {1:2.4f} * PU weight {2:2.4f} *Trigger Eff. {3:2.4f} * Cut ID {4:2.4f} * HIP SF {5:2.4f} * Btag SF {6:2.4f}".format(self.theWeight, self.EventWeight , self.PUWeight , self.TriggEffIs , self.CutIDScaleFIs, self.MuonHIPScaleFIs, self.BtagWeight)
-        if self.verbose : print "theWeight is : {}".format(self.theWeight)
+        if self.verbose and index == 0 : print "Event weight {0:2.4f} * PU weight {1:2.4f} *Trigger Eff. {2:2.4f} * Cut ID {3:2.4f} * HIP SF {4:2.4f} * Btag SF {5:2.4f} * self.CutIDScaleFLooseIs {6:2.4f}".format(self.EventWeight , self.PUWeight , self.TriggEffIs , self.CutIDScaleFIs, self.MuonHIPScaleFIs, self.BtagWeight, self.CutIDScaleFLooseIs)
+
+        ### The total weight depends on the stage of selection
+        #self.theWeight =  self.EventWeight * self.PUWeight
+        ### Before all selection (LooseID is applied)
+        if index == 0: 
+            self.theWeight =  self.EventWeight * self.PUWeight * self.CutIDScaleFLooseIs
+            if self.verbose : print "theWeight for stage {} is : {} =  self.EventWeight {} * self.PUWeight{} * self.CutIDScaleFLooseIs {}".format(index ,self.theWeight,  self.EventWeight , self.PUWeight , self.CutIDScaleFLooseIs)
+        ### Trigger
+        if index == 1: 
+            self.theWeight =  self.EventWeight * self.PUWeight * self.TriggEffIs * self.CutIDScaleFLooseIs
+            if self.verbose : print "theWeight for stage {} is : {} =  self.EventWeight {} * self.PUWeight {} * self.TriggEffIs {} *self.CutIDScaleFLooseIs {}".format(index ,self.theWeight,  self.EventWeight , self.PUWeight ,self.TriggEffIs,  self.CutIDScaleFLooseIs)
+        if index == 2: 
+            if self.verbose : print "theWeight for stage {} is : {}".format(index ,self.theWeight)
+        ### Cut based ID
+        if index == 3: 
+            self.theWeight =  self.EventWeight * self.PUWeight * self.TriggEffIs  * self.CutIDScaleFIs
+            if self.verbose : print "theWeight for stage {} is : {}".format(index ,self.theWeight)
+        ### HighPt ID
+        if index == 4: 
+            self.theWeight =  self.EventWeight * self.PUWeight * self.TriggEffIs  * self.CutIDScaleFIs *self.MuonHIPScaleFIs
+            if self.verbose : print "theWeight for stage {} is : {}".format(index ,self.theWeight)
+        ### B tag SF
+        if index == 12: 
+            self.theWeight =  self.EventWeight * self.PUWeight * self.TriggEffIs  * self.CutIDScaleFIs *self.MuonHIPScaleFIs * self.BtagWeight
+            if self.verbose : print "theWeight for stage {} is : {}".format(index ,self.theWeight)
+        #if self.verbose : print "Event weight {1:2.4f} * PU weight {2:2.4f} *Trigger Eff. {3:2.4f} * Cut ID {4:2.4f} * HIP SF {5:2.4f} * Btag SF {6:2.4f}".format(self.EventWeight , self.PUWeight , self.TriggEffIs , self.CutIDScaleFIs, self.MuonHIPScaleFIs, self.BtagWeight)
+
 
 
 
