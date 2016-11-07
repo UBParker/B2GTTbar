@@ -56,6 +56,11 @@ parser.add_option('--ttSF', action='store_true',
                   dest='ttSF',
                   help='Apply a ttbar scaling computed using ScalettMC?')
 
+parser.add_option('--AllStages', action='store_true',
+                  default=False,
+                  dest='AllStages',
+                  help='Plot all stages (for a given sample) on same canvas?')
+
 parser.add_option('--fixFit', action='store_true',
                   default=False,
                   dest='fixFit',
@@ -380,6 +385,21 @@ nev_QCD = [
     39988.,  
     ]
 
+if options.allMC :    MCs = "_MCIsttbarWjetsST"
+else             :    MCs = "_MCIsttbar"
+
+if options.Type2 : typeIs = "_type2Tops"
+else             : typeIs = "_type1Tops" 
+
+
+CorrIs = "_PUreweight_outfile_mu45Trig_muMedID_MuHighPt_ak8pt500_AK4pt30_BTagSF_weightVariesWithStages"
+
+if options.allMC and options.ttSF : 
+    CorrIs = "_PUreweight_ttSF_outfile_mu45Trig_muMedID_MuHighPt_ak8pt500_AK4pt30_BTagSF_weightVariesWithStages"
+if options.allMC and options.includeQCD : 
+    CorrIs = "_PUreweight_QCD_outfile_mu45Trig_muMedID_MuHighPt_ak8pt500_AK4pt30_BTagSF_weightVariesWithStages"
+    if options.drawOnlyQCD : CorrIs = "_PUreweight_drawONLYQCD_outfile_mu45Trig_muMedID_MuHighPt_ak8pt500_AK4pt30_BTagSF_weightVariesWithStages"
+
 
 if options.noData : 
     print "WARNING : noData option is ON !!! "
@@ -474,10 +494,262 @@ if options.allMC :
 
     #QCD_colors = [  ROOT.kWhite,ROOT.kYellow - 9, ROOT.kYellow - 8, ROOT.kYellow - 7,  ROOT.kYellow - 6,  ROOT.kYellow - 5, ROOT.kYellow - 4, ROOT.kYellow ,  ROOT.kYellow + 1, ROOT.kYellow + 2, ROOT.kYellow + 3, ROOT.kYellow + 4 ]
     QCD_colors = [ ROOT.kRed + 7, ROOT.kRed + 3,  ROOT.kOrange + 2, ROOT.kYellow + 6 ,ROOT.kYellow + 1 , ROOT.kGreen + 2, ROOT.kCyan + 6, ROOT.kCyan+1, ROOT.kBlue + 2, ROOT.kBlue + 6, ROOT.kMagenta + 2, ROOT.kMagenta + 7 ]
-   
+
 objs = []
 
 
+if options.AllStages :
+    ROOT.gStyle.SetOptStat(000000)
+    #Set multiple of maximum to scale y axis by
+    y_max_scale_all = 1.618
+
+    cdata1 = ROOT.TCanvas("cdata1", "cdata1",1,1,745,701)
+    cdata1.SetHighLightColor(2)
+    cdata1.Range(0,0,1,1)
+    cdata1.SetFillColor(0)
+    cdata1.SetBorderMode(0)
+    cdata1.SetBorderSize(2)
+    cdata1.SetTickx(1)
+    cdata1.SetTicky(1)
+    cdata1.SetLeftMargin(0.14)
+    cdata1.SetRightMargin(0.04)
+    cdata1.SetTopMargin(0.08)
+    cdata1.SetBottomMargin(0.15)
+    cdata1.SetFrameFillStyle(0)
+    cdata1.SetFrameBorderMode(0)
+    cdata1.cd()
+
+    '''
+    cdata2 = ROOT.TCanvas("cdata2", "cdata2",1,1,745,701)
+    cdata2.SetHighLightColor(2)
+    cdata2.Range(0,0,1,1)
+    cdata2.SetFillColor(0)
+    cdata2.SetBorderMode(0)
+    cdata2.SetBorderSize(2)
+    cdata2.SetTickx(1)
+    cdata2.SetTicky(1)
+    cdata2.SetLeftMargin(0.14)
+    cdata2.SetRightMargin(0.04)
+    cdata2.SetTopMargin(0.08)
+    cdata2.SetBottomMargin(0.15)
+    cdata2.SetFrameFillStyle(0)
+    cdata2.SetFrameBorderMode(0)
+    cdata2.cd()
+    '''
+
+    padd = ROOT.TPad("padd", "padd",0,0,1,1)
+    padd.Draw()
+    padd.cd()
+    ## padd.Range(-0.1792683,-2.983224,1.10122,146.183)
+    padd.SetFillColor(0)
+    padd.SetBorderMode(0)
+    padd.SetBorderSize(2)
+    padd.SetTickx(1)
+    padd.SetTicky(1)
+    padd.SetLeftMargin(0.14)
+    padd.SetRightMargin(0.04)
+    padd.SetTopMargin(0.12)
+    padd.SetBottomMargin(0.02)
+    padd.SetFrameFillStyle(0)
+    padd.SetFrameBorderMode(0)
+    padd.SetFrameFillStyle(0)
+    padd.SetFrameBorderMode(0)
+
+    hdata = datafile.Get(options.hist + str(0))
+    hdata.GetXaxis().SetRangeUser(  xAxisrange[iHisto][0] , xAxisrange[iHisto][1] )
+    hdata.SetMaximum(y_max_scale_all * hdata.GetMaximum() )
+    hdata.SetMinimum(0.0001 )
+    hdata.GetYaxis().SetTitle("Events")
+    hdata.GetYaxis().SetTitleSize(0.065)
+    hdata.GetYaxis().SetTitleOffset(0.9) ## 0.7)
+    hdata.GetYaxis().SetLabelSize(0.06)
+    hdataColors = [1, 2, 3, 4, 5, 6, 7, 8, 9, 20, 11,12,13,14,15,16,17, 18,19 ]
+    hdata.SetLineColor( hdataColors[0] )
+    hdataHists = []
+
+    hdata.SetLineColor(1)
+
+    #hdata.SetFillColor(1)
+    #hdata.SetFillStyle(0)
+    hdata.SetLineWidth(2)
+    #hdata.SetMarkerStyle(20)
+    #hdata.SetMarkerSize(0.8)
+
+    hdata.GetXaxis().SetNdivisions(506)
+    hdata.GetXaxis().SetLabelFont(42)
+    hdata.GetXaxis().SetLabelSize(0)
+    hdata.GetXaxis().SetTitleSize(0.0475)
+    hdata.GetXaxis().SetTickLength(0.045)
+    hdata.GetXaxis().SetTitleOffset(1.15)
+    hdata.GetXaxis().SetTitleFont(42)
+    hdata.GetYaxis().SetTitle("Events")
+    hdata.GetYaxis().SetNdivisions(506)
+    hdata.GetYaxis().SetLabelFont(42)
+    hdata.GetYaxis().SetLabelSize(0.06375)
+    hdata.GetYaxis().SetTitleSize(0.07125)
+    hdata.GetYaxis().SetTitleOffset(0.9)
+    hdata.GetYaxis().SetTitleFont(42)
+    hdata.SetXTitle(HistoTitle[iHisto]+", Data at each stage ")
+
+    words = ROOT.TLatex(0.14,0.916,"#font[62]{CMS} #font[52]{Preliminary}")
+    words.SetNDC()
+    words.SetTextFont(42)
+    words.SetTextSize(0.0825)
+    words.SetLineWidth(2)
+    words.Draw()
+    words1 = ROOT.TLatex(0.9,0.916,"12.9  fb^{-1} (13 TeV)")
+    words1.SetNDC()
+    words1.SetTextAlign(31)
+    words1.SetTextFont(42)
+    words1.SetTextSize(0.0825)
+    words1.SetLineWidth(2)
+    words1.Draw()
+    words2 = ROOT.TLatex(0.181,0.82225,"")
+    words2.SetNDC()
+    words2.SetTextAlign(13)
+    words2.SetTextFont(42)
+    words2.SetTextSize(0.045)
+    words2.SetLineWidth(2)
+    words2.Draw()
+
+    '''
+    cttbar = ROOT.TCanvas("cttbar", "cttbar",1,1,745,701)
+    cttbar.SetHighLightColor(2)
+    cttbar.Range(0,0,1,1)
+    cttbar.SetFillColor(0)
+    cttbar.SetBorderMode(0)
+    cttbar.SetBorderSize(2)
+    cttbar.SetTickx(1)
+    cttbar.SetTicky(1)
+    cttbar.SetLeftMargin(0.14)
+    cttbar.SetRightMargin(0.04)
+    cttbar.SetTopMargin(0.08)
+    cttbar.SetBottomMargin(0.15)
+    cttbar.SetFrameFillStyle(0)
+    cttbar.SetFrameBorderMode(0)
+    cttbar.cd()
+
+    padt = ROOT.TPad("padt", "padt",0,0,1,1)
+    padt.Draw()
+    padt.cd()
+    ## padt.Range(-0.1792683,-2.983224,1.10122,146.183)
+    padt.SetFillColor(0)
+    padt.SetBorderMode(0)
+    padt.SetBorderSize(2)
+    padt.SetTickx(1)
+    padt.SetTicky(1)
+    padt.SetLeftMargin(0.14)
+    padt.SetRightMargin(0.04)
+    padt.SetTopMargin(0.12)
+    padt.SetBottomMargin(0.02)
+    padt.SetFrameFillStyle(0)
+    padt.SetFrameBorderMode(0)
+    padt.SetFrameFillStyle(0)
+    padt.SetFrameBorderMode(0)
+
+    cwjets = ROOT.TCanvas("cwjets", "cwjets",1,1,745,701)
+    cwjets.SetHighLightColor(2)
+    cwjets.Range(0,0,1,1)
+    cwjets.SetFillColor(0)
+    cwjets.SetBorderMode(0)
+    cwjets.SetBorderSize(2)
+    cwjets.SetTickx(1)
+    cwjets.SetTicky(1)
+    cwjets.SetLeftMargin(0.14)
+    cwjets.SetRightMargin(0.04)
+    cwjets.SetTopMargin(0.08)
+    cwjets.SetBottomMargin(0.15)
+    cwjets.SetFrameFillStyle(0)
+    cwjets.SetFrameBorderMode(0)
+    cwjets.cd()
+
+    padw = ROOT.TPad("padw", "padw",0,0,1,1)
+    padw.Draw()
+    padw.cd()
+    ## padw.Range(-0.1792683,-2.983224,1.10122,146.183)
+    padw.SetFillColor(0)
+    padw.SetBorderMode(0)
+    padw.SetBorderSize(2)
+    padw.SetTickx(1)
+    padw.SetTicky(1)
+    padw.SetLeftMargin(0.14)
+    padw.SetRightMargin(0.04)
+    padw.SetTopMargin(0.12)
+    padw.SetBottomMargin(0.02)
+    padw.SetFrameFillStyle(0)
+    padw.SetFrameBorderMode(0)
+    padw.SetFrameFillStyle(0)
+    padw.SetFrameBorderMode(0)
+
+    cst = ROOT.TCanvas("cst", "cst",1,1,745,701)
+    cst.SetHighLightColor(2)
+    cst.Range(0,0,1,1)
+    cst.SetFillColor(0)
+    cst.SetBorderMode(0)
+    cst.SetBorderSize(2)
+    cst.SetTickx(1)
+    cst.SetTicky(1)
+    cst.SetLeftMargin(0.14)
+    cst.SetRightMargin(0.04)
+    cst.SetTopMargin(0.08)
+    cst.SetBottomMargin(0.15)
+    cst.SetFrameFillStyle(0)
+    cst.SetFrameBorderMode(0)
+    cst.cd()
+
+    pads = ROOT.TPad("pads", "pads",0,0,1,1)
+    pads.Draw()
+    pads.cd()
+    ## pads.Range(-0.1792683,-2.983224,1.10122,146.183)
+    pads.SetFillColor(0)
+    pads.SetBorderMode(0)
+    pads.SetBorderSize(2)
+    pads.SetTickx(1)
+    pads.SetTicky(1)
+    pads.SetLeftMargin(0.14)
+    pads.SetRightMargin(0.04)
+    pads.SetTopMargin(0.12)
+    pads.SetBottomMargin(0.02)
+    pads.SetFrameFillStyle(0)
+    pads.SetFrameBorderMode(0)
+    pads.SetFrameFillStyle(0)
+    pads.SetFrameBorderMode(0)
+
+    cQCD = ROOT.TCanvas("cQCD", "cQCD",1,1,745,701)
+    cQCD.SetHighLightColor(2)
+    cQCD.Range(0,0,1,1)
+    cQCD.SetFillColor(0)
+    cQCD.SetBorderMode(0)
+    cQCD.SetBorderSize(2)
+    cQCD.SetTickx(1)
+    cQCD.SetTicky(1)
+    cQCD.SetLeftMargin(0.14)
+    cQCD.SetRightMargin(0.04)
+    cQCD.SetTopMargin(0.08)
+    cQCD.SetBottomMargin(0.15)
+    cQCD.SetFrameFillStyle(0)
+    cQCD.SetFrameBorderMode(0)
+    cQCD.cd()
+
+    padQ = ROOT.TPad("padQ", "padQ",0,0,1,1)
+    padQ.Draw()
+    padQ.cd()
+    ## padQ.Range(-0.1792683,-2.983224,1.10122,146.183)
+    padQ.SetFillColor(0)
+    padQ.SetBorderMode(0)
+    padQ.SetBorderSize(2)
+    padQ.SetTickx(1)
+    padQ.SetTicky(1)
+    padQ.SetLeftMargin(0.14)
+    padQ.SetRightMargin(0.04)
+    padQ.SetTopMargin(0.12)
+    padQ.SetBottomMargin(0.02)
+    padQ.SetFrameFillStyle(0)
+    padQ.SetFrameBorderMode(0)
+    padQ.SetFrameFillStyle(0)
+    padQ.SetFrameBorderMode(0)
+
+    '''
 
 for istage in xrange(options.nstages) : 
     # Store the int number to rbin by
@@ -491,6 +763,7 @@ for istage in xrange(options.nstages) :
         hdata.Sumw2()
     else :
         hdata = datafile.Get(options.hist + str(istage))
+        hdataHists.append(  hdata  )
         #hdata.SetName('hdata')
         tempdata = hdata.Clone('tempdata')
         tempdata2 = hdata.Clone('tempdata2')
@@ -867,31 +1140,65 @@ for istage in xrange(options.nstages) :
         fout.Write()
         fout.Close()
 
+    if not options.AllStages :
 
+        ROOT.gStyle.SetOptStat(000000)
+        #Set multiple of maximum to scale y axis by
+        y_max_scale = 1.8+1.618
 
-    ROOT.gStyle.SetOptStat(000000)
-    #Set multiple of maximum to scale y axis by
-    y_max_scale = 1.8+1.618
+        c1 = ROOT.TCanvas("c" + str(istage), "c" + str(istage),1,1,745,701)
+        #gStyle.SetOptFit(1)
+        #gStyle.SetOptStat(0)
+        c1.SetHighLightColor(2)
+        c1.Range(0,0,1,1)
+        c1.SetFillColor(0)
+        c1.SetBorderMode(0)
+        c1.SetBorderSize(2)
+        c1.SetTickx(1)
+        c1.SetTicky(1)
+        c1.SetLeftMargin(0.14)
+        c1.SetRightMargin(0.04)
+        c1.SetTopMargin(0.08)
+        c1.SetBottomMargin(0.15)
+        c1.SetFrameFillStyle(0)
+        c1.SetFrameBorderMode(0)
+        if iHisto == 11:
+            if not options.noData:
+                hdata.SetLineColor(1)
+                hdata.SetFillColor(1)
+                hdata.SetFillStyle(0)
+                hdata.SetLineWidth(2)
+                hdata.SetMarkerStyle(20)
+                hdata.SetMarkerSize(0.8)
+            hMC.SetLineColor(4)
+            hMC.SetFillColor(4)
+            hMC.SetFillStyle(0)
+            hMC.SetLineWidth(2)
+            hMC.SetMarkerStyle(20)
+            hMC.SetMarkerSize(0.8)
 
-    c1 = ROOT.TCanvas("c" + str(istage), "c" + str(istage),1,1,745,701)
-    #gStyle.SetOptFit(1)
-    #gStyle.SetOptStat(0)
-    c1.SetHighLightColor(2)
-    c1.Range(0,0,1,1)
-    c1.SetFillColor(0)
-    c1.SetBorderMode(0)
-    c1.SetBorderSize(2)
-    c1.SetTickx(1)
-    c1.SetTicky(1)
-    c1.SetLeftMargin(0.14)
-    c1.SetRightMargin(0.04)
-    c1.SetTopMargin(0.08)
-    c1.SetBottomMargin(0.15)
-    c1.SetFrameFillStyle(0)
-    c1.SetFrameBorderMode(0)
-    if iHisto == 11:
-        if not options.noData:
-            '''
+            hMC.Draw()
+            hdata.Draw("e0 same")
+
+        if iHisto != 11:      
+            pad1 = ROOT.TPad("pad1", "pad1",0,0.3333333,1,1)
+            pad1.Draw()
+            pad1.cd()
+            ## pad1.Range(-0.1792683,-2.983224,1.10122,146.183)
+            pad1.SetFillColor(0)
+            pad1.SetBorderMode(0)
+            pad1.SetBorderSize(2)
+            pad1.SetTickx(1)
+            pad1.SetTicky(1)
+            pad1.SetLeftMargin(0.14)
+            pad1.SetRightMargin(0.04)
+            pad1.SetTopMargin(0.12)
+            pad1.SetBottomMargin(0.02)
+            pad1.SetFrameFillStyle(0)
+            pad1.SetFrameBorderMode(0)
+            pad1.SetFrameFillStyle(0)
+            pad1.SetFrameBorderMode(0)
+
             hdata.GetXaxis().SetRangeUser(  xAxisrange[iHisto][0] , xAxisrange[iHisto][1] )
             hdata.SetMaximum(y_max_scale * hdata.GetMaximum() )
             hdata.SetMinimum(0.0001 )
@@ -899,283 +1206,237 @@ for istage in xrange(options.nstages) :
             hdata.GetYaxis().SetTitleSize(0.065)
             hdata.GetYaxis().SetTitleOffset(0.9) ## 0.7)
             hdata.GetYaxis().SetLabelSize(0.06)
-            ## hdata.SetMarkerStyle(20)
-            ## hdata.SetMarkerSize(0.8)
-            '''
             hdata.SetLineColor(1)
             hdata.SetFillColor(1)
             hdata.SetFillStyle(0)
             hdata.SetLineWidth(2)
             hdata.SetMarkerStyle(20)
             hdata.SetMarkerSize(0.8)
-        hMC.SetLineColor(4)
-        hMC.SetFillColor(4)
-        hMC.SetFillStyle(0)
-        hMC.SetLineWidth(2)
-        hMC.SetMarkerStyle(20)
-        hMC.SetMarkerSize(0.8)
 
-        hMC.Draw()
-        hdata.Draw("e0 same")
-
-    if iHisto != 11:      
-        pad1 = ROOT.TPad("pad1", "pad1",0,0.3333333,1,1)
-        pad1.Draw()
-        pad1.cd()
-        ## pad1.Range(-0.1792683,-2.983224,1.10122,146.183)
-        pad1.SetFillColor(0)
-        pad1.SetBorderMode(0)
-        pad1.SetBorderSize(2)
-        pad1.SetTickx(1)
-        pad1.SetTicky(1)
-        pad1.SetLeftMargin(0.14)
-        pad1.SetRightMargin(0.04)
-        pad1.SetTopMargin(0.12)
-        pad1.SetBottomMargin(0.02)
-        pad1.SetFrameFillStyle(0)
-        pad1.SetFrameBorderMode(0)
-        pad1.SetFrameFillStyle(0)
-        pad1.SetFrameBorderMode(0)
-
-        hdata.GetXaxis().SetRangeUser(  xAxisrange[iHisto][0] , xAxisrange[iHisto][1] )
-        hdata.SetMaximum(y_max_scale * hdata.GetMaximum() )
-        hdata.SetMinimum(0.0001 )
-        hdata.GetYaxis().SetTitle("Events")
-        hdata.GetYaxis().SetTitleSize(0.065)
-        hdata.GetYaxis().SetTitleOffset(0.9) ## 0.7)
-        hdata.GetYaxis().SetLabelSize(0.06)
-        hdata.SetLineColor(1)
-        hdata.SetFillColor(1)
-        hdata.SetFillStyle(0)
-        hdata.SetLineWidth(2)
-        hdata.SetMarkerStyle(20)
-        hdata.SetMarkerSize(0.8)
-
-        hdata.GetXaxis().SetNdivisions(506)
-        hdata.GetXaxis().SetLabelFont(42)
-        hdata.GetXaxis().SetLabelSize(0)
-        hdata.GetXaxis().SetTitleSize(0.0475)
-        hdata.GetXaxis().SetTickLength(0.045)
-        hdata.GetXaxis().SetTitleOffset(1.15)
-        hdata.GetXaxis().SetTitleFont(42)
-        hdata.GetYaxis().SetTitle("Events")
-        hdata.GetYaxis().SetNdivisions(506)
-        hdata.GetYaxis().SetLabelFont(42)
-        hdata.GetYaxis().SetLabelSize(0.06375)
-        hdata.GetYaxis().SetTitleSize(0.07125)
-        hdata.GetYaxis().SetTitleOffset(0.9)
-        hdata.GetYaxis().SetTitleFont(42)
-        '''
-        hdata.GetZaxis().SetLabelFont(42)
-        hdata.GetZaxis().SetLabelSize(0.0425)
-        hdata.GetZaxis().SetTitleSize(0.0475)
-        hdata.GetZaxis().SetTitleFont(42)
-        '''
-        hdata.SetXTitle(HistoTitle[iHisto]+" , Stage "+str(istage))
+            hdata.GetXaxis().SetNdivisions(506)
+            hdata.GetXaxis().SetLabelFont(42)
+            hdata.GetXaxis().SetLabelSize(0)
+            hdata.GetXaxis().SetTitleSize(0.0475)
+            hdata.GetXaxis().SetTickLength(0.045)
+            hdata.GetXaxis().SetTitleOffset(1.15)
+            hdata.GetXaxis().SetTitleFont(42)
+            hdata.GetYaxis().SetTitle("Events")
+            hdata.GetYaxis().SetNdivisions(506)
+            hdata.GetYaxis().SetLabelFont(42)
+            hdata.GetYaxis().SetLabelSize(0.06375)
+            hdata.GetYaxis().SetTitleSize(0.07125)
+            hdata.GetYaxis().SetTitleOffset(0.9)
+            hdata.GetYaxis().SetTitleFont(42)
+            hdata.SetXTitle(HistoTitle[iHisto]+" , Stage "+str(istage))
 
 
-        hdata.Draw("e x0")
+            hdata.Draw("e x0")
 
-        if options.drawOnlyQCD :
-            hQCD_stack.Draw("hist same")
-        else :
-            hstack.Draw("hist same")
-
-        ## Only fit the histos of SD jet mass in later stages of selection
-        if (iHisto <17 and iHisto > 12 )  and istage >= (options.nstages-2) : 
-            tempMC.Draw("axis same")
-            fitter_mc.Draw("same")
-            if not options.noData:
-                tempdata.Draw("axis same")
-                fitter_data.Draw("same")
-
-        hdata.Draw("e same x0")
-
-
-        if options.verbose : 
-            print "Setting X axis range to ({0}  ,  {1})".format(xAxisrange[iHisto][0] , xAxisrange[iHisto][1] )
-            if not options.noData:
-                print "Setting Y axis range to ({0}  ,  {1})".format(0. ,y_max_scale * hdata.GetMaximum() )
-    if iHisto != 11:
-        words = ROOT.TLatex(0.14,0.916,"#font[62]{CMS} #font[52]{Preliminary}")
-        words.SetNDC()
-        words.SetTextFont(42)
-        words.SetTextSize(0.0825)
-        words.SetLineWidth(2)
-        words.Draw()
-        words1 = ROOT.TLatex(0.9,0.916,"12.9  fb^{-1} (13 TeV)")
-        words1.SetNDC()
-        words1.SetTextAlign(31)
-        words1.SetTextFont(42)
-        words1.SetTextSize(0.0825)
-        words1.SetLineWidth(2)
-        words1.Draw()
-        words2 = ROOT.TLatex(0.181,0.82225,"")
-        words2.SetNDC()
-        words2.SetTextAlign(13)
-        words2.SetTextFont(42)
-        words2.SetTextSize(0.045)
-        words2.SetLineWidth(2)
-        words2.Draw()
-
-        leg = ROOT.TLegend(0.63,0.4,0.78,0.84)
-        leg.SetFillColor(0)
-        leg.SetBorderSize(0)
-        leg.SetTextSize(0.036)
-
-        if options.drawOnlyQCD :
-            leg.AddEntry( hQCD_list[0] , 'QCD Pt 80-120', 'f')
-            leg.AddEntry( hQCD_list[1] , 'QCD Pt 120-170', 'f')
-            leg.AddEntry( hQCD_list[2] , 'QCD Pt 170-300', 'f')
-            leg.AddEntry( hQCD_list[3] , 'QCD Pt 300-470', 'f')
-            leg.AddEntry( hQCD_list[4] , 'QCD Pt 470-600', 'f')
-            leg.AddEntry( hQCD_list[5] , 'QCD Pt 600-800', 'f')
-            leg.AddEntry( hQCD_list[6] , 'QCD Pt 800-1000', 'f')
-            leg.AddEntry( hQCD_list[7] , 'QCD Pt 1000-1400', 'f')
-            leg.AddEntry( hQCD_list[8] , 'QCD Pt 1400-1800', 'f')
-            leg.AddEntry( hQCD_list[9] , 'QCD Pt 1800-2400', 'f')
-            leg.AddEntry( hQCD_list[10] , 'QCD Pt 2400-3200', 'f')
-            leg.AddEntry( hQCD_list[11] , 'QCD Pt 3200-Inf', 'f')
-            if not options.noData:
-                leg.AddEntry( hdata, 'Data', 'p')
-                leg.Draw()
-        else :
-            leg.AddEntry( httbar, 't#bar{t} (80X Powheg + Pythia 8 )', 'f')
-            if options.allMC :
-                leg.AddEntry( hst, 'Single Top', 'f')
-                leg.AddEntry( hwjets, 'W+jets', 'f')
-                if options.includeQCD :
-                    leg.AddEntry( hQCD, 'QCD', 'f')
-            if not options.noData:
-                leg.AddEntry( hdata, 'Data', 'p')
-            leg.Draw()
-
-    #ROOT.gPad.RedrawAxis()
-
-    if iHisto != 11:
-        pad1.Modified()
-        c1.cd()
-        if not options.noData:
-            pad2 = ROOT.TPad("pad2", "pad2",0,0,1,0.3333333)
-            pad2.Draw()
-            pad2.cd()
-            ## pad2.Range(-0.1792683,-1.370091,1.10122,1.899)
-            pad2.SetFillColor(0)
-            pad2.SetBorderMode(0)
-            pad2.SetBorderSize(2)
-            pad2.SetTickx(1)
-            pad2.SetTicky(1)
-            pad2.SetLeftMargin(0.14)
-            pad2.SetRightMargin(0.04)
-            pad2.SetTopMargin(0)
-            pad2.SetBottomMargin(0.45)
-            pad2.SetFrameFillStyle(0)
-            pad2.SetFrameBorderMode(0)
-            pad2.SetFrameFillStyle(0)
-            pad2.SetFrameBorderMode(0)
-
-            hRatio = tempdata2.Clone('hRatio')
-            #hRatio.SetName('hRatio')
-            hRatio.Sumw2()
-            hRatio.SetStats(0)
             if options.drawOnlyQCD :
-                hRatio.Divide(hQCD)#(tempMC2)
+                hQCD_stack.Draw("hist same")
             else :
-                hRatio.Divide(tempMC2)
+                hstack.Draw("hist same")
 
-            hRatio.GetYaxis().SetRangeUser(0.01,1.99)   #(-1.01, 2.99)#
-            hRatio.GetXaxis().SetRangeUser(  xAxisrange[iHisto][0] , xAxisrange[iHisto][1] )
-            hRatio.GetXaxis().SetTitle(  HistoTitle[iHisto]+" , Stage "+str(istage)  )
+            ## Only fit the histos of SD jet mass in later stages of selection
+            if (iHisto <17 and iHisto > 12 )  and istage >= (options.nstages-2) : 
+                tempMC.Draw("axis same")
+                fitter_mc.Draw("same")
+                if not options.noData:
+                    tempdata.Draw("axis same")
+                    fitter_data.Draw("same")
+
+            hdata.Draw("e same x0")
 
 
-            hRatio.SetFillColor(1)
-            hRatio.SetFillStyle(0)
-            hRatio.SetLineWidth(2)
-            hRatio.SetLineColor(1)
-            hRatio.SetMarkerStyle(20)
-            hRatio.SetMarkerSize(0.8)
-            hRatio.GetXaxis().SetNdivisions(506)
-            hRatio.GetXaxis().SetLabelFont(42)
-            hRatio.GetXaxis().SetLabelOffset(0.015)
-            hRatio.GetXaxis().SetLabelSize(0.1275)
-            hRatio.GetXaxis().SetTitleSize(0.1425)
-            hRatio.GetXaxis().SetTickLength(0.09)
-            hRatio.GetXaxis().SetTitleOffset(1.15)
-            hRatio.GetXaxis().SetTitleFont(42)
-            hRatio.GetYaxis().SetTitle("#frac{Data}{MC}")
-            #hRatio.GetYaxis().CenterTitle(true)
-            hRatio.GetYaxis().SetNdivisions(304)
-            hRatio.GetYaxis().SetLabelFont(42)
-            hRatio.GetYaxis().SetLabelSize(0.1275)
-            hRatio.GetYaxis().SetTitleSize(0.1425)
-            hRatio.GetYaxis().SetTickLength(0.045)
-            hRatio.GetYaxis().SetTitleOffset(0.45)
-            hRatio.GetYaxis().SetTitleFont(42)
+            if options.verbose : 
+                print "Setting X axis range to ({0}  ,  {1})".format(xAxisrange[iHisto][0] , xAxisrange[iHisto][1] )
+                if not options.noData:
+                    print "Setting Y axis range to ({0}  ,  {1})".format(0. ,y_max_scale * hdata.GetMaximum() )
+        if iHisto != 11:
+            words = ROOT.TLatex(0.14,0.916,"#font[62]{CMS} #font[52]{Preliminary}")
+            words.SetNDC()
+            words.SetTextFont(42)
+            words.SetTextSize(0.0825)
+            words.SetLineWidth(2)
+            words.Draw()
+            words1 = ROOT.TLatex(0.9,0.916,"12.9  fb^{-1} (13 TeV)")
+            words1.SetNDC()
+            words1.SetTextAlign(31)
+            words1.SetTextFont(42)
+            words1.SetTextSize(0.0825)
+            words1.SetLineWidth(2)
+            words1.Draw()
+            words2 = ROOT.TLatex(0.181,0.82225,"")
+            words2.SetNDC()
+            words2.SetTextAlign(13)
+            words2.SetTextFont(42)
+            words2.SetTextSize(0.045)
+            words2.SetLineWidth(2)
+            words2.Draw()
 
-            hRatio.Draw("lepe0")
+            leg = ROOT.TLegend(0.63,0.4,0.78,0.84)
+            leg.SetFillColor(0)
+            leg.SetBorderSize(0)
+            leg.SetTextSize(0.036)
 
-            lineup = ROOT.TF1("lineup", "1.5", -7000, 7000)
-            lineup.SetLineColor(1)
-            lineup.SetLineStyle(2)
-            lineup.SetLineWidth(2)
-            lineup.Draw("same")
-            hRatio.Draw("e same x0")
+            if options.drawOnlyQCD :
+                leg.AddEntry( hQCD_list[0] , 'QCD Pt 80-120', 'f')
+                leg.AddEntry( hQCD_list[1] , 'QCD Pt 120-170', 'f')
+                leg.AddEntry( hQCD_list[2] , 'QCD Pt 170-300', 'f')
+                leg.AddEntry( hQCD_list[3] , 'QCD Pt 300-470', 'f')
+                leg.AddEntry( hQCD_list[4] , 'QCD Pt 470-600', 'f')
+                leg.AddEntry( hQCD_list[5] , 'QCD Pt 600-800', 'f')
+                leg.AddEntry( hQCD_list[6] , 'QCD Pt 800-1000', 'f')
+                leg.AddEntry( hQCD_list[7] , 'QCD Pt 1000-1400', 'f')
+                leg.AddEntry( hQCD_list[8] , 'QCD Pt 1400-1800', 'f')
+                leg.AddEntry( hQCD_list[9] , 'QCD Pt 1800-2400', 'f')
+                leg.AddEntry( hQCD_list[10] , 'QCD Pt 2400-3200', 'f')
+                leg.AddEntry( hQCD_list[11] , 'QCD Pt 3200-Inf', 'f')
+                if not options.noData:
+                    leg.AddEntry( hdata, 'Data', 'p')
+                    leg.Draw()
+            else :
+                leg.AddEntry( httbar, 't#bar{t} (80X Powheg + Pythia 8 )', 'f')
+                if options.allMC :
+                    leg.AddEntry( hst, 'Single Top', 'f')
+                    leg.AddEntry( hwjets, 'W+jets', 'f')
+                    if options.includeQCD :
+                        leg.AddEntry( hQCD, 'QCD', 'f')
+                if not options.noData:
+                    leg.AddEntry( hdata, 'Data', 'p')
+                leg.Draw()
 
-            line = ROOT.TF1("line", "1", -7000, 7000)
-            line.SetLineColor(1)
-            line.SetLineStyle(1)
-            line.SetLineWidth(3)
-            line.Draw("same")
-            hRatio.Draw("e same x0")
+        #ROOT.gPad.RedrawAxis()
 
-            lined = ROOT.TF1("lined", "0.5", -7000, 7000)
-            lined.SetLineColor(1)
-            lined.SetLineStyle(2)
-            lined.SetLineWidth(2)
-            lined.Draw("same")
-            hRatio.Draw("e same x0")
-            ROOT.gPad.RedrawAxis()
-             
-            pad2.Modified()
+        if iHisto != 11:
+            pad1.Modified()
             c1.cd()
-            c1.Modified()
+            if not options.noData:
+                pad2 = ROOT.TPad("pad2", "pad2",0,0,1,0.3333333)
+                pad2.Draw()
+                pad2.cd()
+                ## pad2.Range(-0.1792683,-1.370091,1.10122,1.899)
+                pad2.SetFillColor(0)
+                pad2.SetBorderMode(0)
+                pad2.SetBorderSize(2)
+                pad2.SetTickx(1)
+                pad2.SetTicky(1)
+                pad2.SetLeftMargin(0.14)
+                pad2.SetRightMargin(0.04)
+                pad2.SetTopMargin(0)
+                pad2.SetBottomMargin(0.45)
+                pad2.SetFrameFillStyle(0)
+                pad2.SetFrameBorderMode(0)
+                pad2.SetFrameFillStyle(0)
+                pad2.SetFrameBorderMode(0)
 
-            c1.cd()
-            c1.SetSelected(c1)     
+                hRatio = tempdata2.Clone('hRatio')
+                #hRatio.SetName('hRatio')
+                hRatio.Sumw2()
+                hRatio.SetStats(0)
+                if options.drawOnlyQCD :
+                    hRatio.Divide(hQCD)#(tempMC2)
+                else :
+                    hRatio.Divide(tempMC2)
+
+                hRatio.GetYaxis().SetRangeUser(0.01,1.99)   #(-1.01, 2.99)#
+                hRatio.GetXaxis().SetRangeUser(  xAxisrange[iHisto][0] , xAxisrange[iHisto][1] )
+                hRatio.GetXaxis().SetTitle(  HistoTitle[iHisto]+" , Stage "+str(istage)  )
 
 
-    if options.allMC :    MCs = "_MCIsttbarWjetsST"
-    else             :    MCs = "_MCIsttbar"
+                hRatio.SetFillColor(1)
+                hRatio.SetFillStyle(0)
+                hRatio.SetLineWidth(2)
+                hRatio.SetLineColor(1)
+                hRatio.SetMarkerStyle(20)
+                hRatio.SetMarkerSize(0.8)
+                hRatio.GetXaxis().SetNdivisions(506)
+                hRatio.GetXaxis().SetLabelFont(42)
+                hRatio.GetXaxis().SetLabelOffset(0.015)
+                hRatio.GetXaxis().SetLabelSize(0.1275)
+                hRatio.GetXaxis().SetTitleSize(0.1425)
+                hRatio.GetXaxis().SetTickLength(0.09)
+                hRatio.GetXaxis().SetTitleOffset(1.15)
+                hRatio.GetXaxis().SetTitleFont(42)
+                hRatio.GetYaxis().SetTitle("#frac{Data}{MC}")
+                #hRatio.GetYaxis().CenterTitle(true)
+                hRatio.GetYaxis().SetNdivisions(304)
+                hRatio.GetYaxis().SetLabelFont(42)
+                hRatio.GetYaxis().SetLabelSize(0.1275)
+                hRatio.GetYaxis().SetTitleSize(0.1425)
+                hRatio.GetYaxis().SetTickLength(0.045)
+                hRatio.GetYaxis().SetTitleOffset(0.45)
+                hRatio.GetYaxis().SetTitleFont(42)
 
-    if options.Type2 : typeIs = "_type2Tops"
-    else             : typeIs = "_type1Tops" 
+                hRatio.Draw("lepe0")
 
-    '''
-    NOTE : Corrections applied beyond the standard MC scaling and weighting by semileptEvent weight are listed below:
+                lineup = ROOT.TF1("lineup", "1.5", -7000, 7000)
+                lineup.SetLineColor(1)
+                lineup.SetLineStyle(2)
+                lineup.SetLineWidth(2)
+                lineup.Draw("same")
+                hRatio.Draw("e same x0")
 
- 
-    CorrIs = ["_NoCorr",     # 
-                             # (negative weights corrected for now but must scale to account for them)
+                line = ROOT.TF1("line", "1", -7000, 7000)
+                line.SetLineColor(1)
+                line.SetLineStyle(1)
+                line.SetLineWidth(3)
+                line.Draw("same")
+                hRatio.Draw("e same x0")
+
+                lined = ROOT.TF1("lined", "0.5", -7000, 7000)
+                lined.SetLineColor(1)
+                lined.SetLineStyle(2)
+                lined.SetLineWidth(2)
+                lined.Draw("same")
+                hRatio.Draw("e same x0")
+                ROOT.gPad.RedrawAxis()
+                 
+                pad2.Modified()
+                c1.cd()
+                c1.Modified()
+
+                c1.cd()
+                c1.SetSelected(c1)     
 
 
-                "_ttSF",     # tt MC is scaled by ratio of integrals of tt to data
+
+        c1.Print("./plots_Nov7/" + options.hist + str(istage) + typeIs + MCs + CorrIs + ".pdf", "pdf")
+
+        if not options.noData and not iHisto == 11 :  
+            objs.append( [hdata, httbar, c1, hstack, leg] )
+            if options.allMC and not options.includeQCD :
+                objs.append( [hdata, httbar, hwjets, hst, c1, hstack, leg] )
+            if options.allMC and options.includeQCD :
+                objs.append( [hdata, httbar, hwjets, hst, hQCD,  c1, hstack, leg] )
+
+    if options.AllStages :
+        print "istage is {}".format(int(istage))
+        if float(istage) < 10:
+            cdata1.cd()
+            padd.cd()
+            if float(istage) > 0. :
+                print "hdataColors[istage] {}".format(hdataColors[istage])
+                hdata.SetLineColor( hdataColors[int(istage)] )
+                hdata.Draw("hist same")
+                if float(istage) == 9 :
+                    leg.AddEntry(hdataHists[0] , ' stage 0: No Cuts', 'l')
+                    leg.AddEntry(hdataHists[1] , ' stage 1: Trigger', 'l')
+                    leg.AddEntry(hdataHists[2] , ' stage 2: Lepton Pt & eta', 'l')
+                    leg.AddEntry(hdataHists[3] , ' stage 3: Med Cut ID', 'l')
+                    leg.AddEntry(hdataHists[4] , ' stage 4: HighPtID', 'l')
+                    leg.AddEntry(hdataHists[5] , ' stage 5: MET', 'l')
+                    leg.AddEntry(hdataHists[6] , ' stage 6: AK4 Pt & eta', 'l')
+                    leg.AddEntry(hdataHists[7] , ' stage 7: 2D cut', 'l')
+                    leg.AddEntry(hdataHists[8] , ' stage 8: DR(lep, AK8)', 'l')
+                    leg.AddEntry(hdataHists[9] , ' stage 9: Ht lep ', 'l')
+                    leg.Draw()
+            if float(istage) == 0. :
+                hdata.Draw("hist")
+                leg = ROOT.TLegend(0.54,0.4,0.7,0.84)
+                leg.SetFillColor(0)
+                leg.SetBorderSize(0)
+                leg.SetTextSize(0.036)
 
 
-           "_PuppiCorr",     # Puppi corrections from Thea]
-
-    ''' 
-    CorrIs = "_PUreweight_outfile_mu45Trig_muMedID_MuHighPt_ak8pt500_AK4pt30_BTagSF_weightVariesWithStages"
-
-    if options.allMC and options.ttSF : 
-        CorrIs = "_PUreweight_ttSF_outfile_mu45Trig_muMedID_MuHighPt_ak8pt500_AK4pt30_BTagSF_weightVariesWithStages"
-    if options.allMC and options.includeQCD : 
-        CorrIs = "_PUreweight_QCD_outfile_mu45Trig_muMedID_MuHighPt_ak8pt500_AK4pt30_BTagSF_weightVariesWithStages"
-        if options.drawOnlyQCD : CorrIs = "_PUreweight_drawONLYQCD_outfile_mu45Trig_muMedID_MuHighPt_ak8pt500_AK4pt30_BTagSF_weightVariesWithStages"
-    c1.Print("./plots_Nov7/" + options.hist + str(istage) + typeIs + MCs + CorrIs + ".pdf", "pdf")
-    #c1.Print("./plots_Oct25/" + options.hist + str(istage) + typeIs + MCs + CorrIs + ".png", "png")
-    #c1.Print("plot_" + options.hist + str(istage) + MCs + ".root", "root")
-    if not options.noData and not iHisto ==11 :  
-        objs.append( [hdata, httbar, c1, hstack, leg] )
-        if options.allMC :
-            #objs.append( [hdata, httbar, hwjets, c1, hstack, leg] )
-            objs.append( [hdata, httbar, hwjets, hst, c1, hstack, leg] )
+cdata1.Print("./plots_Nov7All/" + options.hist + "_data_ALLSTAGES" + typeIs  + CorrIs + ".pdf", "pdf")
