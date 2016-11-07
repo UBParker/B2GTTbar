@@ -38,12 +38,12 @@ parser.add_option('--drawOnlyQCD', action='store_true',
 
 parser.add_option('--rebinNum', type='float', action='store',
                   dest='rebinNum',
-                  default = 20,
+                  default = 10,
                   help='number to rebin the histograms by')
 
 parser.add_option('--nstages', type='int', action='store',
                   dest='nstages',
-                  default = 15,
+                  default = 18,
                   help='number of stages of selection (sum of nstages from lept and had selections)')
 
 parser.add_option('--Type2', action='store_true',
@@ -109,7 +109,7 @@ if options.noData : print "WARNING : noData option is ON so the data wil not be 
 
 # Open output root file to store SF, JMR, JMS 
 
-fileout = "plotstackoutfile_outfile_mu45Trig_ak8pt500_METPt50_HTlep150_AK4pt30_tau32AFTERmSD_" + options.hist + ".root"
+fileout = "plotstackoutfile_mu45Trig_muMedID_MuHighPt_ak8pt500_AK4pt30_BTagSF_weightVariesWithStages_" + options.hist + ".root"
 
 fout = ROOT.TFile( fileout, "RECREATE") 
 
@@ -303,9 +303,9 @@ if options.verbose : print "Histo name in options was {0}, index number {1:0.0f}
 tdrstyle.setTDRStyle()
 
 xs_ttbar = 831.76
-nev_ttbar =   92925926.  #
+nev_ttbar = 92925926.#182123200.
 print "nev_ttbar = {}".format(nev_ttbar)
-lumi = 27220. #12300. #12900./1.618    # pb-1
+lumi = 12900. #27220. #12300. #12900./1.618    # pb-1
 print "lumi (fb-1) = {}".format(lumi/1000.)
 kfactorW = 1.21
 
@@ -386,17 +386,17 @@ if options.noData :
 else :
     if options.Type2 :
         print "Type 2 selection"
-        datafile = ROOT.TFile('data_BCDEFG_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type2.root')
+        datafile = ROOT.TFile('data_BCD_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type2.root')
     else :
         print "Type 1 selection"
-        datafile = ROOT.TFile('data_BCDEFG_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root')
+        datafile = ROOT.TFile('data_BCD_outfile_mu45Trig_muMedID_MuHighPt_ak8pt500_AK4pt30_BTagSF_weightVariesWithStages_type1.root')
 
 if options.Type2 :
     print "Type 2 selection"
     ttbarfile = ROOT.TFile('ttjets_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type2.root')
 else :
     print "Type 1 selection"
-    ttbarfile = ROOT.TFile('ttjets_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root')
+    ttbarfile = ROOT.TFile('ttjets_outfile_mu45Trig_muMedID_MuHighPt_ak8pt500_AK4pt30_BTagSF_weightVariesWithStages_type1.root')
 
 
 
@@ -413,13 +413,13 @@ if options.allMC :
             ]
     else :
         wjetsfiles = [
-            ROOT.TFile('wjets1_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root'),
-            ROOT.TFile('wjets2_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root'),
-            ROOT.TFile('wjets3_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root'),
-            ROOT.TFile('wjets4_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root'),
-            ROOT.TFile('wjets5_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root'),
-            ROOT.TFile('wjets6_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root'),
-            ROOT.TFile('wjets7_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root'),
+            ROOT.TFile('wjets1_outfile_mu45Trig_muMedID_MuHighPt_ak8pt500_AK4pt30_BTagSF_weightVariesWithStages_type1.root'),
+            ROOT.TFile('wjets2_outfile_mu45Trig_muMedID_MuHighPt_ak8pt500_AK4pt30_BTagSF_weightVariesWithStages_type1.root'),
+            ROOT.TFile('wjets3_outfile_mu45Trig_muMedID_MuHighPt_ak8pt500_AK4pt30_BTagSF_weightVariesWithStages_type1.root'),
+            ROOT.TFile('wjets4_outfile_mu45Trig_muMedID_MuHighPt_ak8pt500_AK4pt30_BTagSF_weightVariesWithStages_type1.root'),
+            ROOT.TFile('wjets5_outfile_mu45Trig_muMedID_MuHighPt_ak8pt500_AK4pt30_BTagSF_weightVariesWithStages_type1.root'),
+            ROOT.TFile('wjets6_outfile_mu45Trig_muMedID_MuHighPt_ak8pt500_AK4pt30_BTagSF_weightVariesWithStages_type1.root'),
+            ROOT.TFile('wjets7_outfile_mu45Trig_muMedID_MuHighPt_ak8pt500_AK4pt30_BTagSF_weightVariesWithStages_type1.root'),
             ]
 
     wjets_colors = [   
@@ -434,11 +434,11 @@ if options.allMC :
                 ROOT.TFile('st5_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type2.root') ]
     else:        
         stfiles = [
-                ROOT.TFile('st1_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root'),
-                ROOT.TFile('st2_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root'),
-                ROOT.TFile('st3_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root'),
-                ROOT.TFile('st4_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root'),
-                ROOT.TFile('st5_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root'),
+                ROOT.TFile('st1_outfile_mu45Trig_muMedID_MuHighPt_ak8pt500_AK4pt30_BTagSF_weightVariesWithStages_type1.root'),
+                ROOT.TFile('st2_outfile_mu45Trig_muMedID_MuHighPt_ak8pt500_AK4pt30_BTagSF_weightVariesWithStages_type1.root'),
+                ROOT.TFile('st3_outfile_mu45Trig_muMedID_MuHighPt_ak8pt500_AK4pt30_BTagSF_weightVariesWithStages_type1.root'),
+                ROOT.TFile('st4_outfile_mu45Trig_muMedID_MuHighPt_ak8pt500_AK4pt30_BTagSF_weightVariesWithStages_type1.root'),
+                ROOT.TFile('st5_outfile_mu45Trig_muMedID_MuHighPt_ak8pt500_AK4pt30_BTagSF_weightVariesWithStages_type1.root'),
             ]
 
     st_colors = [  ROOT.kWhite,ROOT.kCyan - 9, ROOT.kCyan - 7, ROOT.kCyan - 4, ROOT.kCyan  ]
@@ -459,18 +459,18 @@ if options.allMC :
                 ROOT.TFile('QCD9_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type2.root') ]
     else:        
         QCDfiles = [
-                ROOT.TFile('QCD-2_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root'),
-                ROOT.TFile('QCD-1_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root'),
-                ROOT.TFile('QCD0_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root'),
-                ROOT.TFile('QCD1_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root'),
-                ROOT.TFile('QCD2_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root'),
-                ROOT.TFile('QCD3_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root'),
-                ROOT.TFile('QCD4_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root'),
-                ROOT.TFile('QCD5_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root'),
-                ROOT.TFile('QCD6_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root'),
-                ROOT.TFile('QCD7_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root'),
-                ROOT.TFile('QCD8_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root'),
-                ROOT.TFile('QCD9_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30type1.root') ]
+                ROOT.TFile('QCD-2_outfile_mu45Trig_muMedID_MuHighPt_ak8pt500_AK4pt30_BTagSF_weightVariesWithStages_type1.root'),
+                ROOT.TFile('QCD-1_outfile_mu45Trig_muMedID_MuHighPt_ak8pt500_AK4pt30_BTagSF_weightVariesWithStages_type1.root'),
+                ROOT.TFile('QCD0_outfile_mu45Trig_muMedID_MuHighPt_ak8pt500_AK4pt30_BTagSF_weightVariesWithStages_type1.root'),
+                ROOT.TFile('QCD1_outfile_mu45Trig_muMedID_MuHighPt_ak8pt500_AK4pt30_BTagSF_weightVariesWithStages_type1.root'),
+                ROOT.TFile('QCD2_outfile_mu45Trig_muMedID_MuHighPt_ak8pt500_AK4pt30_BTagSF_weightVariesWithStages_type1.root'),
+                ROOT.TFile('QCD3_outfile_mu45Trig_muMedID_MuHighPt_ak8pt500_AK4pt30_BTagSF_weightVariesWithStages_type1.root'),
+                ROOT.TFile('QCD4_outfile_mu45Trig_muMedID_MuHighPt_ak8pt500_AK4pt30_BTagSF_weightVariesWithStages_type1.root'),
+                ROOT.TFile('QCD5_outfile_mu45Trig_muMedID_MuHighPt_ak8pt500_AK4pt30_BTagSF_weightVariesWithStages_type1.root'),
+                ROOT.TFile('QCD6_outfile_mu45Trig_muMedID_MuHighPt_ak8pt500_AK4pt30_BTagSF_weightVariesWithStages_type1.root'),
+                ROOT.TFile('QCD7_outfile_mu45Trig_muMedID_MuHighPt_ak8pt500_AK4pt30_BTagSF_weightVariesWithStages_type1.root'),
+                ROOT.TFile('QCD8_outfile_mu45Trig_muMedID_MuHighPt_ak8pt500_AK4pt30_BTagSF_weightVariesWithStages_type1.root'),
+                ROOT.TFile('QCD9_outfile_mu45Trig_muMedID_MuHighPt_ak8pt500_AK4pt30_BTagSF_weightVariesWithStages_type1.root') ]
 
     #QCD_colors = [  ROOT.kWhite,ROOT.kYellow - 9, ROOT.kYellow - 8, ROOT.kYellow - 7,  ROOT.kYellow - 6,  ROOT.kYellow - 5, ROOT.kYellow - 4, ROOT.kYellow ,  ROOT.kYellow + 1, ROOT.kYellow + 2, ROOT.kYellow + 3, ROOT.kYellow + 4 ]
     QCD_colors = [ ROOT.kRed + 7, ROOT.kRed + 3,  ROOT.kOrange + 2, ROOT.kYellow + 6 ,ROOT.kYellow + 1 , ROOT.kGreen + 2, ROOT.kCyan + 6, ROOT.kCyan+1, ROOT.kBlue + 2, ROOT.kBlue + 6, ROOT.kMagenta + 2, ROOT.kMagenta + 7 ]
@@ -491,7 +491,7 @@ for istage in xrange(options.nstages) :
         hdata.Sumw2()
     else :
         hdata = datafile.Get(options.hist + str(istage))
-        hdata.SetName('hdata')
+        #hdata.SetName('hdata')
         tempdata = hdata.Clone('tempdata')
         tempdata2 = hdata.Clone('tempdata2')
         hdata.Sumw2()
@@ -523,7 +523,7 @@ for istage in xrange(options.nstages) :
             hwjets_stack.Add( htempw )
         #hwjets_stack.Draw("hist")
         hwjets.Sumw2()
-        hwjets.SetName('hwjets')
+        #hwjets.SetName('hwjets')
         hwjets.SetFillColor( ROOT.kRed )
 
         # ST stack (t-channel top, t-channel antitop, tW top, tW antitop, s-channel)
@@ -544,7 +544,7 @@ for istage in xrange(options.nstages) :
                 hst.Add( htemps )
             hst_stack.Add( htemps )
         hst.Sumw2()
-        hst.SetName('hst')
+        #hst.SetName('hst')
         hst.SetFillColor( ROOT.kCyan)
 
         #hwjets_stack.Draw("hist")
@@ -568,12 +568,12 @@ for istage in xrange(options.nstages) :
                 htempq.Rebin(rebinNum)
                 hQCD_stack.Add( htempq )
             hQCD.Sumw2()
-            hQCD.SetName('hQCD')
+            #hQCD.SetName('hQCD')
             hQCD.SetFillColor( ROOT.kYellow )
 
 
     httbar = ttbarfile.Get(options.hist + str(istage))
-    httbar.SetName('httbar')
+    #httbar.SetName('httbar')
     ttscaleIs = xs_ttbar/ nev_ttbar  * lumi 
     print "ttscaleIs {}".format(ttscaleIs)
     httbar.Scale(  ttscaleIs )
@@ -591,6 +591,7 @@ for istage in xrange(options.nstages) :
             hdata.Rebin(rebinNum)
             tempdata.Rebin(rebinNum)
             tempdata2.Rebin(rebinNum)
+
 
     hMC = httbar.Clone('hMC')   
     if options.allMC : 
@@ -870,7 +871,7 @@ for istage in xrange(options.nstages) :
 
     ROOT.gStyle.SetOptStat(000000)
     #Set multiple of maximum to scale y axis by
-    y_max_scale = 1.+1.618
+    y_max_scale = 1.8+1.618
 
     c1 = ROOT.TCanvas("c" + str(istage), "c" + str(istage),1,1,745,701)
     #gStyle.SetOptFit(1)
@@ -1002,7 +1003,7 @@ for istage in xrange(options.nstages) :
         words.SetTextSize(0.0825)
         words.SetLineWidth(2)
         words.Draw()
-        words1 = ROOT.TLatex(0.9,0.916,"27.22  fb^{-1} (13 TeV)")
+        words1 = ROOT.TLatex(0.9,0.916,"12.9  fb^{-1} (13 TeV)")
         words1.SetNDC()
         words1.SetTextAlign(31)
         words1.SetTextFont(42)
@@ -1074,7 +1075,7 @@ for istage in xrange(options.nstages) :
             pad2.SetFrameBorderMode(0)
 
             hRatio = tempdata2.Clone('hRatio')
-            hRatio.SetName('hRatio')
+            #hRatio.SetName('hRatio')
             hRatio.Sumw2()
             hRatio.SetStats(0)
             if options.drawOnlyQCD :
@@ -1163,15 +1164,14 @@ for istage in xrange(options.nstages) :
            "_PuppiCorr",     # Puppi corrections from Thea]
 
     ''' 
-    CorrIs = "_PUreweight_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30"
-    if options.drawOnlyQCD : CorrIs = "_PUreweight_drawONLYQCD_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30"
-    if options.allMC and options.ttSF : 
-        CorrIs = "_PUreweight_ttSF_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30"
-    if options.allMC and options.includeQCD : 
-        CorrIs = "_PUreweight_QCD_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30"
-        if options.drawOnlyQCD : CorrIs = "_PUreweight_drawOnlyQCD_outfile_mu45Trig_muMedium_ak8pt500_METPt50_HTlep150_AK4pt30"
+    CorrIs = "_PUreweight_outfile_mu45Trig_muMedID_MuHighPt_ak8pt500_AK4pt30_BTagSF_weightVariesWithStages"
 
-    c1.Print("./plots_Oct30th/" + options.hist + str(istage) + typeIs + MCs + CorrIs + ".pdf", "pdf")
+    if options.allMC and options.ttSF : 
+        CorrIs = "_PUreweight_ttSF_outfile_mu45Trig_muMedID_MuHighPt_ak8pt500_AK4pt30_BTagSF_weightVariesWithStages"
+    if options.allMC and options.includeQCD : 
+        CorrIs = "_PUreweight_QCD_outfile_mu45Trig_muMedID_MuHighPt_ak8pt500_AK4pt30_BTagSF_weightVariesWithStages"
+        if options.drawOnlyQCD : CorrIs = "_PUreweight_drawONLYQCD_outfile_mu45Trig_muMedID_MuHighPt_ak8pt500_AK4pt30_BTagSF_weightVariesWithStages"
+    c1.Print("./plots_Nov7/" + options.hist + str(istage) + typeIs + MCs + CorrIs + ".pdf", "pdf")
     #c1.Print("./plots_Oct25/" + options.hist + str(istage) + typeIs + MCs + CorrIs + ".png", "png")
     #c1.Print("plot_" + options.hist + str(istage) + MCs + ".root", "root")
     if not options.noData and not iHisto ==11 :  
