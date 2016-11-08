@@ -18,6 +18,7 @@ class B2GTTreeSemiLep( ) :
         ###
         self.variables = {
             'SemiLeptTrigPass':'b',
+            ## 'SemiLeptTrigNames':'c',
             ## 'JetPtRaw':'f',
             ## 'JetEtaRaw':'f',
             ## 'JetPhiRaw':'f',
@@ -59,8 +60,8 @@ class B2GTTreeSemiLep( ) :
             ## 'JetTau2':'f',
             ## 'JetTau3':'f',
             ## 'JetTau4':'f',
-            ## 'JetTau32':'f',
-            ## 'JetTau21':'f',
+            'JetTau32':'f',
+            'JetTau21':'f',
             ## 'JetSDsubjet0bdisc':'f',
             ## 'JetSDsubjet1bdisc':'f',
             ## 'JetSDmaxbdisc':'f',
@@ -73,8 +74,8 @@ class B2GTTreeSemiLep( ) :
             ## 'JetSDsubjet0area':'f',
             ## 'JetSDsubjet0flavHadron':'f',
             ## 'JetSDsubjet0flavParton':'f',
-            ## 'JetSDsubjet0tau1':'f',
-            ## 'JetSDsubjet0tau2':'f',
+            'JetSDsubjet0tau1':'f',
+            'JetSDsubjet0tau2':'f',
             ## 'JetSDsubjet0tau3':'f',
             ## 'JetSDsubjet1pt':'f',
             ## 'JetSDsubjet1mass':'f',
@@ -151,7 +152,7 @@ class B2GTTreeSemiLep( ) :
             'JetCorrFactor':'f',
             ## 'JetCorrFactorUp':'f',
             ## 'JetCorrFactorDn':'f',
-            ## 'JetPtSmearFactor':'f',
+            'JetPtSmearFactor':'f',
             ## 'JetPtSmearFactorUp':'f',
             ## 'JetPtSmearFactorDn':'f',
             ## 'JetPuppiMassCorrFactor':'f',
@@ -160,7 +161,7 @@ class B2GTTreeSemiLep( ) :
             'JetPuppiCorrFactor':'f',
             ## 'JetPuppiCorrFactorUp':'f',
             ## 'JetPuppiCorrFactorDn':'f',
-            ## 'JetPuppiPtSmearFactor':'f',
+            'JetPuppiPtSmearFactor':'f',
             ## 'JetPuppiPtSmearFactorUp':'f',
             ## 'JetPuppiPtSmearFactorDn':'f',
             ## 'JetEtaScaleFactor':'f',
@@ -260,10 +261,7 @@ class B2GTTreeSemiLep( ) :
 	        'Electron_iso_passHEEP' : 'i',
 	        'Electron_noiso_passLoose' : 'i',
 	        'Electron_noiso_passMedium' : 'i',
-	        'Electron_noiso_passTight' : 'i', 
-
-
-
+	        'Electron_noiso_passTight' : 'i'
           }
 
 

@@ -359,22 +359,18 @@ class RunSemiLepTTbar(OptionParser) :
 
 
         if b.ak8Jet != None :
-            self.AK8PtHist[index].Fill( b.ak8Jet.Perp()  , self.theWeight )
+            self.AK8PtHist[index].Fill( b.ak8Jet.Perp()* b.PtSmear  , self.theWeight )
             self.AK8HTHist[index].Fill( b.ak8JetHT  , self.theWeight )
             self.AK8Tau32Hist[index].Fill( b.tau32  , self.theWeight )
             self.AK8Tau21Hist[index].Fill( b.tau21  , self.theWeight )
             if b.ak8SDJet != None and b.SDptGenpt != None :
-                self.AK8SDPtResponse[index].Fill( b.SDptGenpt , b.ak8Jet.Perp() )    
+                self.AK8SDPtResponse[index].Fill( b.SDptGenpt , b.ak8Jet.Perp() * b.PtSmear )    
 
         if b.ak8SDJet != None :
-            self.AK8SDPtHist[index].Fill( b.ak8SDJet.Perp()  , self.theWeight )
+            self.AK8SDPtHist[index].Fill( b.ak8SDJet.Perp() * b.PtSmear  , self.theWeight )
 
         if b.ak8PuppiJet != None :
-            self.AK8PtHist[index].Fill( b.ak8PuppiJet.Perp()  , self.theWeight )
-
-        if b.ak8PuppiJet != None :
-            self.AK8PuppiPtHist[index].Fill( b.ak8PuppiJet.Perp()  , self.theWeight )
-            self.AK8SDSJ0PtHist[index].Fill( b.ak8PuppiSDJet_Subjet0.Perp()  , self.theWeight )
+            self.AK8PuppiPtHist[index].Fill( b.ak8PuppiJet.Perp() * b.PuppiPtSmear , self.theWeight )
             self.AK8EtaHist[index].Fill( b.ak8PuppiJet.Eta()  , self.theWeight )
             self.AK8puppitau21Hist[index].Fill( b.puppitau21  , self.theWeight )
             self.AK8puppitau32Hist[index].Fill( b.puppitau32  , self.theWeight )
@@ -382,13 +378,15 @@ class RunSemiLepTTbar(OptionParser) :
             self.AK8MHist[index].Fill( b.ak8_Puppim  , self.theWeight )
             if b.ak8PuppiSDJet != None :
                 if b.ak8PuppiJet != None and b.SDptPuppipt != None :
-                    self.AK8PuppiSDPtResponse[index].Fill(b.SDptPuppipt  , b.ak8PuppiJet.Perp() )  
+                    self.AK8PuppiSDPtResponse[index].Fill(b.SDptPuppipt  , b.ak8PuppiJet.Perp()* b.PuppiPtSmear )  
+
+        if  b.SDRhoRatio  != None :
+            self.AK8SDRhoRatioHist[index].Fill(b.SDRhoRatio  , self.theWeight ) 
+
 
         if b.ak8PuppiSDJet != None :
             self.AK8MSDHist[index].Fill( b.ak8PuppiSD_m  , self.theWeight )
-            if  b.SDRhoRatio  != None :
-                self.AK8SDRhoRatioHist[index].Fill(b.SDRhoRatio  , self.theWeight ) 
-
+            self.AK8SDSJ0PtHist[index].Fill( b.ak8PuppiSDJet_Subjet0.Perp()* b.PuppiPtSmear  , self.theWeight )
             self.AK8MSDSJ0Hist[index].Fill( b.ak8SDsj0_m  , self.theWeight )
 
 

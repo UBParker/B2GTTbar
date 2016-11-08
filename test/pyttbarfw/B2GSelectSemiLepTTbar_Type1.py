@@ -112,6 +112,7 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.ak8JetHT = None
         self.SDRhoRatio = None
  
+
         ### PUPPI jet mass corrections
 
         self.finCor1 = ROOT.TFile.Open( "./puppiCorr.root","READ")
@@ -125,11 +126,15 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         theFileIs = self.infile
         if theFileIs.find("Run2016")== -1 : 
             self.itIsData = False
+            self.PtSmear = None
+            self.PuppiPtSmear = None
             if self.verbose :  
                 print "MC : Event and PU weights != 1"
 
         else : 
-            self.itIsData = True                     
+            self.itIsData = True   
+            self.PtSmear = 1.0  
+            self.PuppiPtSmear = 1.0             
             if self.verbose : print "DATA : weights = 1" 
     """
         This is the "select" function that does the work for the event selection. If you have any complicated
@@ -143,7 +148,12 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.Corr = self.tree.JetCorrFactor[0]  
         self.CorrL2L3 = self.tree.JetSDptCorrL23[0]  
         self.CorrL2L3SD = self.tree.JetSDmassCorrL23[0]
-
+        if self.itIsData :
+            self.PtSmear = 1.
+            self.PuppiPtSmear = 1.
+        else:
+            self.PtSmear = self.tree.JetPtSmearFactor[0]
+            self.PuppiPtSmear = self.tree.JetPuppiPtSmearFactor[0]
         self.ak8Jet = None
         self.ak8JetRaw = None
 
@@ -240,7 +250,7 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.ak8SDJetRaw =   self.ak8SDJet
         self.ak8SDJet =   self.ak8SDJet * self.Corr
         if self.ak8SDJetRaw != None :
-            self.ak8_SDm = self.CorrPUPPIMass( self.ak8SDJetRaw.Perp() , self.ak8SDJetRaw.Eta(), self.ak8SDJetRaw.M()  )
+            self.ak8_SDm = self.ak8SDJet.M()
             # Pt Responses
             self.SDptGenpt = float(self.ak8SDJet.Perp())  / float(self.ak8Jet.Perp() ) 
             if self.ak8PuppiJetRaw != None :
@@ -421,11 +431,12 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.passedCount[0] += 1
         if self.verbose : print "Stage 10 : Event passed leptonic selection"
 
-        if not (self.ak8Jet.Perp() > self.AK8PtCut and abs(self.ak8Jet.Eta()) < self.AK8EtaCut ) : return self.passed
+        if not (self.ak8Jet.Perp()* self.PtSmear > self.AK8PtCut and abs(self.ak8Jet.Eta()) < self.AK8EtaCut ) : return self.passed
         self.passed[1] = True
         self.passedCount[1] += 1
-        if self.verbose : print "Stage 11 : AK8 Pt  {0:2.2f}  > ( {1:2.2f} GeV) and eta {2:2.2f} < ( {3:2.2f} )".format( 
+        if self.verbose : print "Stage 11 : AK8 Pt  {0:2.2f}* smear{1:2.2f}  > ( {2:2.2f} GeV) and eta {3:2.2f} < ( {4:2.2f} )".format( 
                                                                                                                    self.ak8Jet.Perp(),
+                                                                                                                         self.PtSmear,
                                                                                                                         self.AK8PtCut,
                                                                                                                     self.ak8Jet.Eta(),
                                                                                                                        self.AK8EtaCut)
