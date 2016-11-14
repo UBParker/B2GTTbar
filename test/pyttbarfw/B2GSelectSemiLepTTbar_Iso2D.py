@@ -90,7 +90,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         self.CutIDScaleFIs = 1.0  
         self.CutIDScaleFLooseIs = 1.0  
         self.finCor2 = ROOT.TFile.Open( "./MuonID_Z_RunBCD_prompt80X_7p65.root","READ")
-        self.PtetaCutIDScaleFMed      = self.finCor2.Get("MC_NUM_MediumID_DEN_genTracks_PAR_pt_spliteta_bin1/pt_abseta_ratio")
+        self.PtetaCutIDScaleFTight      = self.finCor2.Get("MC_NUM_TightIDandIPCut_DEN_genTracks_PAR_pt_spliteta_bin1/pt_abseta_ratio")
         self.PtetaCutIDScaleFLoose      = self.finCor2.Get("MC_NUM_LooseID_DEN_genTracks_PAR_pt_spliteta_bin1/pt_abseta_ratio")
         ### Muon HIP SF
   
@@ -175,7 +175,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
             self.CutIDScaleFLooseIs = self.MuonCutIDScaleFLoose( self.leptonP4.Perp() , abs(self.leptonP4.Eta())  )
             if self.verbose : "Muon Cut ID LOOSE  eff is {0:2.4f} for pt {1:2.4f} and abs(eta) {2:2.4f}".format(self.CutIDScaleFLooseIs ,self.leptonP4.Perp() , abs(self.leptonP4.Eta())  )
 
-            self.CutIDScaleFIs = self.MuonCutIDScaleFMed( self.leptonP4.Perp() , abs(self.leptonP4.Eta())  )
+            self.CutIDScaleFIs = self.MuonCutIDScaleFTight( self.leptonP4.Perp() , abs(self.leptonP4.Eta())  )
             if self.verbose : "Muon Cut ID MEDIUM eff is {0:2.4f} for pt {1:2.4f} and abs(eta) {2:2.4f}".format(self.CutIDScaleFIs,self.leptonP4.Perp() , abs(self.leptonP4.Eta())  )
 
             self.MuonHIPScaleFIs = self.MuonHIPScaleF( self.leptonP4.Eta() )
@@ -253,7 +253,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
                 print "Stage 1: No Trigger cut applied to this MC sample"
 
         ### NOTE : High Pt Muon ID is now required as suggested here https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideMuonIdRun2#2016_Data
-        if not (( self.tree.LeptonIsMu[0] == 1 and self.leptonP4.Perp() > self.muonPtCut and abs(self.leptonP4.Eta()) < self.muonEtaCut ) or (self.tree.LeptonIsMu[0] == 0 and  self.leptonP4.Perp() > 50. and abs(self.leptonP4.Eta()) < 2.5 )) : #and self.tree.MuTight[0]
+        if not (( self.tree.LeptonIsMu[0] == 1 and self.leptonP4.Perp() > self.muonPtCut and abs(self.leptonP4.Eta()) < self.muonEtaCut) or (self.tree.LeptonIsMu[0] == 0 and  self.leptonP4.Perp() > 50. and abs(self.leptonP4.Eta()) < 2.5 )) : #and self.tree.MuTight[0]
             return self.passed
         self.passed[2] = True
         self.passedCount[2] += 1
@@ -264,22 +264,22 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
                                                                         self.muonEtaCut)
 
 
-        if not (( self.tree.LeptonIsMu[0] == 1 and self.tree.MuMedium[0] == 1 ) or (self.tree.LeptonIsMu[0] == 0 and  self.leptonP4.Perp() > 50. and abs(self.leptonP4.Eta()) < 2.5 )) : ### To-DO: Add ElMedium requirement when adding electrons
+        if not (( self.tree.LeptonIsMu[0] == 1 and self.tree.MuTight[0] == 1 ) or (self.tree.LeptonIsMu[0] == 0 and  self.leptonP4.Perp() > 50. and abs(self.leptonP4.Eta()) < 2.5 )) : ### To-DO: Add ElMedium requirement when adding electrons
             return self.passed
         self.passed[3] = True
         self.passedCount[3] += 1
-        if self.verbose  : print "Stage 3: Muon passed Medium Cut based ID"
+        if self.verbose  : print "Stage 3: Muon passed Tight Cut based ID"
 
-        if not (( self.tree.LeptonIsMu[0] == 1  and self.tree.MuHighPt[0] ==1 ) or (self.tree.LeptonIsMu[0] == 0 and  self.leptonP4.Perp() > 50. and abs(self.leptonP4.Eta()) < 2.5 )) : ### To-DO: Add ElisHighPt requirement when adding electrons
+        if not (( self.tree.LeptonIsMu[0] == 1 ) or (self.tree.LeptonIsMu[0] == 0 and  self.leptonP4.Perp() > 50. and abs(self.leptonP4.Eta()) < 2.5 )) : ### To-DO: Add ElisHighPt requirement when adding electrons #  and self.tree.MuHighPt[0] ==1 
             return self.passed
         self.passed[4] = True
         self.passedCount[4] += 1
-        if self.verbose  : print "Stage 4: Muon is HighPt"
+        if self.verbose  : print "Stage 4: No Cut" #Muon is HighPt"
 
-        if not ( self.nuP4.Perp() > self.muonMETPtCut) : return self.passed 
+        if not ( self.nuP4.Perp() > self.muonMETPtCut and self.tree.SemiLeptPassMETFilters[0] == 1 ) : return self.passed 
         self.passed[5] = True
         self.passedCount[5] += 1
-        if self.verbose : print "Stage 5: MET pt {0:2.4f} GeV > ( {1:2.4f} GeV ) ".format(
+        if self.verbose : print "Stage 5: MET pt {0:2.4f} GeV > ( {1:2.4f} GeV ) and passed MET filters ".format(
                                                                         self.nuP4.Perp(),
                                                                         self.muonMETPtCut )
 
@@ -320,7 +320,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         ### TO-DO: Implement this for type 2 selection
         TriggEff = 1.
         runNumIs = None
-        if muonpt >= 500. :
+        if  muonpt >= 500. and abs(muoneta) > 1.2 :
             TriggEff = 0.0
         else :
             ### Note: This needs to be updated as SFs for new data become available...
@@ -333,22 +333,22 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         return float(TriggEff)      
   
 
-    def MuonCutIDScaleFMed(self, muonpt, muoneta) : #{ROOT file from
+    def MuonCutIDScaleFTight(self, muonpt, muoneta) : #{ROOT file from
         #https://twiki.cern.ch/twiki/bin/view/CMS/MuonWorkInProgressAndPagResults
         ### TO-DO: Implement this for type 2 selection
-        if muonpt >= 500. :
-            CutIDScaleFm = 0.0
+        if muonpt >= 500. and abs(muoneta) > 1.2 :
+            CutIDScaleFt = 0.0
         else :
-            binx = self.PtetaCutIDScaleFMed.GetXaxis().FindBin( muonpt  )
-            biny = self.PtetaCutIDScaleFMed.GetYaxis().FindBin( muoneta )
-            CutIDScaleFm = self.PtetaCutIDScaleFMed.GetBinContent(binx, biny )
-            if self.verbose : print "get bin: x (using pt) {}, y (using eta) {}, CUt ID Eff is {}".format(binx, biny, CutIDScaleFm )
-        return float(CutIDScaleFm) 
+            binx = self.PtetaCutIDScaleFTight.GetXaxis().FindBin( muonpt  )
+            biny = self.PtetaCutIDScaleFTight.GetYaxis().FindBin( muoneta )
+            CutIDScaleFt = self.PtetaCutIDScaleFTight.GetBinContent(binx, biny )
+            if self.verbose : print "get bin: x (using pt) {}, y (using eta) {}, CUt ID Eff is {}".format(binx, biny, CutIDScaleFt )
+        return float(CutIDScaleFt) 
      
     def MuonCutIDScaleFLoose(self, muonpt, muoneta) : #{ROOT file from
         #https://twiki.cern.ch/twiki/bin/view/CMS/MuonWorkInProgressAndPagResults
         ### TO-DO: Implement this for type 2 selection
-        if muonpt >= 500. :
+        if  muonpt >= 500. and abs(muoneta) > 1.2 :
             CutIDScaleFl = 0.0
         else :
             binx = self.PtetaCutIDScaleFLoose.GetXaxis().FindBin( muonpt  )
@@ -361,7 +361,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
     def MuonIsoScaleF(self, muonpt, muoneta) : #{ROOT file from
         #https://twiki.cern.ch/twiki/bin/view/CMS/MuonWorkInProgressAndPagResults            ### TO-DO: Implement this for type 2 selection
         MuonIsoScaleF = 1.
-        if muonpt >= 500. :
+        if muonpt >= 500. and abs(muoneta) > 1.2 :
             MuonIsoScaleF = 0.0
         else :
             binx = self.fff.GetXaxis().FindBin( muonpt  )

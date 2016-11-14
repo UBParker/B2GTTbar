@@ -340,8 +340,6 @@ class RunSemiLepTTbar(OptionParser) :
         #if self.verbose : print "Event weight {1:2.4f} * PU weight {2:2.4f} *Trigger Eff. {3:2.4f} * Cut ID {4:2.4f} * HIP SF {5:2.4f} * Btag SF {6:2.4f}".format(self.EventWeight , self.PUWeight , self.TriggEffIs , self.CutIDScaleFIs, self.MuonHIPScaleFIs, self.BtagWeight)
 
 
-
-
         self.hCutFlow[index].Fill(self.passedCutCount[index])
         self.WeightHist[index].Fill(self.theWeight )
 
