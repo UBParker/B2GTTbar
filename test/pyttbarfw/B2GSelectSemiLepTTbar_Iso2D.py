@@ -6,7 +6,7 @@ import TrigMap
 
 class B2GSelectSemiLepTTbar_Iso2D( ) :
     """
-    Selects boosted semileptonic ttbar events with standard isolation.
+    Selects boosted semileptonic ttbar events with non-isolated leptons , as described in CMS AN-15-107
     """
     def __init__(self, options, tree ):
         self.ignoreTrig = options.ignoreTrig
@@ -23,21 +23,39 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         # Work the cut flow
         # Stage 0 : None.
         # Stage 1 : Trigger
+        
+        self.trigIndex = [
+            self.trigMap.HLT_Mu45_eta2p1_v,
+            #self.trigMap.HLT_Mu30_eta2p1_PFJet150_PFJet50_v,
+            #self.trigMap.HLT_Mu40_eta2p1_PFJet200_PFJet50_v,
+            self.trigMap.HLT_Ele45_CaloIdVT_GsfTrkIdT_PFJet200_PFJet50_v,
+            #self.trigMap.HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet140_v,
+            #self.trigMap.HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165_v
+            ]        
+        
         # Stage 2 : Lepton kinematic selection
+        
+        # Veto events with 2 lepton candidates.
+        
         self.muonPtCut = 50.
         self.muonEtaCut = 2.1
 
-
+        self.electronPtCut = 50.
+        self.electronEtaCut = 2.5
+        
         # Stage 3 : Lepton Cut based ID selection 
-        # Medium
+        # Tight (no iso for electrons).   ### Was Medium for muons in paper however Tight is suggested by semi-lept group for new 2016 data.
 
-        # Stage 4 : Lepton High Pt ID selection 
+        # Stage 4 : Muon High Pt ID selection 
         
         # Stage 5 : MET selection
         self.muonMETPtCut = 50.
 
+        self.electronMETPtCut = 120.
+
+
         # Stage 6 : Leptonic-side AK4 jet selection
-        self.AK4jet0PtCut = 30.
+        self.AK4jet0PtCut = 50.
         self.AK4EtaCut = 2.4
 
         # Stage 7 : 2D cut (decrease QCD contamination)
@@ -56,14 +74,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         self.nuP4 = None
         self.ak4Jet = None
 
-        self.trigIndex = [
-            self.trigMap.HLT_Mu45_eta2p1_v,
-            #self.trigMap.HLT_Mu30_eta2p1_PFJet150_PFJet50_v,
-            #self.trigMap.HLT_Mu40_eta2p1_PFJet200_PFJet50_v,
-            #self.trigMap.HLT_Ele45_CaloIdVT_GsfTrkIdT_PFJet200_PFJet50_v,
-            #self.trigMap.HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet140_v,
-            #self.trigMap.HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165_v
-            ]
+
         if self.verbose: print "self.trigIndex[0] {}".format(self.trigIndex[0])
         #self.printAK4Warning = True
 
@@ -214,9 +225,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         '''
         if self.printAK4Warning :
             print '----------------------------------- WARNING --------------------------------------'
-            print '    AK4 jet mass is not set correctly. It is set to zero because it is not filled.'
-            print '    To be fixed. Do NOT use the AK4 four vector, but you can use the three vector.'
-            self.printAK4Warning = False
+            print  ' error resolved'
         '''
 
 
@@ -239,7 +248,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
             if self.passedTrigIndex == 16 :        self.passedTrig = "HLT_Mu45_eta2p1_v"
             #if self.passedTrigIndex == 22 :        self.passedTrig = "HLT_Mu30_eta2p1_PFJet150_PFJet50_v"
             #if self.passedTrigIndex == 23 :        self.passedTrig = "HLT_Mu40_eta2p1_PFJet200_PFJet50_v"
-            if ( self.passedTrigIndex != 16 ) :   print "TRIGGER ERROR! Passed unexpected trigger {}".format(self.TrigMap.names[self.passedTrigIndex])
+            #if ( self.passedTrigIndex != 16 ) :   print "TRIGGER ERROR! Passed unexpected trigger {}".format(self.TrigMap.names[self.passedTrigIndex])
             # See trigger list here https://github.com/UBParker/B2GTTbar/blob/TreeV3/test/pyttbarfw/TrigMap.py
 
             if self.verbose : 
@@ -252,37 +261,42 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
                 print "Event passed :"
                 print "Stage 1: No Trigger cut applied to this MC sample"
 
-        ### NOTE : High Pt Muon ID is now required as suggested here https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideMuonIdRun2#2016_Data
-        if not (( self.tree.LeptonIsMu[0] == 1 and self.leptonP4.Perp() > self.muonPtCut and abs(self.leptonP4.Eta()) < self.muonEtaCut) or (self.tree.LeptonIsMu[0] == 0 and  self.leptonP4.Perp() > 50. and abs(self.leptonP4.Eta()) < 2.5 )) : #and self.tree.MuTight[0]
+        if not  len(self.tree.LeptonPt) == 1 and ((  self.tree.LeptonIsMu[0] == 1 and self.leptonP4.Perp() > self.muonPtCut and abs(self.leptonP4.Eta()) < self.muonEtaCut) or (self.tree.LeptonIsMu[0] == 0 and  self.leptonP4.Perp() > self.electronPtCut and abs(self.leptonP4.Eta()) < self.electronEtaCut)) : 
             return self.passed
         self.passed[2] = True
         self.passedCount[2] += 1
-        if self.verbose : print "Stage 2: lepton pt {0:2.4f} GeV > ({1:2.4f} GeV), eta {2:2.4f} < ( {3:2.4f} )".format(
+        if self.verbose : print "Stage 2: Exactly 1 lepton candidate pt {0:2.4f} GeV > ({1:2.4f} GeV), eta {2:2.4f} < ( {3:2.4f} )".format(
                                                                         self.leptonP4.Perp(),
                                                                         self.muonPtCut,                       
                                                                         self.leptonP4.Eta(),
                                                                         self.muonEtaCut)
 
 
-        if not (( self.tree.LeptonIsMu[0] == 1 and self.tree.MuTight[0] == 1 ) or (self.tree.LeptonIsMu[0] == 0 and  self.leptonP4.Perp() > 50. and abs(self.leptonP4.Eta()) < 2.5 )) : ### To-DO: Add ElMedium requirement when adding electrons
+        if not (( self.tree.LeptonIsMu[0] == 1 and self.tree.MuTight[0] == 1 ) or (self.tree.LeptonIsMu[0] == 0 and self.tree.Electron_noiso_passTight[0] == 1 ) ) :
             return self.passed
         self.passed[3] = True
         self.passedCount[3] += 1
-        if self.verbose  : print "Stage 3: Muon passed Tight Cut based ID"
+        if self.verbose  : print "Stage 3: Muon (Electron) passed Tight Cut based ID (with no iso) "
 
-        if not (( self.tree.LeptonIsMu[0] == 1 ) or (self.tree.LeptonIsMu[0] == 0 and  self.leptonP4.Perp() > 50. and abs(self.leptonP4.Eta()) < 2.5 )) : ### To-DO: Add ElisHighPt requirement when adding electrons #  and self.tree.MuHighPt[0] ==1 
+        ### NOTE : High Pt Muon ID is now required as suggested here https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideMuonIdRun2#2016_Data
+        if not (( self.tree.LeptonIsMu[0] == 1 and self.tree.MuHighPt[0] == 1) or (self.tree.LeptonIsMu[0] == 0 and  self.leptonP4.Perp() > 50. and abs(self.leptonP4.Eta()) < 2.5 )) : ### To-DO: Add ElisHighPt requirement when adding electrons #  and self.tree.MuHighPt[0] ==1 
             return self.passed
         self.passed[4] = True
         self.passedCount[4] += 1
-        if self.verbose  : print "Stage 4: No Cut" #Muon is HighPt"
+        if self.verbose  : print "Stage 4: Muon is HighPt"
 
-        if not ( self.nuP4.Perp() > self.muonMETPtCut and self.tree.SemiLeptPassMETFilters[0] == 1 ) : return self.passed 
+        if not ( ( self.tree.LeptonIsMu[0] == 1 and self.nuP4.Perp() > self.muonMETPtCut) or (self.tree.LeptonIsMu[0] == 0 and self.nuP4.Perp() > self.electronMETPtCut) ) and self.tree.SemiLeptPassMETFilters[0] == 1  : return self.passed 
         self.passed[5] = True
         self.passedCount[5] += 1
-        if self.verbose : print "Stage 5: MET pt {0:2.4f} GeV > ( {1:2.4f} GeV ) and passed MET filters ".format(
+        if self.verbose : 
+			if self.tree.LeptonIsMu[0] == 1 :
+				print "Stage 5: Muon passed MET filters and MET pt {0:2.4f} GeV > ( {1:2.4f} GeV ) ".format(
                                                                         self.nuP4.Perp(),
                                                                         self.muonMETPtCut )
-
+			else:
+				print "Stage 5: Electron passed MET filters and MET pt {0:2.4f} GeV > ( {1:2.4f} GeV ) ".format(
+                                                                        self.nuP4.Perp(),
+                                                                        self.electronMETPtCut )
  
         if not ( self.ak4Jet0.Perp() > self.AK4jet0PtCut and abs(self.ak4Jet0.Eta()) < self.AK4EtaCut  ) : return self.passed    
         self.passed[6] = True
@@ -295,10 +309,10 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
 
         # NOTE: This jet cut was found to be strongly suboptimal by the semileptonic team. They had better performance at pt > 15 GeV, with 
         # delta R < 0.4 and ptrel > 20. For now, we will raise the HTLep cut and ptrel cut but we need to fix this.
-        if not  (self.tree.AK4_dRminLep_dRlep[0] > 0.4 or self.tree.PtRel[0] > self.PtRel ) : return self.passed
+        if not  (self.tree.AK4_dRminLep_dRlep[0] > self.DrAK4Lep or self.tree.PtRel[0] > self.PtRel ) : return self.passed
         self.passed[7] = True
         self.passedCount[7] += 1
-        if self.verbose : print "Stage 7: DR(AK4, lep) {0:2.4f}  > ( {1:2.4f} ) and PtRel(AK4, lep) {2:2.4f} > ( {3:2.4f} )".format( 
+        if self.verbose : print "Stage 7: DR(AK4, lep) {0:2.4f}  > ( {1:2.4f} ) or PtRel(AK4, lep) {2:2.4f} > ( {3:2.4f} )".format( 
                                                                                                       self.tree.AK4_dRminLep_dRlep[0],
                                                                                                                         self.DrAK4Lep,
                                                                                                                    self.tree.PtRel[0],
@@ -308,10 +322,10 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         self.passedCount[8] += 1
         if self.verbose : print "Stage 8: DR(AK8, lep) {0:2.4f}  > ( 1.0 )".format( self.tree.DeltaRJetLep[0] )
 
-        if not ( (self.leptonP4 + self.nuP4).Perp() > self.MuonHtLepCut ) : return self.passed
+        if not ( self.tree.LeptonIsMu[0] == 1 and (self.leptonP4 + self.nuP4).Perp() > self.MuonHtLepCut ) : return self.passed
         self.passed[9] = True
         self.passedCount[9] += 1
-        if self.verbose : print "Stage 9: Leptonic W Pt (Lepton Pt + MET Pt ) {0:2.4f} > ( {1:2.4f} GeV )".format( (self.leptonP4 + self.nuP4).Perp(), self.MuonHtLepCut )
+        if self.verbose : print "Stage 9: Leptonic W Pt of Muon (Lepton Pt + MET Pt ) {0:2.4f} > ( {1:2.4f} GeV )".format( (self.leptonP4 + self.nuP4).Perp(), self.MuonHtLepCut )
 
         return self.passed
 

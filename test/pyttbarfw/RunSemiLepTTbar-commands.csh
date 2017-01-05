@@ -1,107 +1,73 @@
-#type 2 
+#Data
 
-python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/haddFiles/Puppi_ttjets_b2gtreeV3.root --outfile ttjets_outfile_type2.root --Type2 >& ttjets_outfile_type2.txt &
+python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov///store/user/rappocc/B2GAnaFWFiles16Dec2016/singlemu_run2016B.root --outfile mudata_Run2016B_Jan4_type1.root >& mudata_Run2016B_Jan4_type1.txt &
 
-python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/haddFiles/b2gtree_SingleMuon_Run2016BCD.root --outfile data_BCD_outfile_type2.root --Type2 >& dataBCD_outfile_type2.txt &
-
-python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/haddFiles/b2gtree_SingleMuon_Run2016BCDEFG.root --outfile data_BCDEFG_outfile_type2.root --Type2 >& dataBCDEFG_outfile_type2.txt &
-
-python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/haddFiles/Puppi_wjets1_b2gtreeV3_incomplete.root --outfile wjets1_outfile_type2.root --Type2  --ignoreTrig >& wjets1_outfile_type2.txt &
-
-python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/haddFiles/Puppi_wjets2_b2gtreeV3.root --outfile wjets2_outfile_type2.root --Type2  --ignoreTrig >& wjets2_outfile_type2.txt &
-
-python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/haddFiles/Puppi_wjets3_b2gtreeV3.root --outfile wjets3_outfile_type2.root --Type2  --ignoreTrig >& wjets3_outfile_type2.txt &
-
-python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/haddFiles/Puppi_wjets4_b2gtreeV3.root --outfile wjets4_outfile_type2.root --Type2  --ignoreTrig >& wjets4_outfile_type2.txt &
-
-python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/haddFiles/Puppi_wjets5_b2gtreeV3.root --outfile wjets5_outfile_type2.root --Type2  --ignoreTrig >& wjets5_outfile_type2.txt &
-
-python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/haddFiles/Puppi_wjets6_b2gtreeV3_incomplete.root --outfile wjets6_outfile_type2.root --Type2  --ignoreTrig >& wjets6_outfile_type2.txt &
-
-python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/haddFiles/Puppi_wjets7_b2gtreeV3.root --outfile wjets7_outfile_type2.root --Type2  --ignoreTrig >& wjets7_outfile_type2.txt &
-
-python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/haddFiles/Puppi_st1_b2gtreeV3_incomplete.root --outfile st1_outfile_type2.root --Type2  --ignoreTrig >& st1_incomplete_outfile_type2.txt &
-
-python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/haddFiles/Puppi_st2_b2gtreeV3.root --outfile st2_outfile_type2.root --Type2  --ignoreTrig >& st2_outfile_type2.txt &
-
-python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/haddFiles/Puppi_st3_b2gtreeV3.root --outfile st3_outfile_type2.root --Type2  --ignoreTrig >& st3_outfile_type2.txt &
-
-python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/haddFiles/Puppi_st4_b2gtreeV3.root --outfile st4_outfile_type2.root --Type2  --ignoreTrig >& st4_outfile_type2.txt &
-
-python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/haddFiles/Puppi_st5_b2gtreeV3.root --outfile st5_outfile_type2.root --Type2  --ignoreTrig >& st5_outfile_type2.txt &
-
-python RunSemiLepTTbar.py --infile  /uscmst1b_scratch/lpc1/lpcphys/jdolen/B2G2016/V3/b2gtree_QCD_Pt_1000to1400_pythia8_RunIISpring16MiniAODv2_reHLT_V3.root  --outfile QCD5_outfile_type2.root --Type2  --ignoreTrig >& QCD5_outfile_type2.txt &
-
-python RunSemiLepTTbar.py --infile  /uscmst1b_scratch/lpc1/lpcphys/jdolen/B2G2016/V3/b2gtree_QCD_Pt_1400to1800_pythia8_RunIISpring16MiniAODv2_reHLT_V3.root  --outfile QCD6_outfile_type2.root --Type2  --ignoreTrig >& QCD6_outfile_type2.txt &
-
-python RunSemiLepTTbar.py --infile  /uscmst1b_scratch/lpc1/lpcphys/jdolen/B2G2016/V3/b2gtree_QCD_Pt_1800to2400_pythia8_RunIISpring16MiniAODv2_reHLT_V3.root  --outfile QCD7_outfile_type2.root --Type2  --ignoreTrig >& QCD7_outfile_type2.txt &
-
-python RunSemiLepTTbar.py --infile  /uscmst1b_scratch/lpc1/lpcphys/jdolen/B2G2016/V3/b2gtree_QCD_Pt_2400to3200_pythia8_RunIISpring16MiniAODv2_reHLT_V3.root  --outfile QCD8_outfile_type2.root --Type2  --ignoreTrig >& QCD8_outfile_type2.txt &
-
-python RunSemiLepTTbar.py --infile  /uscmst1b_scratch/lpc1/lpcphys/jdolen/B2G2016/V3/b2gtree_QCD_Pt_300to470_pythia8_RunIISpring16MiniAODv2_reHLT_V3.root  --outfile QCD1_outfile_type2.root --Type2  --ignoreTrig >& QCD1_outfile_type2.txt &
-
-python RunSemiLepTTbar.py --infile  /uscmst1b_scratch/lpc1/lpcphys/jdolen/B2G2016/V3/b2gtree_QCD_Pt_3200toInf_pythia8_RunIISpring16MiniAODv2_reHLT_V3.root  --outfile QCD9_outfile_type2.root --Type2  --ignoreTrig >& QCD9_outfile_type2.txt &
-
-python RunSemiLepTTbar.py --infile  /uscmst1b_scratch/lpc1/lpcphys/jdolen/B2G2016/V3/b2gtree_QCD_Pt_470to600_pythia8_RunIISpring16MiniAODv2_reHLT_V3.root  --outfile QCD2_outfile_type2.root --Type2  --ignoreTrig >& QCD2_outfile_type2.txt &
-
-python RunSemiLepTTbar.py --infile  /uscmst1b_scratch/lpc1/lpcphys/jdolen/B2G2016/V3/b2gtree_QCD_Pt_600to800_pythia8_RunIISpring16MiniAODv2_reHLT_V3.root  --outfile QCD3_outfile_type2.root --Type2  --ignoreTrig >& QCD3_outfile_type2.txt &
-
-python RunSemiLepTTbar.py --infile  /uscmst1b_scratch/lpc1/lpcphys/jdolen/B2G2016/V3/b2gtree_QCD_Pt_800to1000_pythia8_RunIISpring16MiniAODv2_reHLT_V3.root  --outfile QCD4_outfile_type2.root --Type2  --ignoreTrig >& QCD4_outfile_type2.txt &
+python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov///store/user/rappocc/B2GAnaFWFiles16Dec2016/singlemu_run2016C.root --outfile mudata_Run2016C_Jan4_type1.root >& mudata_Run2016C_Jan4_type1.txt &
 
 
+python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov///store/user/rappocc/B2GAnaFWFiles16Dec2016/singlemu_run2016D.root --outfile mudata_Run2016D_Jan4_type1.root >& mudata_Run2016D_Jan4_type1.txt &
 
 
+python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov///store/user/rappocc/B2GAnaFWFiles16Dec2016/singlemu_run2016E.root --outfile mudata_Run2016E_Jan4_type1.root >& mudata_Run2016E_Jan4_type1.txt &
 
-# type 1
+python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/aparker/B2G2016/V4Trees/b2gtree_mudata_Run2016F-23Sep_all_V4.root --outfile mudata_Run2016F_Jan4_type1.root >& mudata_Run2016F_Jan4_type1.txt &
 
-python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/haddFiles/Puppi_ttjets_b2gtreeV3.root --outfile ttjets_outfile_type1.root   >& ttjets_outfile_type1.txt &
+python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/aparker/B2G2016/V4Trees/b2gtree_mudata_Run2016G-23Sep_all_V4.root --outfile mudata_Run2016G_Jan4_type1.root >& mudata_Run2016G_Jan4_type1.txt &
 
-python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/haddFiles/b2gtree_SingleMuon_Run2016BCD.root --outfile data_BCD_outfile_type1.root  >& dataBCD_outfile_type1.txt &
+python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov///store/user/rappocc/B2GAnaFWFiles16Dec2016/singlemu_run2016H.root --outfile mudata_Run2016H_Jan4_type1.root >& mudata_Run2016H_Jan4_type1.txt &
 
-python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/haddFiles/b2gtree_SingleMuon_Run2016BCDEFG.root --outfile data_BCDEFG_outfile_type1.root  >& dataBCDEFG_outfile_type1.txt &
+# MC
 
-python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/haddFiles/Puppi_wjets1_b2gtreeV3_incomplete.root --outfile wjets1_outfile_type1.root  --ignoreTrig  >& wjets1_outfile_type1.txt &
+# ttbar
 
-python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/haddFiles/Puppi_wjets2_b2gtreeV3.root --outfile wjets2_outfile_type1.root  --ignoreTrig  >& wjets2_outfile_type1.txt &
+python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/haddFiles/Puppi_ttjets_b2gtreeV3.root --outfile ttjets_outfile_type1.root >& ttjets_Jan4_type1.txt &
 
-python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/haddFiles/Puppi_wjets3_b2gtreeV3.root --outfile wjets3_outfile_type1.root  --ignoreTrig  >& wjets3_outfile_type1.txt &
+# wjets
 
-python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/haddFiles/Puppi_wjets4_b2gtreeV3.root --outfile wjets4_outfile_type1.root  --ignoreTrig >& wjets4_outfile_type1.txt &
-
-python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/haddFiles/Puppi_wjets5_b2gtreeV3.root --outfile wjets5_outfile_type1.root  --ignoreTrig  >& wjets5_outfile_type1.txt &
-
-python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/haddFiles/Puppi_wjets6_b2gtreeV3_incomplete.root --outfile wjets6_outfile_type1.root  --ignoreTrig  >& wjets6_outfile_type1.txt &
-
-python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/haddFiles/Puppi_wjets7_b2gtreeV3.root --outfile wjets7_outfile_type1.root  --ignoreTrig  >& wjets7_outfile_type1.txt &
-
-python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/haddFiles/Puppi_st1_b2gtreeV3_incomplete.root --outfile st1_outfile_type1.root  --ignoreTrig >& st1_incomplete_outfile_type1.txt &
-
-python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/haddFiles/Puppi_st2_b2gtreeV3.root --outfile st2_outfile_type1.root  --ignoreTrig >& st2_outfile_type1.txt &
-
-python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/haddFiles/Puppi_st3_b2gtreeV3.root --outfile st3_outfile_type1.root  --ignoreTrig >& st3_outfile_type1.txt &
-
-python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/haddFiles/Puppi_st4_b2gtreeV3.root --outfile st4_outfile_type1.root --ignoreTrig >& st4_outfile_type1.txt &
-
-python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/haddFiles/Puppi_st5_b2gtreeV3.root --outfile st5_outfile_type1.root  --ignoreTrig >& st5_outfile_type1.txt &
-
-python RunSemiLepTTbar.py --infile  /uscmst1b_scratch/lpc1/lpcphys/jdolen/B2G2016/V3/b2gtree_QCD_Pt_1000to1400_pythia8_RunIISpring16MiniAODv2_reHLT_V3.root  --outfile QCD5_outfile_type1.root  --ignoreTrig >& QCD5_outfile_type1.txt &
-
-python RunSemiLepTTbar.py --infile  /uscmst1b_scratch/lpc1/lpcphys/jdolen/B2G2016/V3/b2gtree_QCD_Pt_1400to1800_pythia8_RunIISpring16MiniAODv2_reHLT_V3.root  --outfile QCD6_outfile_type1.root  --ignoreTrig >& QCD6_outfile_type1.txt &
-
-python RunSemiLepTTbar.py --infile  /uscmst1b_scratch/lpc1/lpcphys/jdolen/B2G2016/V3/b2gtree_QCD_Pt_1800to2400_pythia8_RunIISpring16MiniAODv2_reHLT_V3.root  --outfile QCD7_outfile_type1.root  --ignoreTrig >& QCD7_outfile_type1.txt &
-
-python RunSemiLepTTbar.py --infile  /uscmst1b_scratch/lpc1/lpcphys/jdolen/B2G2016/V3/b2gtree_QCD_Pt_2400to3200_pythia8_RunIISpring16MiniAODv2_reHLT_V3.root  --outfile QCD8_outfile_type1.root  --ignoreTrig >& QCD8_outfile_type1.txt &
-
-python RunSemiLepTTbar.py --infile  /uscmst1b_scratch/lpc1/lpcphys/jdolen/B2G2016/V3/b2gtree_QCD_Pt_300to470_pythia8_RunIISpring16MiniAODv2_reHLT_V3.root  --outfile QCD1_outfile_type1.root  --ignoreTrig >& QCD1_outfile_type1.txt &
-
-python RunSemiLepTTbar.py --infile  /uscmst1b_scratch/lpc1/lpcphys/jdolen/B2G2016/V3/b2gtree_QCD_Pt_3200toInf_pythia8_RunIISpring16MiniAODv2_reHLT_V3.root  --outfile QCD9_outfile_type1.root  --ignoreTrig >& QCD9_outfile_type1.txt &
-
-python RunSemiLepTTbar.py --infile  /uscmst1b_scratch/lpc1/lpcphys/jdolen/B2G2016/V3/b2gtree_QCD_Pt_470to600_pythia8_RunIISpring16MiniAODv2_reHLT_V3.root  --outfile QCD2_outfile_type1.root  --ignoreTrig >& QCD2_outfile_type1.txt &
-
-python RunSemiLepTTbar.py --infile  /uscmst1b_scratch/lpc1/lpcphys/jdolen/B2G2016/V3/b2gtree_QCD_Pt_600to800_pythia8_RunIISpring16MiniAODv2_reHLT_V3.root  --outfile QCD3_outfile_type1.root  --ignoreTrig >& QCD3_outfile_type1.txt &
-
-python RunSemiLepTTbar.py --infile  /uscmst1b_scratch/lpc1/lpcphys/jdolen/B2G2016/V3/b2gtree_QCD_Pt_800to1000_pythia8_RunIISpring16MiniAODv2_reHLT_V3.root  --outfile QCD4_outfile_type1.root  --ignoreTrig >& QCD4_outfile_type1.txt &
+python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_100_V4.root --outfile wjets100_Jan4_type1.root --ignoreTrig >& wjets100_Jan4_type1..txt &
 
 
+python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_200_V4.root --outfile wjets200_Jan4_type1.root --ignoreTrig >& wjets200_Jan4_type1..txt &
 
+python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_400_V4.root --outfile wjets400_Jan4_type1.root --ignoreTrig >& wjets400_Jan4_type1..txt &
+
+python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_600_V4.root --outfile wjets600_Jan4_type1.root --ignoreTrig >& wjets600_Jan4_type1..txt &
+
+python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_800_V4.root --outfile wjets800_Jan4_type1.root --ignoreTrig >& wjets800_Jan4_type1..txt &
+
+python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_1200_V4.root --outfile wjets1200_Jan4_type1.root --ignoreTrig >& wjets1200_Jan4_type1..txt &
+
+python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_2500_V4.root --outfile wjets2500_Jan4_type1.root --ignoreTrig >& wjets2500_Jan4_type1..txt &
+
+# ST
+
+python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ST_schannel_V4.root
+--outfile ST_schannel_Jan4_type1.root --ignoreTrig >& ST_schannel_Jan4_type1..txt &
+
+python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ST_tW-top_V4.root --outfile ST_tW-top_Jan4_type1.root --ignoreTrig >& ST_tW-top_Jan4_type1..txt &
+
+python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ST_tchannel-antitop_V4.root --outfile ST_tchannel-antitop_Jan4_type1.root --ignoreTrig >& ST_tchannel-antitop_Jan4_type1..txt &
+
+
+python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtreeV4_ST_t-channel_top_1of1.root --outfile ST_t-channel_top_Jan4_type1.root --ignoreTrig >& ST_t-channel_top_Jan4_type1..txt &
+
+python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtreeV4_ST_tW_antitop_1of1.root --outfile ST_tW_antitop_Jan4_type1.root --ignoreTrig >& ST_tW_antitop_Jan4_type1..txt &
+
+# QCD
+
+python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht100_V4.root --outfile QCD_Ht100_Jan4_type1.root --ignoreTrig >& QCD_Ht100_Jan4_type1..txt &
+
+python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht200_V4.root --outfile QCD_Ht200_Jan4_type1.root --ignoreTrig >& QCD_Ht200_Jan4_type1..txt &
+
+python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht300_V4.root --outfile QCD_Ht300_Jan4_type1.root --ignoreTrig >& QCD_Ht300_Jan4_type1..txt &
+
+python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht500_V4.root --outfile QCD_Ht500_Jan4_type1.root --ignoreTrig >& QCD_Ht500_Jan4_type1..txt &
+
+python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht700_V4.root --outfile QCD_Ht700_Jan4_type1.root --ignoreTrig >& QCD_Ht700_Jan4_type1..txt &
+
+python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht1500_V4.root --outfile QCD_Ht1500_Jan4_type1.root --ignoreTrig >& QCD_Ht1500_Jan4_type1..txt &
+
+python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht2000_V4.root --outfile QCD_Ht2000_Jan4_type1.root --ignoreTrig >& QCD_Ht2000_Jan4_type1..txt &
+
+python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht100_V4.root --outfile QCD_Ht100_Jan4_type1.root --ignoreTrig >& QCD_Ht100_Jan4_type1..txt &
 
