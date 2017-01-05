@@ -1,5 +1,55 @@
 # B2GTTbar
 
+
+##B2G2016 TreeV4 recipe:
+```
+cmsrel CMSSW_8_0_22
+cmsenv
+git cms-init
+git cms-merge-topic -u cms-met:CMSSW_8_0_X-METFilterUpdate
+git cms-merge-topic cms-met:METRecipe_8020
+git cms-merge-topic ikrav:egm_id_80X_v1
+git clone https://github.com/rappoccio/PredictedDistribution.git Analysis/PredictedDistribution
+git clone https://github.com/cmsb2g/B2GTTbar.git Analysis/B2GTTbar
+git clone git@github.com:cms-jet/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_80X
+scramv1 b
+
+cd B2GTTbar/test/
+cp JECs/Spring16_25nsV6*AK4PFchs* .
+cp JECs/Spring16_25nsV6*AK4PFPuppi* .
+cp JECs/Spring16_25nsV6*AK8PFchs* .
+cp JECs/Spring16_25nsV6*AK8PFPuppi* .
+cp JERs/* .
+```
+for MC:
+
+`cmsRun run_B2GTTbarTreeMaker_MC_Toolbox.py`   # for QCD, Wjets
+
+`cmsRun run_B2GTTbarTreeMaker_Zprime_Toolbox.py`
+
+`cmsRun run_B2GTTbarTreeMaker_RSG_Toolbox.py`
+
+`cmsRun run_B2GTTbarTreeMaker_ttbar_Toolbox.py`
+
+for data:
+
+`cmsRun run_B2GTTbarTreeMaker_data_Toolbox.py`
+
+
+**For analysis with Loop tree, you must also checkout the btag package and remove one line:**
+
+```
+cd CMSSW_8_0_22/src/
+git cms-addpkg CondFormats/BTauObjects
+```
+*Edit CondFormats/BTauObjects/src/classes.h  and comment out line 30 (it says BTagCalibration btc1;)* 
+```
+cd CondFormats/BTauObjects 
+scramv1 b
+cd ../../
+```
+
+
 ##B2G2016 TreeV3 recipe:
 ```
 cmsrel CMSSW_8_0_20
