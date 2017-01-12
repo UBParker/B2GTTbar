@@ -23,23 +23,23 @@ class B2GSelectSemiLepTTbar_Type2( ) :
         # Cached class member variables for plotting
 
 
-        self.ak8Jet = None
-        self.ak8JetRaw = None
+        self.ak8JetP4 = None
+        self.ak8JetP4Raw = None
 
         self.ak8SDJet = None
         self.ak8SDJetRaw = None
 
-        self.ak8PuppiJet = None
-        self.ak8PuppiJetRaw = None
+        self.ak8PuppiJetP4 = None
+        self.ak8PuppiJetP4Raw = None
 
-        self.ak8PuppiSDJet = None
-        self.ak8PuppiSDJetRaw = None
+        self.ak8PuppiSDJetP4 = None
+        self.ak8PuppiSDJetP4Raw = None
 
         self.puppitau32 = None
         self.puppitau21 = None
 
-        self.ak8PuppiSDJet_Subjet0 = None
-        self.ak8PuppiSDJet_Subjet1 = None
+        self.ak8PuppiSDJetP4_Subjet0 = None
+        self.ak8PuppiSDJetP4_Subjet1 = None
 
         self.ak4JetBdisc = None
         self.ak4Jet = None
@@ -80,29 +80,27 @@ class B2GSelectSemiLepTTbar_Type2( ) :
             self.PUWeight = 1.0                        
             if self.verbose :  print "This is DATA : setting weights to 1."   
 
-        self.theNeutrino = None
-        self.theLepton = None
-
-        self.ak8Jet = None
-        self.ak8JetRaw = None
+        self.ak8JetP4 = None
+        self.ak8JetP4Raw = None
 
         self.ak8SDJet = None
         self.ak8SDJetRaw = None
 
-        self.ak8PuppiJet = None
-        self.ak8PuppiJetRaw = None
+        self.ak8PuppiJetP4 = None
+        self.ak8PuppiJetP4Raw = None
 
-        self.ak8PuppiSDJet = None
-        self.ak8PuppiSDJetRaw = None
+        self.ak8PuppiSDJetP4 = None
+        self.ak8PuppiSDJetP4Raw = None
 
         self.puppitau32 = None
         self.puppitau21 = None
 
-        self.ak8PuppiSDJet_Subjet0 = None
-        self.ak8PuppiSDJet_Subjet1 = None        
+        self.ak8PuppiSDJetP4_Subjet0 = None
+        self.ak8PuppiSDJetP4_Subjet1 = None        
         
         self.SDptPuppipt = None
         self.SDptGenpt = None
+        
         self.ak8JetHT = 0.
         self.SDRhoRatio = None
 
@@ -119,16 +117,16 @@ class B2GSelectSemiLepTTbar_Type2( ) :
         self.ak4JetBdisc = self.tree.AK4_dRminLep_Bdisc[0]
 
 
-        self.ak8Jet = ROOT.TLorentzVector()
-        self.ak8Jet.SetPtEtaPhiM( self.tree.JetPt[0],
+        self.ak8JetP4 = ROOT.TLorentzVector()
+        self.ak8JetP4.SetPtEtaPhiM( self.tree.JetPt[0],
                                   self.tree.JetEta[0],
                                   self.tree.JetPhi[0],
                                   self.tree.JetMass[0] )        
-        self.ak8JetRaw =   self.ak8Jet
-        self.ak8Jet =   self.ak8Jet * self.Corr
-        if self.ak8JetRaw != None :
-            self.ak8_m = self.CorrPUPPIMass( self.ak8JetRaw.Perp() , self.ak8JetRaw.Eta(), self.ak8JetRaw.M()  )
-            self.ak8JetHT =         self.ak8JetHT + self.ak8Jet.Perp()
+        self.ak8JetP4Raw =   self.ak8JetP4
+        self.ak8JetP4 =   self.ak8JetP4 * self.Corr
+        if self.ak8JetP4Raw != None :
+            self.ak8_m = self.CorrPUPPIMass( self.ak8JetP4Raw.Perp() , self.ak8JetP4Raw.Eta(), self.ak8JetP4Raw.M()  )
+            self.ak8JetHT =         self.ak8JetHT + self.ak8JetP4.Perp()
 
         self.ak8SDJet = ROOT.TLorentzVector()
         self.ak8SDJet.SetPtEtaPhiM( self.tree.JetSDptRaw[0],
@@ -140,117 +138,81 @@ class B2GSelectSemiLepTTbar_Type2( ) :
         self.ak8_SDm = self.CorrPUPPIMass( self.ak8SDJetRaw.Perp() , self.ak8SDJetRaw.Eta(), self.ak8SDJetRaw.M()  )
 
 
-        self.ak8PuppiJet = ROOT.TLorentzVector()
-        self.ak8PuppiJet.SetPtEtaPhiM( self.tree.JetPuppiPt[0],
+        self.ak8PuppiJetP4 = ROOT.TLorentzVector()
+        self.ak8PuppiJetP4.SetPtEtaPhiM( self.tree.JetPuppiPt[0],
                                   self.tree.JetPuppiEta[0],
                                   self.tree.JetPuppiPhi[0],
                                   self.tree.JetPuppiMass[0] )        
-        self.ak8PuppiJetRaw =   self.ak8PuppiJet
-        self.ak8PuppiJet =   self.ak8PuppiJet * self.PuppiCorr
-        if self.ak8PuppiJetRaw != None :
-            self.ak8_Puppim = self.CorrPUPPIMass( self.ak8PuppiJetRaw.Perp() , self.ak8PuppiJetRaw.Eta(), self.ak8PuppiJetRaw.M()  )
+        self.ak8PuppiJetP4Raw =   self.ak8PuppiJetP4
+        self.ak8PuppiJetP4 =   self.ak8PuppiJetP4 * self.PuppiCorr
+        if self.ak8PuppiJetP4Raw != None :
+            self.ak8_Puppim = self.CorrPUPPIMass( self.ak8PuppiJetP4Raw.Perp() , self.ak8PuppiJetP4Raw.Eta(), self.ak8PuppiJetP4Raw.M()  )
             # Pt Responses
-            self.SDptGenpt = float(self.ak8SDJet.Perp())  / float(self.ak8Jet.Perp() ) 
-            if self.ak8PuppiJetRaw != None :
-                self.SDptPuppipt = float(self.ak8SDJet.Perp())  / float(self.ak8PuppiJet.Perp() ) 
+            self.SDptGenpt = float(self.ak8SDJet.Perp())  / float(self.ak8JetP4.Perp() ) 
+            if self.ak8PuppiJetP4Raw != None :
+                self.SDptPuppipt = float(self.ak8SDJet.Perp())  / float(self.ak8PuppiJetP4.Perp() ) 
 
 
-        self.ak8PuppiSDJet_Subjet0 = ROOT.TLorentzVector()
-        self.ak8PuppiSDJet_Subjet1 = ROOT.TLorentzVector()
-        self.ak8PuppiSDJet_Subjet0.SetPtEtaPhiM( 
+        self.ak8PuppiSDJetP4_Subjet0 = ROOT.TLorentzVector()
+        self.ak8PuppiSDJetP4_Subjet1 = ROOT.TLorentzVector()
+        self.ak8PuppiSDJetP4_Subjet0.SetPtEtaPhiM( 
                                                 self.tree.JetPuppiSDsubjet0pt[0],
                                                 self.tree.JetPuppiSDsubjet0eta[0], 
                                                 self.tree.JetPuppiSDsubjet0phi[0], 
                                                 self.tree.JetPuppiSDsubjet0mass[0] )
-        self.ak8PuppiSDJet_Subjet1.SetPtEtaPhiM( 
+        self.ak8PuppiSDJetP4_Subjet1.SetPtEtaPhiM( 
                                                 self.tree.JetPuppiSDsubjet1pt[0],
                                                 self.tree.JetPuppiSDsubjet1eta[0],
                                                 self.tree.JetPuppiSDsubjet1phi[0],
                                                 self.tree.JetPuppiSDsubjet1mass[0] )
 
-        if self.ak8PuppiSDJet_Subjet0.M() < self.ak8PuppiSDJet_Subjet1.M() : 
-            self.ak8PuppiSDJet_Subjet1,self.ak8PuppiSDJet_Subjet0 = self.ak8PuppiSDJet_Subjet0,self.ak8PuppiSDJet_Subjet1
-        self.ak8PuppiSDJet =  self.ak8PuppiSDJet_Subjet0 +  self.ak8PuppiSDJet_Subjet1
+        if self.ak8PuppiSDJetP4_Subjet0.M() < self.ak8PuppiSDJetP4_Subjet1.M() : 
+            self.ak8PuppiSDJetP4_Subjet1,self.ak8PuppiSDJetP4_Subjet0 = self.ak8PuppiSDJetP4_Subjet0,self.ak8PuppiSDJetP4_Subjet1
+        self.ak8PuppiSDJetP4 =  self.ak8PuppiSDJetP4_Subjet0 +  self.ak8PuppiSDJetP4_Subjet1
 
-        self.ak8PuppiSDJetRaw =   self.ak8PuppiSDJet
-        if self.ak8PuppiSDJetRaw !=None :
-            if self.ak8PuppiSDJet.Perp() > 0.001 :
-                self.SDRhoRatio = pow( self.ak8PuppiSDJet.M() / (self.ak8PuppiSDJet.Perp()*0.8) , 2)
+        self.ak8PuppiSDJetP4Raw =   self.ak8PuppiSDJetP4
+        if self.ak8PuppiSDJetP4Raw !=None :
+            if self.ak8PuppiSDJetP4.Perp() > 0.001 :
+                self.SDRhoRatio = pow( self.ak8PuppiSDJetP4.M() / (self.ak8PuppiSDJetP4.Perp()*0.8) , 2)
             self.ak8PuppiSD_m = self.CorrPUPPIMass( 
-                                                   self.ak8PuppiSDJetRaw.Perp(),
-                                                   self.ak8PuppiSDJetRaw.Eta(),
-                                                   self.ak8PuppiSDJetRaw.M()  )
+                                                   self.ak8PuppiSDJetP4Raw.Perp(),
+                                                   self.ak8PuppiSDJetP4Raw.Eta(),
+                                                   self.ak8PuppiSDJetP4Raw.M()  )
 
-        self.ak8PuppiSDJet_Subjet0Raw =   self.ak8PuppiSDJet_Subjet0 
-        self.ak8PuppiSDJet_Subjet1Raw =   self.ak8PuppiSDJet_Subjet1 
+        self.ak8PuppiSDJetP4_Subjet0Raw =   self.ak8PuppiSDJetP4_Subjet0 
+        self.ak8PuppiSDJetP4_Subjet1Raw =   self.ak8PuppiSDJetP4_Subjet1 
 
-        self.ak8PuppiSDJet =   self.ak8PuppiSDJet * self.PuppiCorr
-        self.ak8PuppiSDJet_Subjet0 =   self.ak8PuppiSDJet_Subjet0 * self.PuppiCorr
-        self.ak8PuppiSDJet_Subjet1 =   self.ak8PuppiSDJet_Subjet1 * self.PuppiCorr
+        self.ak8PuppiSDJetP4 =   self.ak8PuppiSDJetP4 * self.PuppiCorr
+        self.ak8PuppiSDJetP4_Subjet0 =   self.ak8PuppiSDJetP4_Subjet0 * self.PuppiCorr
+        self.ak8PuppiSDJetP4_Subjet1 =   self.ak8PuppiSDJetP4_Subjet1 * self.PuppiCorr
 
-        if self.verbose : print 'ak8PuppiSDJet = (%6.2f,%8.3f,%8.3f,%6.2f)' % ( self.ak8PuppiSDJet.Perp(), self.ak8PuppiSDJet.Eta(), self.ak8PuppiSDJet.Phi(), self.ak8PuppiSDJet.M() )
+        if self.verbose : print 'ak8PuppiSDJet = (%6.2f,%8.3f,%8.3f,%6.2f)' % ( self.ak8PuppiSDJetP4.Perp(), self.ak8PuppiSDJetP4.Eta(), self.ak8PuppiSDJetP4.Phi(), self.ak8PuppiSDJetP4.M() )
 
-        self.ak8PuppiJet_m = self.CorrPUPPIMass( self.ak8PuppiJetRaw.Perp() , self.ak8PuppiJetRaw.Eta(), self.ak8PuppiJetRaw.M()  )
+        self.ak8PuppiJetP4_m = self.CorrPUPPIMass( self.ak8PuppiJetP4Raw.Perp() , self.ak8PuppiJetP4Raw.Eta(), self.ak8PuppiJetP4Raw.M()  )
 
-        self.ak8SDsj0_m = self.CorrPUPPIMass( self.ak8PuppiSDJet_Subjet0Raw.Perp() , self.ak8PuppiSDJet_Subjet0Raw.Eta(), self.ak8PuppiSDJet_Subjet0Raw.M()  )
+        self.ak8SDsj0_m = self.CorrPUPPIMass( self.ak8PuppiSDJetP4_Subjet0Raw.Perp() , self.ak8PuppiSDJetP4_Subjet0Raw.Eta(), self.ak8PuppiSDJetP4_Subjet0Raw.M()  )
 
+        self.ak8SDsj1_m = self.CorrPUPPIMass( self.ak8PuppiSDJetP4_Subjet1Raw.Perp() , self.ak8PuppiSDJetP4_Subjet1Raw.Eta(), self.ak8PuppiSDJetP4_Subjet1Raw.M()  )
 
-        self.ak8PuppiJet200 =ROOT.TLorentzVector()
-        self.ak8PuppiSDJet200 = ROOT.TLorentzVector()
-        self.ak8PuppiSDJet_Subjet0M200 = ROOT.TLorentzVector()
-        self.ak8PuppiSDJet_Subjet1M200 = ROOT.TLorentzVector()
-
-        if (  200. < self.ak8PuppiSDJet_Subjet0.Perp() < 300. ) :
-            self.ak8PuppiJet200.SetPtEtaPhiM( self.tree.JetPuppiPt[0], self.tree.JetPuppiEta[0], self.tree.JetPuppiPhi[0], self.tree.JetPuppiMass[0] ) 
-            self.ak8PuppiSDJet_Subjet0M200.SetPtEtaPhiM( self.tree.JetPuppiSDsubjet0pt[0], self.tree.JetPuppiSDsubjet0eta[0], self.tree.JetPuppiSDsubjet0phi[0], self.tree.JetPuppiSDsubjet0mass[0] )
-            self.ak8PuppiSDJet_Subjet1M200.SetPtEtaPhiM( self.tree.JetPuppiSDsubjet1pt[0], self.tree.JetPuppiSDsubjet1eta[0], self.tree.JetPuppiSDsubjet1phi[0], self.tree.JetPuppiSDsubjet1mass[0] )
-            self.ak8PuppiSDJet200 =  self.ak8PuppiSDJet_Subjet0M200 + self.ak8PuppiSDJet_Subjet1M200
-
-        self.ak8PuppiJet300 = ROOT.TLorentzVector()
-        self.ak8PuppiSDJet300 = ROOT.TLorentzVector()
-        self.ak8PuppiSDJet_Subjet0M300 = ROOT.TLorentzVector()
-        self.ak8PuppiSDJet_Subjet1M300 = ROOT.TLorentzVector()
-        if (  300. < self.ak8PuppiSDJet_Subjet0.Perp() < 400. ) :
-            self.ak8PuppiJet300.SetPtEtaPhiM( self.tree.JetPuppiPt[0], self.tree.JetPuppiEta[0], self.tree.JetPuppiPhi[0], self.tree.JetPuppiMass[0] ) 
-            self.ak8PuppiSDJet_Subjet0M300.SetPtEtaPhiM( self.tree.JetPuppiSDsubjet0pt[0], self.tree.JetPuppiSDsubjet0eta[0], self.tree.JetPuppiSDsubjet0phi[0], self.tree.JetPuppiSDsubjet0mass[0] )
-            self.ak8PuppiSDJet_Subjet1M300.SetPtEtaPhiM( self.tree.JetPuppiSDsubjet1pt[0], self.tree.JetPuppiSDsubjet1eta[0], self.tree.JetPuppiSDsubjet1phi[0], self.tree.JetPuppiSDsubjet1mass[0] )
-            self.ak8PuppiSDJet300 =  self.ak8PuppiSDJet_Subjet0M300 + self.ak8PuppiSDJet_Subjet1M300
-        self.ak8PuppiJet400 = ROOT.TLorentzVector()
-        self.ak8PuppiSDJet400 = ROOT.TLorentzVector()
-        self.ak8PuppiSDJet_Subjet0M400 = ROOT.TLorentzVector()
-        self.ak8PuppiSDJet_Subjet1M400 = ROOT.TLorentzVector()
-        if (  400. < self.ak8PuppiSDJet_Subjet0.Perp() < 500. ) :
-            self.ak8PuppiJet400.SetPtEtaPhiM( self.tree.JetPuppiPt[0], self.tree.JetPuppiEta[0], self.tree.JetPuppiPhi[0], self.tree.JetPuppiMass[0] ) 
-            self.ak8PuppiSDJet_Subjet0M400.SetPtEtaPhiM( self.tree.JetPuppiSDsubjet0pt[0], self.tree.JetPuppiSDsubjet0eta[0], self.tree.JetPuppiSDsubjet0phi[0], self.tree.JetPuppiSDsubjet0mass[0] )
-            self.ak8PuppiSDJet_Subjet1M400.SetPtEtaPhiM( self.tree.JetPuppiSDsubjet1pt[0], self.tree.JetPuppiSDsubjet1eta[0], self.tree.JetPuppiSDsubjet1phi[0], self.tree.JetPuppiSDsubjet1mass[0] )
-            self.ak8PuppiSDJet400 =  self.ak8PuppiSDJet_Subjet0M400 + self.ak8PuppiSDJet_Subjet1M400
-
-        self.ak8PuppiJet500 = ROOT.TLorentzVector()
-        self.ak8PuppiSDJet500 = ROOT.TLorentzVector()
-        self.ak8PuppiSDJet_Subjet0M500 = ROOT.TLorentzVector()
-        self.ak8PuppiSDJet_Subjet1M500 = ROOT.TLorentzVector()
-        if (  500. < self.ak8PuppiSDJet_Subjet0.Perp() < 600. ) :
-            self.ak8PuppiJet500.SetPtEtaPhiM( self.tree.JetPuppiPt[0], self.tree.JetPuppiEta[0], self.tree.JetPuppiPhi[0], self.tree.JetPuppiMass[0] ) 
-            self.ak8PuppiSDJet_Subjet0M500.SetPtEtaPhiM( self.tree.JetPuppiSDsubjet0pt[0], self.tree.JetPuppiSDsubjet0eta[0], self.tree.JetPuppiSDsubjet0phi[0], self.tree.JetPuppiSDsubjet0mass[0] )
-            self.ak8PuppiSDJet_Subjet1M500.SetPtEtaPhiM( self.tree.JetPuppiSDsubjet1pt[0], self.tree.JetPuppiSDsubjet1eta[0], self.tree.JetPuppiSDsubjet1phi[0], self.tree.JetPuppiSDsubjet1mass[0] )
-            self.ak8PuppiSDJet500 =  self.ak8PuppiSDJet_Subjet0M500 + self.ak8PuppiSDJet_Subjet1M500
-
-        self.ak8PuppiJet600 = ROOT.TLorentzVector()
-        self.ak8PuppiSDJet600 = ROOT.TLorentzVector()
-        self.ak8PuppiSDJet_Subjet0M600 = ROOT.TLorentzVector()
-        self.ak8PuppiSDJet_Subjet1M600 = ROOT.TLorentzVector()
-        if (  600. < self.ak8PuppiSDJet_Subjet0.Perp() < 800. ) :
-            self.ak8PuppiJet600.SetPtEtaPhiM( self.tree.JetPuppiPt[0], self.tree.JetPuppiEta[0], self.tree.JetPuppiPhi[0], self.tree.JetPuppiMass[0] ) 
-            self.ak8PuppiSDJet_Subjet0M600.SetPtEtaPhiM( self.tree.JetPuppiSDsubjet0pt[0], self.tree.JetPuppiSDsubjet0eta[0], self.tree.JetPuppiSDsubjet0phi[0], self.tree.JetPuppiSDsubjet0mass[0] )
-            self.ak8PuppiSDJet_Subjet1M600.SetPtEtaPhiM( self.tree.JetPuppiSDsubjet1pt[0], self.tree.JetPuppiSDsubjet1eta[0], self.tree.JetPuppiSDsubjet1phi[0], self.tree.JetPuppiSDsubjet1mass[0] )
-            self.ak8PuppiSDJet600 =  self.ak8PuppiSDJet_Subjet0M600 + self.ak8PuppiSDJet_Subjet1M600
+        self.ak8Jet_Ptbins = [200, 300, 400, 500, 800, 1000]
+        
+        self.ak8PuppiJetP4_Binned = [ROOT.TLorentzVector()] * len(self.ak8Jet_Ptbins)
+        self.ak8PuppiSDJetP4_Binned = [ROOT.TLorentzVector()] * len(self.ak8Jet_Ptbins)
+        self.ak8PuppiSDJetP4Subjet0_Binned = [ROOT.TLorentzVector()] * len(self.ak8Jet_Ptbins)
+        self.ak8PuppiSDJetP4Subjet1_Binned = [ROOT.TLorentzVector()] * len(self.ak8Jet_Ptbins)
+        self.ak8PuppiSDJetP4Subjet0PuppiCorrMass_Binned = [] * len(self.ak8Jet_Ptbins)
+        self.ak8PuppiSDJetP4Subjet1PuppiCorrMass_Binned = [] * len(self.ak8Jet_Ptbins)
 
 
-        self.ak8SDsj0_m200 = self.CorrPUPPIMass( self.ak8PuppiSDJet_Subjet0M200.Perp() , self.ak8PuppiSDJet_Subjet0M200.Eta(), self.ak8PuppiSDJet_Subjet0M200.M()  )
-        self.ak8SDsj0_m300 = self.CorrPUPPIMass( self.ak8PuppiSDJet_Subjet0M300.Perp() , self.ak8PuppiSDJet_Subjet0M300.Eta(), self.ak8PuppiSDJet_Subjet0M300.M()  )
-        self.ak8SDsj0_m400 = self.CorrPUPPIMass( self.ak8PuppiSDJet_Subjet0M400.Perp() , self.ak8PuppiSDJet_Subjet0M400.Eta(), self.ak8PuppiSDJet_Subjet0M400.M()  )
-        self.ak8SDsj0_m500 = self.CorrPUPPIMass( self.ak8PuppiSDJet_Subjet0M500.Perp() , self.ak8PuppiSDJet_Subjet0M500.Eta(), self.ak8PuppiSDJet_Subjet0M500.M()  )
-        self.ak8SDsj0_m600 = self.CorrPUPPIMass( self.ak8PuppiSDJet_Subjet0M600.Perp() , self.ak8PuppiSDJet_Subjet0M600.Eta(), self.ak8PuppiSDJet_Subjet0M600.M()  )
+        for iptbin, ptbin in enumerate(self.ak8Jet_Ptbins) :
+            if ptbin < 1000.:
+                if (  ptbin < self.ak8PuppiSDJetP4_Subjet0.Perp() < self.ak8Jet_Ptbins[iptbin+1] ) :
+                    self.ak8PuppiJetP4_Binned[iptbin].SetPtEtaPhiM( self.tree.JetPuppiPt[0], self.tree.JetPuppiEta[0], self.tree.JetPuppiPhi[0], self.tree.JetPuppiMass[0] ) 
+                    self.ak8PuppiSDJetP4Subjet0_Binned[iptbin].SetPtEtaPhiM( self.tree.JetPuppiSDsubjet0pt[0], self.tree.JetPuppiSDsubjet0eta[0], self.tree.JetPuppiSDsubjet0phi[0], self.tree.JetPuppiSDsubjet0mass[0] )
+                    self.ak8PuppiSDJetP4Subjet1_Binned[iptbin].SetPtEtaPhiM( self.tree.JetPuppiSDsubjet1pt[0], self.tree.JetPuppiSDsubjet1eta[0], self.tree.JetPuppiSDsubjet1phi[0], self.tree.JetPuppiSDsubjet1mass[0] )
+                    self.ak8PuppiSDJetP4_Binned[iptbin] =  self.ak8PuppiSDJetP4Subjet0_Binned[iptbin] + self.ak8PuppiSDJetP4Subjet1_Binned[iptbin]
+                    self.ak8PuppiSDJetP4Subjet0PuppiCorrMass_Binned[iptbin] = self.CorrPUPPIMass( self.ak8PuppiSDJetP4Subjet0_Binned[iptbin].Perp() , self.ak8PuppiSDJetP4Subjet0_Binned[iptbin].Eta(), self.ak8PuppiSDJetP4Subjet0_Binned[iptbin].M()  )
+                    self.ak8PuppiSDJetP4Subjet1PuppiCorrMass_Binned[iptbin] = self.CorrPUPPIMass( self.ak8PuppiSDJetP4Subjet1_Binned[iptbin].Perp() , self.ak8PuppiSDJetP4Subjet1_Binned[iptbin].Eta(), self.ak8PuppiSDJetP4Subjet1_Binned[iptbin].M()  )
 
 
         self.puppitau21 = self.tree.JetPuppiTau21[0]
@@ -273,7 +235,7 @@ class B2GSelectSemiLepTTbar_Type2( ) :
         if not self.passed[0] : return self.passed
         self.passedCount[0] += 1
 
-        if not (self.ak8PuppiJet.Perp() > 200. and abs(self.ak8PuppiJet.Eta()) < 2.4  ) : return self.passed
+        if not (self.ak8PuppiSDJetP4.Perp() > 200. and abs(self.ak8PuppiSDJetP4.Eta()) < 2.4 and self.ak8Jet.DeltaR( self.lepsel.leptonP4) > 1.0  ) : return self.passed
         self.passed[1] = True
         self.passedCount[1] += 1
 
@@ -281,7 +243,7 @@ class B2GSelectSemiLepTTbar_Type2( ) :
         self.passed[2] = True
         self.passedCount[2] += 1
         
-        if not ( 40. < self.ak8PuppiSDJet.M() < 150. ) : return self.passed
+        if not ( 30. < self.ak8PuppiSDJetP4.M() < 150. ) : return self.passed
         self.passed[3] = True
         self.passedCount[3] += 1
 

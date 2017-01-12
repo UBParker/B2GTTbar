@@ -1,0 +1,52 @@
+'''
+NOTE:
+type2 is correct updated Jan 12, 2017
+
+'''
+#  Stage      Name                                               Type2
+
+    0                           NOTE: weight for filling histos varies with stage
+
+
+    1        trigger                    (applied to data and tt but not other MCs for both selection types)    HLT_Mu50_v  
+
+
+    2         muon1                                       HighPt ID
+
+    3         muon2                                       Tight cut based ID
+
+
+    4         muon3                                      pt>53 , eta <2.1
+
+
+    5         muon                       Iso <0.1
+
+
+
+    6          MET                                        Pt > 40
+
+
+    7          AK4                                               Pt > 30 , eta < 2.4
+
+
+    8      DR(lep, jet)                          DR(lep, AK8 ) > 0.4
+
+
+    9                                    Pt(lep + MET) > 200
+
+
+
+    10                                         not cut                                                
+    
+    11           AK8                          PuppiSDPt > 200, abs(eta)<2.4, DR(lep, AK8) > 1
+    
+    
+    12            btag                                            bdisc < 0.8484
+
+
+    13                                                   30 < AK8 PuppiSD Mass < 150  
+
+
+    14                                                   tau21 < 0.4
+
+
