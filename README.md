@@ -4,17 +4,25 @@
 ##B2G2016 TreeV4 recipe:
 ```
 cmsrel CMSSW_8_0_22
+cd CMSSW_8_0_22/src/
 cmsenv
 git cms-init
 git cms-merge-topic -u cms-met:CMSSW_8_0_X-METFilterUpdate
 git cms-merge-topic cms-met:METRecipe_8020
 git cms-merge-topic ikrav:egm_id_80X_v1
 git clone https://github.com/rappoccio/PredictedDistribution.git Analysis/PredictedDistribution
-git clone https://github.com/cmsb2g/B2GTTbar.git Analysis/B2GTTbar
+git clone git@github.com:UBParker/B2GTTbar.git Analysis/B2GTTbar
 git clone git@github.com:cms-jet/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_80X
-scramv1 b
 
-cd B2GTTbar/test/
+cd Analysis/B2GTTbar/
+git branch TreeV4 origin/TreeV4
+git checkout TreeV4
+
+cd ../..
+scram b -j 12
+
+
+cd Analysis/B2GTTbar/test/
 cp JECs/Spring16_25nsV6*AK4PFchs* .
 cp JECs/Spring16_25nsV6*AK4PFPuppi* .
 cp JECs/Spring16_25nsV6*AK8PFchs* .
