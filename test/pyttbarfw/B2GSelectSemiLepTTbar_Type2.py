@@ -26,8 +26,8 @@ class B2GSelectSemiLepTTbar_Type2( ) :
         self.ak8JetP4 = None
         self.ak8JetP4Raw = None
 
-        self.ak8SDJetP4 = None
-        self.ak8SDJetP4Raw = None
+        self.ak8SDJet = None
+        self.ak8SDJetRaw = None
 
         self.ak8PuppiJetP4 = None
         self.ak8PuppiJetP4Raw = None
@@ -85,8 +85,8 @@ class B2GSelectSemiLepTTbar_Type2( ) :
         self.ak8JetP4 = None
         self.ak8JetP4Raw = None
 
-        self.ak8SDJetP4 = None
-        self.ak8SDJetP4Raw = None
+        self.ak8SDJet = None
+        self.ak8SDJetRaw = None
 
         self.ak8PuppiJetP4 = None
         self.ak8PuppiJetP4Raw = None
@@ -130,14 +130,14 @@ class B2GSelectSemiLepTTbar_Type2( ) :
             self.ak8_m = self.CorrPUPPIMass( self.ak8JetP4Raw.Perp() , self.ak8JetP4Raw.Eta(), self.ak8JetP4Raw.M()  )
             self.ak8JetHT =         self.ak8JetHT + self.ak8JetP4.Perp()
 
-        self.ak8SDJetP4 = ROOT.TLorentzVector()
-        self.ak8SDJetP4.SetPtEtaPhiM( self.tree.JetSDptRaw[0],
+        self.ak8SDJet = ROOT.TLorentzVector()
+        self.ak8SDJet.SetPtEtaPhiM( self.tree.JetSDptRaw[0],
                                   self.tree.JetSDetaRaw[0],
                                   self.tree.JetSDphiRaw[0],
                                   self.tree.JetSDmassRaw[0] )      
-        self.ak8SDJetP4Raw =   self.ak8SDJetP4
-        self.ak8SDJetP4 =   self.ak8SDJetP4 * self.Corr
-        self.ak8_SDm = self.CorrPUPPIMass( self.ak8SDJetP4Raw.Perp() , self.ak8SDJetP4Raw.Eta(), self.ak8SDJetP4Raw.M()  )
+        self.ak8SDJetRaw =   self.ak8SDJet
+        self.ak8SDJet =   self.ak8SDJet * self.Corr
+        self.ak8_SDm = self.CorrPUPPIMass( self.ak8SDJetRaw.Perp() , self.ak8SDJetRaw.Eta(), self.ak8SDJetRaw.M()  )
 
 
         self.ak8PuppiJetP4 = ROOT.TLorentzVector()
@@ -150,9 +150,9 @@ class B2GSelectSemiLepTTbar_Type2( ) :
         if self.ak8PuppiJetP4Raw != None :
             self.ak8_Puppim = self.CorrPUPPIMass( self.ak8PuppiJetP4Raw.Perp() , self.ak8PuppiJetP4Raw.Eta(), self.ak8PuppiJetP4Raw.M()  )
             # Pt Responses
-            self.SDptGenpt = float(self.ak8SDJetP4.Perp())  / float(self.ak8JetP4.Perp() ) 
+            self.SDptGenpt = float(self.ak8SDJet.Perp())  / float(self.ak8JetP4.Perp() ) 
             if self.ak8PuppiJetP4Raw != None :
-                self.SDptPuppipt = float(self.ak8SDJetP4.Perp())  / float(self.ak8PuppiJetP4.Perp() ) 
+                self.SDptPuppipt = float(self.ak8SDJet.Perp())  / float(self.ak8PuppiJetP4.Perp() ) 
 
 
         self.ak8PuppiSDJetP4_Subjet0 = ROOT.TLorentzVector()
@@ -207,15 +207,14 @@ class B2GSelectSemiLepTTbar_Type2( ) :
 
 
         for iptbin, ptbin in enumerate(self.ak8Jet_Ptbins) :
-            if iptbin < 4:
+            if ptbin < 1000.:
                 if (  ptbin < self.ak8PuppiSDJetP4_Subjet0.Perp() < self.ak8Jet_Ptbins[iptbin+1] ) :
-                    #self.ak8PuppiJetP4_Binned[iptbin].SetPtEtaPhiM( self.tree.JetPuppiPt[0], self.tree.JetPuppiEta[0], self.tree.JetPuppiPhi[0], self.tree.JetPuppiMass[0] ) 
-                    print "ERROR: To-Do- Fix filling of binned histos"
-                    #self.ak8PuppiSDJetP4Subjet0_Binned[iptbin].SetPtEtaPhiM( self.tree.JetPuppiSDsubjet0pt[0], self.tree.JetPuppiSDsubjet0eta[0], self.tree.JetPuppiSDsubjet0phi[0], self.tree.JetPuppiSDsubjet0mass[0] )
-                    #self.ak8PuppiSDJetP4Subjet1_Binned[iptbin].SetPtEtaPhiM( self.tree.JetPuppiSDsubjet1pt[0], self.tree.JetPuppiSDsubjet1eta[0], self.tree.JetPuppiSDsubjet1phi[0], self.tree.JetPuppiSDsubjet1mass[0] )
-                    #self.ak8PuppiSDJetP4_Binned[iptbin] =  self.ak8PuppiSDJetP4Subjet0_Binned[iptbin] + self.ak8PuppiSDJetP4Subjet1_Binned[iptbin]
-                    #self.ak8PuppiSDJetP4Subjet0PuppiCorrMass_Binned[iptbin] = self.CorrPUPPIMass( self.ak8PuppiSDJetP4Subjet0_Binned[iptbin].Perp() , self.ak8PuppiSDJetP4Subjet0_Binned[iptbin].Eta(), self.ak8PuppiSDJetP4Subjet0_Binned[iptbin].M()  )
-                    #self.ak8PuppiSDJetP4Subjet1PuppiCorrMass_Binned[iptbin] = self.CorrPUPPIMass( self.ak8PuppiSDJetP4Subjet1_Binned[iptbin].Perp() , self.ak8PuppiSDJetP4Subjet1_Binned[iptbin].Eta(), self.ak8PuppiSDJetP4Subjet1_Binned[iptbin].M()  )
+                    self.ak8PuppiJetP4_Binned[iptbin].SetPtEtaPhiM( self.tree.JetPuppiPt[0], self.tree.JetPuppiEta[0], self.tree.JetPuppiPhi[0], self.tree.JetPuppiMass[0] ) 
+                    self.ak8PuppiSDJetP4Subjet0_Binned[iptbin].SetPtEtaPhiM( self.tree.JetPuppiSDsubjet0pt[0], self.tree.JetPuppiSDsubjet0eta[0], self.tree.JetPuppiSDsubjet0phi[0], self.tree.JetPuppiSDsubjet0mass[0] )
+                    self.ak8PuppiSDJetP4Subjet1_Binned[iptbin].SetPtEtaPhiM( self.tree.JetPuppiSDsubjet1pt[0], self.tree.JetPuppiSDsubjet1eta[0], self.tree.JetPuppiSDsubjet1phi[0], self.tree.JetPuppiSDsubjet1mass[0] )
+                    self.ak8PuppiSDJetP4_Binned[iptbin] =  self.ak8PuppiSDJetP4Subjet0_Binned[iptbin] + self.ak8PuppiSDJetP4Subjet1_Binned[iptbin]
+                    self.ak8PuppiSDJetP4Subjet0PuppiCorrMass_Binned[iptbin] = self.CorrPUPPIMass( self.ak8PuppiSDJetP4Subjet0_Binned[iptbin].Perp() , self.ak8PuppiSDJetP4Subjet0_Binned[iptbin].Eta(), self.ak8PuppiSDJetP4Subjet0_Binned[iptbin].M()  )
+                    self.ak8PuppiSDJetP4Subjet1PuppiCorrMass_Binned[iptbin] = self.CorrPUPPIMass( self.ak8PuppiSDJetP4Subjet1_Binned[iptbin].Perp() , self.ak8PuppiSDJetP4Subjet1_Binned[iptbin].Eta(), self.ak8PuppiSDJetP4Subjet1_Binned[iptbin].M()  )
 
 
         self.puppitau21 = self.tree.JetPuppiTau21[0]
@@ -238,7 +237,7 @@ class B2GSelectSemiLepTTbar_Type2( ) :
         if not self.passed[0] : return self.passed
         self.passedCount[0] += 1
 
-        if not (self.ak8PuppiSDJetP4.Perp() > 200. and abs(self.ak8PuppiSDJetP4.Eta()) < 2.4 and self.ak8JetP4.DeltaR( self.lepsel.leptonP4) > 1.0  ) : return self.passed
+        if not (self.ak8PuppiSDJetP4.Perp() > 200. and abs(self.ak8PuppiSDJetP4.Eta()) < 2.4 and self.ak8Jet.DeltaR( self.lepsel.leptonP4) > 1.0  ) : return self.passed
         self.passed[1] = True
         self.passedCount[1] += 1
 

@@ -112,6 +112,8 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.ak8JetHT = None
         self.SDRhoRatio = None
  
+        self.ak8Jet_Ptbins = [200, 300, 400, 500, 800, 1000]
+
 
         ### PUPPI jet mass corrections
 
