@@ -60,7 +60,9 @@ class DataSample (ASample):
         else:
             print( " ERROR: NO luminosity input for sample named {}".format( self.name) )
          
-        datafile_list = [ROOT.TFile( self.iswhere + "/mudata_" + self.name  +"_" + self.nameTag  + ".root" ) ]
+        #datafile_list = [ROOT.TFile( self.iswhere + "/mudata_" + self.name  +"_" + self.nameTag  + ".root" ) ]
+        datafile_list = [ROOT.TFile( self.iswhere + "/singlemu_" + self.name  +"_" + self.nameTag  + ".root" ) ]
+        
         # e.g.  mudata_Run2016B_Dec12_type1.root
         #print("TFile is {}".format(datafile_list[0]))
         #print( "Using file named : {}".format( self.iswhere + "/mudata_" + self.name  +"_" + self.nameTag  + ".root"))

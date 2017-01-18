@@ -32,7 +32,9 @@ nev_wjets = [
 
 wjets_colors = [   ROOT.kWhite,ROOT.kRed - 9, ROOT.kRed - 7, ROOT.kRed - 4, ROOT.kRed, ROOT.kRed +1, ROOT.kRed +2   ]
 
-wjets_names = [ "100", "200", "400", "600", "800", "1200", "2500" ]
+#wjets_names = [ "100", "200", "400", "600", "800", "1200", "2500" ]
+wjets_names = [ "100to200", "200to400", "400to600", "600to800", "800to1200", "1200to2500", "2500toInf" ]
+
 
 # fix this : get new event yeilds
 xs_ST = [

@@ -41,7 +41,7 @@ class B2GSelectionPlotter() :
         '''
         parser.add_option('--nameTag', type='string', action='store',
                           dest='nameTag',
-                          default = 'Jan4_type1',
+                          default = 'hists_Type1_weight1',
                           help='nam of infiles e.g. agreewithSemilep_type1') # or type2
         '''                  
         parser.add_option('--allMC', action='store_true',
@@ -225,7 +225,8 @@ class B2GSelectionPlotter() :
         self.hists_MuData = []
         self.hists_ElData = []
 
-        self.runs = ["Run2016B", "Run2016C", "Run2016D", "Run2016E", "Run2016F", "Run2016G", "Run2016H"]
+        #self.runs = ["Run2016B", "Run2016C", "Run2016D", "Run2016E", "Run2016F", "Run2016G", "Run2016H"]
+        self.runs = ["run2016B", "run2016C", "run2016D", "run2016E", "run2016F", "run2016G", "run2016H"]
 
         ### Luminosity unit is inverse femtobarn
         self.runs_lumis_MuData = [5.888, 2.646, 4.353, 4.050, 3.157, 7.55, ( 8.633 + 0.217 ) ] 
