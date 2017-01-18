@@ -19,7 +19,7 @@ import time as time
 import ROOT
 
 
-class RunSemiLepTTbar(OptionParser) :
+class RunSemiLepTTbar() :
     '''
     Driver class for Semileptonic TTbar analyses.
     This will use "Selection" classes (the first below is B2GSelectSemiLepTTbar)
@@ -51,11 +51,6 @@ class RunSemiLepTTbar(OptionParser) :
                           default = '',
                           help='Output file string')
 
-        parser.add_option('--maxevents', type='int', action='store',
-                          default=-1,
-                          dest='maxevents',
-                          help='Number of events to run. -1 is all events')
-
         parser.add_option('--tau21Cut', type='float', action='store',
                           dest='tau21Cut',
                           default = 0.7,
@@ -70,6 +65,11 @@ class RunSemiLepTTbar(OptionParser) :
                           dest='bdiscmin',
                           default = 0.8484, ### Medium https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation80XReReco
                           help='B discriminator cut')
+
+        parser.add_option('--maxevents', type='int', action='store',
+                          default=-1,
+                          dest='maxevents',
+                          help='Number of events to run. -1 is all events')
 
         parser.add_option('--ignoreTrig', action='store_true',
                           dest='ignoreTrig',
@@ -107,18 +107,17 @@ class RunSemiLepTTbar(OptionParser) :
 
         
         print 'Getting entries'
-        entries = self.treeobj.tree.GetEntries()
-        self.eventsToRun = entries
+        self.entries = self.treeobj.tree.GetEntries()
+        self.eventsToRun = self.entries
 
         ### Create empty weights used for histo filling
         ### The total weight
         self.theWeight = 1.
-        self.EventWeight = None
-        self.PUWeight = None
-        self.TriggEffIs  = None
-        self.CutIDScaleFIs = None 
-        self.MuonHIPScaleFIs = None 
-
+        self.EventWeight = 1.
+        self.PUWeight = 1.
+        self.TriggEffIs  = 1.
+        self.CutIDScaleFIs = 1.
+        self.MuonHIPScaleFIs = 1.
 
         ### Here is the semileptonic ttbar selection for W jets
         if options.Type2 :
@@ -128,16 +127,17 @@ class RunSemiLepTTbar(OptionParser) :
             self.lepSelection = B2GSelectSemiLepTTbar_Iso2D.B2GSelectSemiLepTTbar_Iso2D( options, self.treeobj )
             self.hadSelection = B2GSelectSemiLepTTbar_Type1.B2GSelectSemiLepTTbar_Type1( options, self.treeobj, self.lepSelection )
         self.nstages = self.lepSelection.nstages + self.hadSelection.nstages
-
+        self.nlep = 2 # Electrons and muons
 
         ### TO-DO: Apply additional 1.5% systematic uncertainty to account for SFs and efficiencies 
 
         ### Array to count events passing each stage 
-        self.passedCutCount = [] 
-        for count in xrange(0, self.lepSelection.nstages):
-            self.passedCutCount.append(    self.lepSelection.passedCount[count]            )
-        for count in xrange(0, self.hadSelection.nstages):
-            self.passedCutCount.append(    self.hadSelection.passedCount[count]            )
+        for ilep in xrange(self.nlep):
+            self.passedCutCount.append([]) 
+            for count in xrange(0, self.lepSelection.nstages):
+                self.passedCutCount[ilep].append(    self.lepSelection.passedCount[count]            )
+            for count in xrange(0, self.hadSelection.nstages):
+                self.passedCutCount[ilep].append(    self.hadSelection.passedCount[count]            )
 
 
         ### Book histograms
@@ -153,11 +153,11 @@ class RunSemiLepTTbar(OptionParser) :
     def run(self):
      
         if self.maxevents > 0. :
-            self.eventsToRun = self.maxevents
+            self.eventsToRun = min( self.maxevents, self.entries )
         print 'processing ', self.eventsToRun, ' events'
 
         for jentry in xrange( self.eventsToRun ):
-            if jentry % 100000 == 0 :
+            if jentry % 10000 == 0 :
                 print 'processing ' + str(jentry)
             # get the next tree in the chain and verify            
             ientry = self.treeobj.tree.GetEntry( jentry )        
@@ -203,8 +203,6 @@ class RunSemiLepTTbar(OptionParser) :
 
         self.AK8puppitau21Hist = []
         self.AK8puppitau32Hist = []
-        self.AK8Tau21Hist      = []
-        self.AK8Tau32Hist      = []
 
         self.AK8EtaHist = []
         self.AK8MHist = []
@@ -213,8 +211,11 @@ class RunSemiLepTTbar(OptionParser) :
 
 
         self.AK8MSDSJ0Hist = []
-        self.AK8SDSJ0PtHist = []          
-
+        self.AK8SDSJ0PtHist = []      
+            
+        self.lepNames = ['Electron', 'Muon' ]
+        
+        
         # Create histos for type 1 selection binned by pt of leading SD subjet 
         b = self.hadSelection 
         #self.ak8Jet_Ptbins = [200, 300, 400, 500, 800, 1000]
@@ -232,48 +233,83 @@ class RunSemiLepTTbar(OptionParser) :
 
         ### List of all histograms
         self.hists = []
+        for ilep in xrange(self.nlep) :     
+            self.AK8PtHist.append([])       
+            self.AK8HTHist.append( [] )
+            self.AK8SDPtHist.append( [] )
+            self.AK8PuppiSDPtHist.append([])
+            self.AK8PuppiPtHist.append( [] )
+            self.AK8PuppiSDPtResponse.append( [] )
+            self.AK8SDPtResponse.append([])
+            self.AK8SDSJ0PtHist.append( [])
+            self.AK8EtaHist.append([])      
+            self.AK8puppitau21Hist.append([])
+            self.AK8puppitau32Hist.append([])
+            
 
-        for ival in xrange(self.nstages):
-            self.AK8PtHist.append( ROOT.TH1F("AK8PtHist" +  str(ival), "Jet p_{T}, Stage " + str(ival), 1000, 0, 1000) )
-            self.AK8HTHist.append( ROOT.TH1F("AK8HTHist" +  str(ival), "Jet H_{T}, Stage " + str(ival), 4000, 0, 4000) )
-            self.AK8SDPtHist.append( ROOT.TH1F("AK8SDPtHist" +  str(ival), "Jet SD p_{T}, Stage " + str(ival), 1000, 0, 1000) )
-            self.AK8PuppiSDPtHist.append( ROOT.TH1F("AK8PuppiSDPtHist" +  str(ival), "Jet Puppi SD p_{T}, Stage " + str(ival), 1000, 0, 1000) )
-            self.AK8PuppiPtHist.append( ROOT.TH1F("AK8PuppiPtHist" +  str(ival), "Jet p_{T}, Stage " + str(ival), 1000, 0, 1000) )
+            self.AK8MHist.append( [] )
+            self.AK8MSDHist.append( [] )
+            self.AK8SDRhoRatioHist.append( [] )
+            self.AK8MSDSJ0Hist.append( [] )
 
-            self.AK8PuppiSDPtResponse.append( ROOT.TH1F("AK8PuppiSDPtResponse" +  str(ival), "Jet p_{T}, Stage " + str(ival), 1000, 0, 1000) )
-            self.AK8SDPtResponse.append( ROOT.TH1F("AK8SDPtResponse" +  str(ival), "Jet p_{T}, Stage " + str(ival), 1000, 0, 1000) )
+            self.LeptonPtHist.append( [] )
+            self.LeptonEtaHist.append( [] )
 
-            self.AK8SDSJ0PtHist.append( ROOT.TH1F("AK8SDSJ0PtHist" +  str(ival), "SD subjet 0 P_{T}, Stage " + str(ival), 1000, 0, 1000) )
-            self.AK8EtaHist.append( ROOT.TH1F("AK8EtaHist" +  str(ival), "Jet #eta, Stage " + str(ival), 1000, -2.5, 2.5) )
-            self.AK8puppitau21Hist.append( ROOT.TH1F("AK8puppitau21Hist" +  str(ival), "Jet #tau_{21}, Stage " + str(ival), 1000, 0., 1.) )
-            self.AK8puppitau32Hist.append( ROOT.TH1F("AK8puppitau32Hist" +  str(ival), "Jet #tau_{32}, Stage " + str(ival), 1000, 0., 1.) )
-            self.AK8Tau21Hist.append( ROOT.TH1F("AK8Tau21Hist" +  str(ival), "Jet #tau_{21}, Stage " + str(ival), 1000, 0., 1.) )
-            self.AK8Tau32Hist.append( ROOT.TH1F("AK8Tau32Hist" +  str(ival), "Jet #tau_{32}, Stage " + str(ival), 1000, 0., 1.) )
-
-
-            self.AK8MHist.append( ROOT.TH1F("AK8MHist" +  str(ival), "Jet Mass, Stage " + str(ival), 1000, 0, 500) )
-            self.AK8MSDHist.append( ROOT.TH1F("AK8MSDHist" +  str(ival), "Jet Soft Dropped Mass, Stage " + str(ival), 1000, 0, 500) )
-            self.AK8SDRhoRatioHist.append( ROOT.TH1F("AK8SDRhoRatioHist" +  str(ival), "SD Rho Ratio, Stage " + str(ival), 1000, 0., 1.) )
-            self.AK8MSDSJ0Hist.append( ROOT.TH1F("AK8MSDSJ0Hist" +  str(ival), "Leading Subjet Soft Dropped Mass, Stage " + str(ival), 1000, 0, 500) )
-
-            self.LeptonPtHist.append( ROOT.TH1F("LeptonPtHist" +  str(ival), "Lepton p_{T}, Stage " + str(ival), 1000, 0, 1000) )
-            self.LeptonEtaHist.append( ROOT.TH1F("LeptonEtaHist" +  str(ival), "Lepton #eta, Stage " + str(ival), 1000, -2.5, 2.5) )
-
-            self.METPtHist.append( ROOT.TH1F("METPtHist" +  str(ival), "Missing p_{T}, Stage " + str(ival), 1000, 0, 1000) )
-            self.HTLepHist.append( ROOT.TH1F("HTLepHist" +  str(ival), "Lepton p_{T} + Missing p_{T}, Stage " + str(ival), 1000, 0, 1000) )
-            self.Iso2DHist.append ( ROOT.TH2F("Iso2DHist" +  str(ival), "Lepton 2D isolation (#Delta R vs p_{T}^{REL} ), Stage " + str(ival), 25, 0, 500, 25, 0, 1) )
-            self.AK4BdiscHist.append( ROOT.TH1F("AK4BdiscHist" +  str(ival), "CSVv2 B disc , Stage " + str(ival), 1000, 0., 1.) )
+            self.METPtHist.append( [] )
+            self.HTLepHist.append([] )
+            self.Iso2DHist.append ( [] )
+            self.AK4BdiscHist.append( [] )
 
             for iptbin, ptbin in enumerate(b.ak8Jet_Ptbins) :
                 if iptbin < 4:
-                    self.AK8MPtBinnedHistList.append( ROOT.TH1F("AK8MPt%sTo%sHist"%(ptbin, b.ak8Jet_Ptbins[iptbin+1]) +  str(ival), "Jet Mass, Stage " + str(ival), 1000, 0, 500) )
-                    self.AK8MSDPtBinnedHistList.append( ROOT.TH1F("AK8MSDPt%sTo%sHist"%(ptbin, b.ak8Jet_Ptbins[iptbin+1]) +  str(ival), "Jet Soft Dropped Mass, Stage " + str(ival), 1000, 0, 500) )
-                    self.AK8MSDSJ0PtBinnedHistList.append( ROOT.TH1F("AK8MSDSJ0Pt%sTo%sHist"%(ptbin, b.ak8Jet_Ptbins[iptbin+1]) +  str(ival), "Leading Subjet Soft Dropped Mass, Stage " + str(ival), 1000, 0, 500) )
-                    self.AK8MSDSJ1PtBinnedHistList.append( ROOT.TH1F("AK8MSDSJ1Pt%sTo%sHist"%(ptbin, b.ak8Jet_Ptbins[iptbin+1]) +  str(ival), "Sub-Leading Subjet Soft Dropped Mass, Stage " + str(ival), 1000, 0, 500) )
+                    self.AK8MPtBinnedHistList.append( [] )
+                    self.AK8MSDPtBinnedHistList.append( [] )
+                    self.AK8MSDSJ0PtBinnedHistList.append( [] )
+                    self.AK8MSDSJ1PtBinnedHistList.append( [] )
             
-            self.hCutFlow.append(ROOT.TH1F("hCutFlow" +  str(ival), " ;Stage " +  str(ival)+" of Selection; Events passing cuts ", 1, 0, 2 ) )
+            self.hCutFlow.append([]  )
 
-            self.WeightHist.append( ROOT.TH1F("WeightHist" +  str(ival), "Total Weight, Stage " + str(ival), 1000, -1.,2.) )
+            self.WeightHist.append( [] )
+
+            for ival in xrange(self.nstages):
+                self.AK8PtHist[ilep].append( ROOT.TH1F("AK8PtHist" +  self.lepNames[ilep] + str(ival), "Jet p_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 1000) )
+                self.AK8HTHist[ilep].append( ROOT.TH1F("AK8HTHist" +  self.lepNames[ilep] + str(ival), "Jet H_{T}, Stage " + self.lepNames[ilep] + str(ival), 4000, 0, 4000) )
+                self.AK8SDPtHist[ilep].append( ROOT.TH1F("AK8SDPtHist" +  self.lepNames[ilep] + str(ival), "Jet SD p_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 1000) )
+                self.AK8PuppiSDPtHist[ilep].append( ROOT.TH1F("AK8PuppiSDPtHist" +  self.lepNames[ilep] + str(ival), "Jet Puppi SD p_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 1000) )
+                self.AK8PuppiPtHist[ilep].append( ROOT.TH1F("AK8PuppiPtHist" +  self.lepNames[ilep] + str(ival), "Jet p_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 1000) )
+
+                self.AK8PuppiSDPtResponse[ilep].append( ROOT.TH1F("AK8PuppiSDPtResponse" +  self.lepNames[ilep] + str(ival), "Jet p_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 1000) )
+                self.AK8SDPtResponse[ilep].append( ROOT.TH1F("AK8SDPtResponse" +  self.lepNames[ilep] + str(ival), "Jet p_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 1000) )
+
+                self.AK8SDSJ0PtHist[ilep].append( ROOT.TH1F("AK8SDSJ0PtHist" +  self.lepNames[ilep] + str(ival), "SD subjet 0 P_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 1000) )
+                self.AK8EtaHist[ilep].append( ROOT.TH1F("AK8EtaHist" +  self.lepNames[ilep] + str(ival), "Jet #eta, Stage " + self.lepNames[ilep] + str(ival), 1000, -2.5, 2.5) )
+                self.AK8puppitau21Hist[ilep].append( ROOT.TH1F("AK8puppitau21Hist" +  self.lepNames[ilep] + str(ival), "Jet #tau_{21}, Stage " + self.lepNames[ilep] + str(ival), 1000, 0., 1.) )
+                self.AK8puppitau32Hist[ilep].append( ROOT.TH1F("AK8puppitau32Hist" +  self.lepNames[ilep] + str(ival), "Jet #tau_{32}, Stage " + self.lepNames[ilep] + str(ival), 1000, 0., 1.) )
+
+
+                self.AK8MHist[ilep].append( ROOT.TH1F("AK8MHist" +  self.lepNames[ilep] + str(ival), "Jet Mass, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 500) )
+                self.AK8MSDHist[ilep].append( ROOT.TH1F("AK8MSDHist" +  self.lepNames[ilep] + str(ival), "Jet Soft Dropped Mass, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 500) )
+                self.AK8SDRhoRatioHist[ilep].append( ROOT.TH1F("AK8SDRhoRatioHist" +  self.lepNames[ilep] + str(ival), "SD Rho Ratio, Stage " + self.lepNames[ilep] + str(ival), 1000, 0., 1.) )
+                self.AK8MSDSJ0Hist[ilep].append( ROOT.TH1F("AK8MSDSJ0Hist" +  self.lepNames[ilep] + str(ival), "Leading Subjet Soft Dropped Mass, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 500) )
+
+                self.LeptonPtHist[ilep].append( ROOT.TH1F("LeptonPtHist" +  self.lepNames[ilep] + str(ival), "Lepton p_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 1000) )
+                self.LeptonEtaHist[ilep].append( ROOT.TH1F("LeptonEtaHist" +  self.lepNames[ilep] + str(ival), "Lepton #eta, Stage " + self.lepNames[ilep] + str(ival), 1000, -2.5, 2.5) )
+
+                self.METPtHist[ilep].append( ROOT.TH1F("METPtHist" +  self.lepNames[ilep] + str(ival), "Missing p_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 1000) )
+                self.HTLepHist[ilep].append( ROOT.TH1F("HTLepHist" +  self.lepNames[ilep] + str(ival), "Lepton p_{T} + Missing p_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 1000) )
+                self.Iso2DHist[ilep].append ( ROOT.TH2F("Iso2DHist" +  self.lepNames[ilep] + str(ival), "Lepton 2D isolation (#Delta R vs p_{T}^{REL} ), Stage " + self.lepNames[ilep] + str(ival), 25, 0, 500, 25, 0, 1) )
+                self.AK4BdiscHist[ilep].append( ROOT.TH1F("AK4BdiscHist" +  self.lepNames[ilep] + str(ival), "CSVv2 B disc , Stage " + self.lepNames[ilep] + str(ival), 1000, 0., 1.) )
+
+                for iptbin, ptbin in enumerate(b.ak8Jet_Ptbins) :
+                    if iptbin < 4:
+                        self.AK8MPtBinnedHistList[ilep].append( ROOT.TH1F("AK8MPt%sTo%sHist"%(ptbin, b.ak8Jet_Ptbins[iptbin+1]) +  self.lepNames[ilep] + str(ival), "Jet Mass, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 500) )
+                        self.AK8MSDPtBinnedHistList[ilep].append( ROOT.TH1F("AK8MSDPt%sTo%sHist"%(ptbin, b.ak8Jet_Ptbins[iptbin+1]) +  self.lepNames[ilep] + str(ival), "Jet Soft Dropped Mass, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 500) )
+                        self.AK8MSDSJ0PtBinnedHistList[ilep].append( ROOT.TH1F("AK8MSDSJ0Pt%sTo%sHist"%(ptbin, b.ak8Jet_Ptbins[iptbin+1]) +  self.lepNames[ilep] + str(ival), "Leading Subjet Soft Dropped Mass, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 500) )
+                        self.AK8MSDSJ1PtBinnedHistList[ilep].append( ROOT.TH1F("AK8MSDSJ1Pt%sTo%sHist"%(ptbin, b.ak8Jet_Ptbins[iptbin+1]) +  self.lepNames[ilep] + str(ival), "Sub-Leading Subjet Soft Dropped Mass, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 500) )
+                
+                self.hCutFlow[ilep].append(ROOT.TH1F("hCutFlow" +  self.lepNames[ilep]+  str(ival), " ;Stage " +  self.lepNames[ilep]+  str(ival)+" of Selection; Events passing cuts ", 1, 0, 2 ) )
+
+                self.WeightHist[ilep].append( ROOT.TH1F("WeightHist" +  self.lepNames[ilep]+  str(ival), "Total Weight, Stage "+  self.lepNames[ilep] + str(ival), 1000, -1.,2.) )
 
     def fill( self, index ) :
         '''
@@ -282,15 +318,18 @@ class RunSemiLepTTbar(OptionParser) :
         '''
         a = self.lepSelection
         b = self.hadSelection 
+        ilep = a.tree.LeptonIsMu[0]     
+        print 'ilep = ', ilep       
 
         ### Define the weights used for histo filling
-        self.EventWeight = 1.# self.lepSelection.EventWeight
-        self.PUWeight = 1.#self.lepSelection.PUWeight
-        self.TriggEffIs  = 1.#self.lepSelection.TriggEffIs
-        self.CutIDScaleFIs = 1.#self.lepSelection.CutIDScaleFIs
-        self.CutIDScaleFLooseIs =1.# self.lepSelection.CutIDScaleFLooseIs
-        self.MuonHIPScaleFIs = 1.#self.lepSelection.MuonHIPScaleFIs
-        self.BtagWeight =  1.#self.lepSelection.BtagWeight
+        self.theWeight = self.lepSelection.theWeight
+        self.EventWeight =  self.lepSelection.EventWeight
+        self.PUWeight = self.lepSelection.PUWeight
+        self.TriggEffIs  = self.lepSelection.TriggEffIs
+        self.CutIDScaleFIs = self.lepSelection.CutIDScaleFIs
+        self.CutIDScaleFLooseIs = self.lepSelection.CutIDScaleFLooseIs
+        self.MuonHIPScaleFIs = self.lepSelection.MuonHIPScaleFIs
+        self.BtagWeight =  self.lepSelection.BtagWeight
 
         if self.verbose and index == 0 : print "Event weight {0:2.4f} * PU weight {1:2.4f} *Trigger Eff. {2:2.4f} * Cut ID {3:2.4f} * HIP SF {4:2.4f} * Btag SF {5:2.4f} * self.CutIDScaleFLooseIs {6:2.4f}".format(self.EventWeight , self.PUWeight , self.TriggEffIs , self.CutIDScaleFIs, self.MuonHIPScaleFIs, self.BtagWeight, self.CutIDScaleFLooseIs)
 
@@ -305,6 +344,7 @@ class RunSemiLepTTbar(OptionParser) :
             self.theWeight =  self.EventWeight * self.PUWeight * self.TriggEffIs * self.CutIDScaleFLooseIs
             if self.verbose : print "theWeight for stage {} is : {} =  self.EventWeight {} * self.PUWeight {} * self.TriggEffIs {} *self.CutIDScaleFLooseIs {}".format(index ,self.theWeight,  self.EventWeight , self.PUWeight ,self.TriggEffIs,  self.CutIDScaleFLooseIs)
         if index == 2: 
+            self.theWeight =  self.EventWeight * self.PUWeight * self.TriggEffIs * self.CutIDScaleFLooseIs
             if self.verbose : print "theWeight for stage {} is : {}".format(index ,self.theWeight)
         ### Cut based ID
         if index == 3: 
@@ -321,53 +361,38 @@ class RunSemiLepTTbar(OptionParser) :
         #if self.verbose : print "Event weight {1:2.4f} * PU weight {2:2.4f} *Trigger Eff. {3:2.4f} * Cut ID {4:2.4f} * HIP SF {5:2.4f} * Btag SF {6:2.4f}".format(self.EventWeight , self.PUWeight , self.TriggEffIs , self.CutIDScaleFIs, self.MuonHIPScaleFIs, self.BtagWeight)
 
 
-        self.hCutFlow[index].Fill(self.passedCutCount[index])
-        self.WeightHist[index].Fill(self.theWeight )
-
-        self.ak8JetP4 = None
-        self.ak8JetP4Raw = None
-
-        self.ak8SDJetP4 = None
-        self.ak8SDJetP4Raw = None
-
-        self.ak8PuppiJetP4 = None
-        self.ak8PuppiJetP4Raw = None
-
-        self.ak8PuppiSDJetP4 = None
-        self.ak8PuppiSDJetP4Raw = None
-
+        self.hCutFlow[ilep][index].Fill(self.passedCutCount[ilep][index])
+        self.WeightHist[ilep][index].Fill(self.theWeight )
 
         if b.ak8JetP4 != None :
-            self.AK8PtHist[index].Fill( b.ak8JetP4.Perp()* 1.000  , self.theWeight )  ### TO-DO : Implement Pt smear in hadselection and replace 1.000 with b.PtSmear
-            self.AK8HTHist[index].Fill( b.ak8JetHT  , self.theWeight )
-            #self.AK8Tau32Hist[index].Fill( b.puppitau32  , self.theWeight )
-            #self.AK8Tau21Hist[index].Fill( b.puppitau21  , self.theWeight )
+            self.AK8PtHist[ilep][index].Fill( b.ak8JetP4.Perp()* b.PtSmear   , self.theWeight )  ### TO-DO : Implement Pt smear in hadselection and replace 1.000 with b.PtSmear
+            self.AK8HTHist[ilep][index].Fill( b.ak8JetHT  , self.theWeight )
             if b.ak8SDJetP4 != None and b.SDptGenpt != None :
-                self.AK8SDPtResponse[index].Fill( b.SDptGenpt , b.ak8JetP4.Perp() )#* b.PtSmear )    
+                self.AK8SDPtResponse[ilep][index].Fill( b.SDptGenpt , b.ak8JetP4.Perp() * b.PtSmear )    
 
         if b.ak8SDJetP4 != None :
-            self.AK8SDPtHist[index].Fill( b.ak8SDJetP4.Perp() * 1.000  , self.theWeight )
+            self.AK8SDPtHist[ilep][index].Fill( b.ak8SDJetP4.Perp() * b.PtSmear  , self.theWeight )
 
         if b.ak8PuppiJetP4 != None :
-            self.AK8PuppiPtHist[index].Fill( b.ak8PuppiJetP4.Perp() * 1.000  , self.theWeight ) #  b.PuppiPtSmear
-            self.AK8EtaHist[index].Fill( b.ak8PuppiJetP4.Eta()  , self.theWeight )
-            self.AK8puppitau21Hist[index].Fill( b.puppitau21  , self.theWeight )
-            self.AK8puppitau32Hist[index].Fill( b.puppitau32  , self.theWeight )
+            self.AK8PuppiPtHist[ilep][index].Fill( b.ak8PuppiJetP4.Perp() * b.PuppiPtSmear  , self.theWeight )
+            self.AK8EtaHist[ilep][index].Fill( b.ak8PuppiJetP4.Eta()  , self.theWeight )
+            self.AK8puppitau21Hist[ilep][index].Fill( b.puppitau21  , self.theWeight )
+            self.AK8puppitau32Hist[ilep][index].Fill( b.puppitau32  , self.theWeight )
 
-            self.AK8MHist[index].Fill( b.ak8_Puppim  , self.theWeight )
+            self.AK8MHist[ilep][index].Fill( b.ak8_Puppim  , self.theWeight )
             if b.ak8PuppiSDJetP4 != None :
                 if b.ak8PuppiJetP4  != None and b.SDptPuppipt != None :
-                    self.AK8PuppiSDPtResponse[index].Fill(b.SDptPuppipt  , b.ak8PuppiJetP4.Perp()  ) #* b.PuppiPtSmear )  
+                    self.AK8PuppiSDPtResponse[ilep][index].Fill(b.SDptPuppipt  , b.ak8PuppiJetP4.Perp() )# * b.PuppiPtSmear )  
 
         if  b.SDRhoRatio  != None :
-            self.AK8SDRhoRatioHist[index].Fill(b.SDRhoRatio  , self.theWeight ) 
+            self.AK8SDRhoRatioHist[ilep][index].Fill(b.SDRhoRatio  , self.theWeight ) 
 
 
         if b.ak8PuppiSDJetP4 != None :
-            self.AK8MSDHist[index].Fill( b.ak8PuppiSD_m  , self.theWeight )
-            self.AK8PuppiSDPtHist[index].Fill( b.ak8PuppiSDJetP4.Perp() ) #* b.PuppiPtSmear  , self.theWeight )
-            self.AK8SDSJ0PtHist[index].Fill( b.ak8PuppiSDJetP4_Subjet0.Perp() ) #* b.PuppiPtSmear  , self.theWeight )
-            self.AK8MSDSJ0Hist[index].Fill( b.ak8SDsj0_m  , self.theWeight )
+            self.AK8MSDHist[ilep][index].Fill( b.ak8PuppiSD_m  , self.theWeight )
+            self.AK8PuppiSDPtHist[ilep][index].Fill( b.ak8PuppiSDJetP4.Perp() * b.PuppiPtSmear  , self.theWeight )
+            self.AK8SDSJ0PtHist[ilep][index].Fill( b.ak8PuppiSDJetP4_Subjet0.Perp() * b.PuppiPtSmear  , self.theWeight )
+            self.AK8MSDSJ0Hist[ilep][index].Fill( b.ak8SDsj0_m  , self.theWeight )
 
 
             # Filling jet mass histos binned by pt of the leading SD subjet
@@ -376,10 +401,10 @@ class RunSemiLepTTbar(OptionParser) :
             '''
             for iptbin, ptbin in enumerate(b.ak8Jet_Ptbins) :
                 if iptbin < 4:
-                    thePthist = self.AK8MPtBinnedHistList[iptbin]
-                    theSDPthist = self.AK8MSDPtBinnedHistList[iptbin]
-                    theSDsj0Pthist = self.AK8MSDSJ0PtBinnedHistList[iptbin]
-                    theSDsj1Pthist = self.AK8MSDSJ1PtBinnedHistList[iptbin]
+                    thePthist = self.AK8MPtBinnedHistList[ilep][iptbin]
+                    theSDPthist = self.AK8MSDPtBinnedHistList[ilep][iptbin]
+                    theSDsj0Pthist = self.AK8MSDSJ0PtBinnedHistList[ilep][iptbin]
+                    theSDsj1Pthist = self.AK8MSDSJ1PtBinnedHistList[ilep][iptbin]
 
 
                     if  b.ak8PuppiJetP4_Binned[iptbin].M() > 0 :
@@ -391,13 +416,13 @@ class RunSemiLepTTbar(OptionParser) :
 
             '''
         if a.leptonP4 != None : 
-            self.LeptonPtHist[index].Fill( a.leptonP4.Perp()  , self.theWeight )
-            self.LeptonEtaHist[index].Fill( a.leptonP4.Eta()  , self.theWeight )
-            self.METPtHist[index].Fill( a.nuP4.Perp() , self.theWeight  )
-            self.HTLepHist[index].Fill( a.leptonP4.Perp() + a.nuP4.Perp()  , self.theWeight )
+            self.LeptonPtHist[ilep][index].Fill( a.leptonP4.Perp()  , self.theWeight )
+            self.LeptonEtaHist[ilep][index].Fill( a.leptonP4.Eta()  , self.theWeight )
+            self.METPtHist[ilep][index].Fill( a.nuP4.Perp() , self.theWeight  )
+            self.HTLepHist[ilep][index].Fill( a.leptonP4.Perp() + a.nuP4.Perp()  , self.theWeight )
             if a.ak4Jet != None : 
-                self.Iso2DHist[index].Fill( a.leptonP4.Perp( a.ak4Jet.Vect() ), a.leptonP4.DeltaR( a.ak4Jet )  , self.theWeight  )
-                self.AK4BdiscHist[index].Fill(b.ak4JetBdisc , self.theWeight)
+                self.Iso2DHist[ilep][index].Fill( a.leptonP4.Perp( a.ak4Jet.Vect() ), a.leptonP4.DeltaR( a.ak4Jet )  , self.theWeight  )
+                self.AK4BdiscHist[ilep][index].Fill(b.ak4JetBdisc , self.theWeight)
 
 
 

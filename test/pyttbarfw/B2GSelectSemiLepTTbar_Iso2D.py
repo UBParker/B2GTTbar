@@ -77,7 +77,8 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         self.leptonP4 = None
         self.nuP4 = None
         self.ak4Jet = None
-
+        self.ak8Jet = None
+        self.ak8SDJet = None
 
         if self.verbose: print "self.trigIndex[0] {}".format(self.trigIndex[0])
         #self.printAK4Warning = True
@@ -86,12 +87,13 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         self.passedCount = [0] * self.nstages
 
         ### Create empty weights used for histo filling
-        self.EventWeight = None
-        self.PUWeight = None
-        self.TriggEffIs  = None
-        self.CutIDScaleFIs = None 
-        self.CutIDScaleFLooseIs = None
-        self.MuonHIPScaleFIs = None
+        self.theWeight = 1.
+        self.EventWeight = 1.
+        self.PUWeight = 1.
+        self.TriggEffIs  = 1.
+        self.CutIDScaleFIs = 1.
+        self.CutIDScaleFLooseIs =1.
+        self.MuonHIPScaleFIs =1.
 
 
         ### Muon trigger efficiency corrections
@@ -148,7 +150,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         ### Flag to distinguish data from MC
         self.itIsData = None
         theFileIs = self.infile
-        if theFileIs.find("Run2016")== -1 : 
+        if theFileIs.find("un2016")== -1 : 
             self.itIsData = False
             if self.verbose :  
                 print "MC : Event and PU weights != 1"

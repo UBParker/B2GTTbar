@@ -53,7 +53,7 @@ class B2GSelectSemiLepTTbar_Type2( ) :
 
         self.ak8Jet_Ptbins = [200, 300, 400, 500, 800, 1000]
 
-        # PUPPI jet mass corrections
+        ### PUPPI jet mass corrections
 
         self.finCor1 = ROOT.TFile.Open( "./puppiCorr.root","READ")
         self.puppisd_corrGEN      = self.finCor1.Get("puppiJECcorr_gen")
@@ -61,29 +61,40 @@ class B2GSelectSemiLepTTbar_Type2( ) :
         self.puppisd_corrRECO_for = self.finCor1.Get("puppiJECcorr_reco_1v3eta2v5")
 
 
+        ### Flag to distinguish data from MC
+        self.itIsData = None
+        theFileIs = self.infile
+        if theFileIs.find("un2016")== -1 : 
+            self.itIsData = False
+            self.PtSmear = None
+            self.PuppiPtSmear = None
+            if self.verbose :  
+                print "MC : Event and PU weights != 1"
+
+        else : 
+            self.itIsData = True   
+            self.PtSmear = 1.0  
+            self.PuppiPtSmear = 1.0             
+            if self.verbose : print "DATA : weights = 1" 
     """
         This is the "select" function that does the work for the event selection. If you have any complicated
         stuff to do, do it here and create a class member variable to cache the results. 
     """
     def select( self ) :
 
-        self.EventWeight = self.tree.SemiLeptEventWeight[0]
-        self.PUWeight = self.tree.SemiLeptPUweight[0]  
+        self.passedCount = [0] * self.nstages
+
         self.PuppiCorr = self.tree.JetPuppiCorrFactor[0]  
         self.Corr = self.tree.JetCorrFactor[0]  
         self.CorrL2L3 = self.tree.JetSDptCorrL23[0]  
-        self.CorrL2L3SD = self.tree.JetSDmassCorrL23
-
-        if self.verbose : print "The infile is : {}".format(self.infile)
-
-        theFileIs = self.infile
-        if theFileIs.find("Run2016")== -1 : 
-            if self.verbose : print "Not data"
-        else :
-            self.EventWeight = 1.0                                    
-            self.PUWeight = 1.0                        
-            if self.verbose :  print "This is DATA : setting weights to 1."   
-
+        self.CorrL2L3SD = self.tree.JetSDmassCorrL23[0]
+        if self.itIsData :
+            self.PtSmear = 1.
+            self.PuppiPtSmear = 1.
+        else:
+            self.PtSmear = self.tree.JetPtSmearFactor[0]
+            self.PuppiPtSmear = self.tree.JetPuppiPtSmearFactor[0]
+            
         self.ak8JetP4 = None
         self.ak8JetP4Raw = None
 
@@ -98,15 +109,8 @@ class B2GSelectSemiLepTTbar_Type2( ) :
 
         self.puppitau32 = None
         self.puppitau21 = None
-
-        self.ak8PuppiSDJetP4_Subjet0 = None
-        self.ak8PuppiSDJetP4_Subjet1 = None        
-        
-        self.SDptPuppipt = None
-        self.SDptGenpt = None
-        
-        self.ak8JetHT = 0.
-        self.SDRhoRatio = None
+        self.tau32      = None
+        self.tau21      = None
 
         self.theNeutrino = ROOT.TLorentzVector( )
         self.theNeutrino.SetPxPyPzE(self.tree.SemiLeptMETpx[0], self.tree.SemiLeptMETpy[0], 0.0, self.tree.SemiLeptMETpt[0])
