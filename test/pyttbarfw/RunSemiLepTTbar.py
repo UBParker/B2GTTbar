@@ -284,13 +284,13 @@ class RunSemiLepTTbar(OptionParser) :
         b = self.hadSelection 
 
         ### Define the weights used for histo filling
-        self.EventWeight =  self.lepSelection.EventWeight
-        self.PUWeight = self.lepSelection.PUWeight
-        self.TriggEffIs  = self.lepSelection.TriggEffIs
-        self.CutIDScaleFIs = self.lepSelection.CutIDScaleFIs
-        self.CutIDScaleFLooseIs = self.lepSelection.CutIDScaleFLooseIs
-        self.MuonHIPScaleFIs = self.lepSelection.MuonHIPScaleFIs
-        self.BtagWeight =  self.lepSelection.BtagWeight
+        self.EventWeight = 1.# self.lepSelection.EventWeight
+        self.PUWeight = 1.#self.lepSelection.PUWeight
+        self.TriggEffIs  = 1.#self.lepSelection.TriggEffIs
+        self.CutIDScaleFIs = 1.#self.lepSelection.CutIDScaleFIs
+        self.CutIDScaleFLooseIs =1.# self.lepSelection.CutIDScaleFLooseIs
+        self.MuonHIPScaleFIs = 1.#self.lepSelection.MuonHIPScaleFIs
+        self.BtagWeight =  1.#self.lepSelection.BtagWeight
 
         if self.verbose and index == 0 : print "Event weight {0:2.4f} * PU weight {1:2.4f} *Trigger Eff. {2:2.4f} * Cut ID {3:2.4f} * HIP SF {4:2.4f} * Btag SF {5:2.4f} * self.CutIDScaleFLooseIs {6:2.4f}".format(self.EventWeight , self.PUWeight , self.TriggEffIs , self.CutIDScaleFIs, self.MuonHIPScaleFIs, self.BtagWeight, self.CutIDScaleFLooseIs)
 
