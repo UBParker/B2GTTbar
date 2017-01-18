@@ -283,7 +283,7 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.ak8PuppiSDJetP4Raw =   self.ak8PuppiSDJetP4
         self.ak8PuppiSDJetP4 =   self.ak8PuppiSDJetP4 * self.PuppiCorr
         if self.ak8PuppiSDJetP4Raw !=None :
-            if self.ak8PuppiSDJetP4.Perp() > 0.1 :
+            if self.ak8PuppiSDJetP4.Perp() > 0.001 :
                 self.SDRhoRatio = pow( self.ak8PuppiSDJetP4.M() / (self.ak8PuppiSDJetP4.Perp()*0.8) , 2)
             self.ak8PuppiSD_m = self.CorrPUPPIMass( 
                                                    self.ak8PuppiSDJetP4Raw.Perp(),
