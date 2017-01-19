@@ -50,7 +50,6 @@ class B2GSelectSemiLepTTbar_Type2( ) :
         self.SDptGenpt = None
         self.ak8JetHT = None
         self.SDRhoRatio = None
-        self.ak8JetHT = None
         self.ak8Jet_Ptbins = [200, 300, 400, 500, 800, 1000]
 
         ### PUPPI jet mass corrections
@@ -81,7 +80,14 @@ class B2GSelectSemiLepTTbar_Type2( ) :
         stuff to do, do it here and create a class member variable to cache the results. 
     """
     def select( self ) :
-
+        
+        self.PuppiCorr = None
+        self.Corr = None
+        self.CorrL2L3 = None
+        self.CorrL2L3SD = None
+        self.PtSmear = None
+        self.PuppiPtSmear = None
+            
         self.PuppiCorr = self.tree.JetPuppiCorrFactor[0]  
         self.Corr = self.tree.JetCorrFactor[0]  
         self.CorrL2L3 = self.tree.JetSDptCorrL23[0]  

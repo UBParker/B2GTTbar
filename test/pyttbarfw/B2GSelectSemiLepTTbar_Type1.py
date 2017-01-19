@@ -19,6 +19,7 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         if self.verbose : print "The infile is : {}".format(self.infile)
 
         self.nstages = 8
+        
         self.tree = tree
         self.lepsel = lepsel
         self.passed = [False] * self.nstages
@@ -70,7 +71,7 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.tau32      = None
         self.tau21      = None
 
-        self.ak8PuppiSDJet_Subjet0 = None
+        self.ak8PuppiSDJetP4_Subjet0 = None
         self.ak8PuppiSDJetP4_Subjet1 = None
         self.ak8PuppiSDJetP4_Subjet0Raw = None
         self.ak8PuppiSDJetP4_Subjet1Raw = None
@@ -144,16 +145,6 @@ class B2GSelectSemiLepTTbar_Type1( ) :
     """
     def select( self ) :
 
-        self.PuppiCorr = self.tree.JetPuppiCorrFactor[0]  
-        self.Corr = self.tree.JetCorrFactor[0]  
-        self.CorrL2L3 = self.tree.JetSDptCorrL23[0]  
-        self.CorrL2L3SD = self.tree.JetSDmassCorrL23[0]
-        if self.itIsData :
-            self.PtSmear = 1.
-            self.PuppiPtSmear = 1.
-        else:
-            self.PtSmear = self.tree.JetPtSmearFactor[0]
-            self.PuppiPtSmear = self.tree.JetPuppiPtSmearFactor[0]
             
         self.ak8JetP4 = None
         self.ak8JetP4Raw = None
@@ -434,6 +425,26 @@ class B2GSelectSemiLepTTbar_Type1( ) :
             self.ak8SDsubjet0tau21 = self.ak8SDsubjet0tau2 / self.ak8SDsubjet0tau1
             #if self.verbose : print "SD subjet 0 tau21 is: {0:2.2f}".format(self.ak8SDsubjet0tau21)
 
+
+        self.PuppiCorr = None
+        self.Corr = None
+        self.CorrL2L3 = None
+        self.CorrL2L3SD = None
+        self.PtSmear = None
+        self.PuppiPtSmear = None
+            
+            
+        self.PuppiCorr = self.tree.JetPuppiCorrFactor[0]  
+        self.Corr = self.tree.JetCorrFactor[0]  
+        self.CorrL2L3 = self.tree.JetSDptCorrL23[0]  
+        self.CorrL2L3SD = self.tree.JetSDmassCorrL23[0]
+        if self.itIsData :
+            self.PtSmear = 1.
+            self.PuppiPtSmear = 1.
+        else:
+            self.PtSmear = self.tree.JetPtSmearFactor[0]
+            self.PuppiPtSmear = self.tree.JetPuppiPtSmearFactor[0]
+            
 
         # Work the cut flow
         self.passedCount = [0] * self.nstages

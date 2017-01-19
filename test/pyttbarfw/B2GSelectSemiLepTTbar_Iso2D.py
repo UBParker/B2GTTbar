@@ -168,14 +168,10 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         self.leptonP4 = None
         self.nuP4 = None
         self.ak4Jet = None
+        
 
-        ### MC generator weights and PU  weights
-        if self.itIsData :
-            self.EventWeight = 1.0
-            self.PUWeight = 1.0
-        else:
-            self.EventWeight = self.tree.SemiLeptEventWeight[0]
-            self.PUWeight = self.tree.SemiLeptPUweight[0]               
+        ### Define the 4 vectors of the leptonic top system
+
 
         self.leptonP4 = ROOT.TLorentzVector()
         self.leptonP4.SetPtEtaPhiM( 
@@ -184,7 +180,40 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
                                    self.tree.LeptonPhi[0], 
                                                        0. )
 
-        ### Muon trigger efficiency and cut based ID weights  (NOTE: Add these to type 2 and also add Iso SF in that case)
+        self.nuP4 = ROOT.TLorentzVector()
+        self.nuP4 = ROOT.TLorentzVector( 
+                                        self.tree.SemiLeptMETpt[0],
+                                        self.tree.SemiLeptMETpx[0], 
+                                        self.tree.SemiLeptMETpy[0], 
+                                                                0. )
+
+        
+        ### B tag SF (To be applied after b-tag is required at stage 12 in type1 and type2)
+        self.ak4Jet = ROOT.TLorentzVector( )        
+        self.ak4Jet.SetPtEtaPhiM( self.tree.AK4_dRminLep_Pt[0],
+                                  self.tree.AK4_dRminLep_Eta[0],
+                                  self.tree.AK4_dRminLep_Phi[0],
+                                  self.tree.AK4_dRminLep_Mass[0] )
+
+
+
+                                                                
+        self.EventWeight = None
+        self.PUWeight = None
+        self.TriggEffIs = None
+        self.CutIDScaleFLooseIs = None
+        self.CutIDScaleFIs = None
+        self.MuonHIPScaleFIs = None
+        self.BtagWeight = None
+        
+        ### MC generator weights and PU  weights
+        if self.itIsData :
+            self.EventWeight = 1.0
+            self.PUWeight = 1.0
+        else:
+            self.EventWeight = self.tree.SemiLeptEventWeight[0]
+            self.PUWeight = self.tree.SemiLeptPUweight[0]              
+            
         if self.tree.LeptonIsMu[0] == 1 and not self.itIsData and self.leptonP4 != None  :
             self.TriggEffIs = self.MuonTriggEff( self.leptonP4.Perp() , abs(self.leptonP4.Eta())   , self.tree.SemiLeptRunNum[0] )
             if self.verbose : "Muon trigger eff is {0:2.2f} for pt {1:2.2f} and abs(eta) {2:2.2f}".format(self.TriggEffIs,self.leptonP4.Perp() , abs(self.leptonP4.Eta())  )
@@ -198,13 +227,6 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
             self.MuonHIPScaleFIs = self.MuonHIPScaleF( self.leptonP4.Eta() )
             if self.verbose : "Muon HIP SF is {0:2.2f} for eta {1:2.2f}".format(self.MuonHIPScaleFIs, self.leptonP4.Eta()  )
 
-        ### B tag SF (To be applied after b-tag is required)
-        self.ak4Jet = ROOT.TLorentzVector( )        
-        self.ak4Jet.SetPtEtaPhiM( self.tree.AK4_dRminLep_Pt[0],
-                                  self.tree.AK4_dRminLep_Eta[0],
-                                  self.tree.AK4_dRminLep_Phi[0],
-                                  self.tree.AK4_dRminLep_Mass[0] )
-
         if  self.itIsData :        self.BtagWeight = 1.0
         else: self.BtagWeight = self.reader.eval_auto_bounds(
                                                         'central',      # systematic (here also 'up'/'down' possible)
@@ -213,20 +235,6 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
                                                         self.ak4Jet.Perp()            # pt
                                                     )
 
-        ### Define the 4 vectors of the leptonic top system
-
-        self.nuP4 = ROOT.TLorentzVector()
-        self.nuP4 = ROOT.TLorentzVector( 
-                                        self.tree.SemiLeptMETpt[0],
-                                        self.tree.SemiLeptMETpx[0], 
-                                        self.tree.SemiLeptMETpy[0], 
-                                                                0. )
-        self.ak4Jet0 = ROOT.TLorentzVector()
-        self.ak4Jet0.SetPtEtaPhiM( 
-                                    self.tree.AK4_dRminLep_Pt[0], 
-                                    self.tree.AK4_dRminLep_Eta[0], 
-                                    self.tree.AK4_dRminLep_Phi[0], 
-                                    self.tree.AK4_dRminLep_Mass[0] )
 
         '''
         if self.printAK4Warning :
@@ -294,22 +302,22 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
             return self.passed
         self.passed[4] = True
         self.passedCount[4] += 1
-        if self.verbose  : print "Stage 4: Muon is HighPt"
+        if self.verbose  : print "Stage 4: Muon is HighPt and self.tree.SemiLeptPassMETFilters[0] is {}".format(self.tree.SemiLeptPassMETFilters[0] )
 
-        if not ( ( self.tree.LeptonIsMu[0] == 1 and self.nuP4.Perp() > self.muonMETPtCut) or (self.tree.LeptonIsMu[0] == 0 and self.nuP4.Perp() > self.electronMETPtCut) ) and self.tree.SemiLeptPassMETFilters[0] == 1  : return self.passed 
+        if not ( ( self.tree.LeptonIsMu[0] == 1 and self.nuP4.Perp() > self.muonMETPtCut) or (self.tree.LeptonIsMu[0] == 0 and self.nuP4.Perp() > self.electronMETPtCut) )  : return self.passed 
         self.passed[5] = True
         self.passedCount[5] += 1
         if self.verbose : 
             if self.tree.LeptonIsMu[0] == 1 :
-                print "Stage 5: Muon passed MET filters and MET pt {0:2.2f} GeV > ( {1:2.2f} GeV ) ".format(
+                print "Stage 5: Muon (FIX didn't use: passed MET filters) and MET pt {0:2.2f} GeV > ( {1:2.2f} GeV ) ".format(
                                                                         self.nuP4.Perp(),
                                                                         self.muonMETPtCut )
             else:
-                print "Stage 5: Electron passed MET filters and MET pt {0:2.2f} GeV > ( {1:2.2f} GeV ) ".format(
+                print "Stage 5: Electron (FIX didn't use: passed MET filters) and MET pt {0:2.2f} GeV > ( {1:2.2f} GeV ) ".format(
                                                                         self.nuP4.Perp(),
                                                                         self.electronMETPtCut )
  
-        if not ( self.ak4Jet0.Perp() > self.AK4jet0PtCut and abs(self.ak4Jet0.Eta()) < self.AK4EtaCut  ) : return self.passed    
+        if not ( self.ak4Jet.Perp() > self.AK4jetPtCut and abs(self.ak4Jet.Eta()) < self.AK4EtaCut  ) : return self.passed    
         self.passed[6] = True
         self.passedCount[6] += 1
         if self.verbose : print "Stage 6: AK4 jet pt {0:2.2f} GeV > ( {1:2.2f} GeV ) and eta {2:2.2f} < ( {3:2.2f} )".format( 

@@ -102,21 +102,13 @@ class B2GSelectSemiLepTTbar_IsoStd( ) :
     """
     def select( self ) :
 
+        self.leptonP4 = None
         self.nuP4 = None
         self.ak4Jet = None
-        self.leptonP4 = None
-                
-        self.ak8Jet = None
-        self.ak8SDJet = None
         
 
-        self.nuP4 = ROOT.TLorentzVector( self.tree.SemiLeptMETpt[0], self.tree.SemiLeptMETpx[0], self.tree.SemiLeptMETpy[0], 0. )
-        
-        
-        self.ak4Jet = ROOT.TLorentzVector()
-        self.ak4Jet.SetPtEtaPhiM( self.tree.AK4_dRminLep_Pt[0], self.tree.AK4_dRminLep_Eta[0], self.tree.AK4_dRminLep_Phi[0], self.tree.AK4_dRminLep_Mass[0] )
+        ### Define the 4 vectors of the leptonic top system
 
-             
 
         self.leptonP4 = ROOT.TLorentzVector()
         self.leptonP4.SetPtEtaPhiM( 
@@ -125,7 +117,15 @@ class B2GSelectSemiLepTTbar_IsoStd( ) :
                                    self.tree.LeptonPhi[0], 
                                                        0. )
 
+        self.nuP4 = ROOT.TLorentzVector()
+        self.nuP4 = ROOT.TLorentzVector( 
+                                        self.tree.SemiLeptMETpt[0],
+                                        self.tree.SemiLeptMETpx[0], 
+                                        self.tree.SemiLeptMETpy[0], 
+                                                                0. )
 
+        
+        ### B tag SF (To be applied after b-tag is required at stage 12 in type1 and type2)
         self.ak4Jet = ROOT.TLorentzVector( )        
         self.ak4Jet.SetPtEtaPhiM( self.tree.AK4_dRminLep_Pt[0],
                                   self.tree.AK4_dRminLep_Eta[0],
