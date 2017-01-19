@@ -95,11 +95,12 @@ class RunSemiLepTTbar() :
         ### of things from the tree
         self.treeobj = B2GTTreeSemiLep( options )
 
+        
         self.options = options
         self.verbose = options.verbose
         self.infile = options.infile
         self.maxevents = options.maxevents
-
+        
         
         print 'Getting entries'
         entries = self.treeobj.tree.GetEntries()              
@@ -311,7 +312,9 @@ class RunSemiLepTTbar() :
         self.CutIDScaleFLooseIs = a.CutIDScaleFLooseIs
         self.MuonHIPScaleFIs = a.MuonHIPScaleFIs
         self.BtagWeight =  a.BtagWeight
-
+        
+        self.theWeight = 1.
+        '''
         #if self.verbose and index == 0 : print "Event weight {0:2.4f} * PU weight {1:2.4f} *Trigger Eff. {2:2.4f} * Cut ID {3:2.4f} * HIP SF {4:2.4f} * Btag SF {5:2.4f} * self.CutIDScaleFLooseIs {6:2.4f}".format(self.EventWeight , self.PUWeight , self.TriggEffIs , self.CutIDScaleFIs, self.MuonHIPScaleFIs, self.BtagWeight, self.CutIDScaleFLooseIs)
 
         ### The total weight depends on the stage of selection
@@ -344,7 +347,7 @@ class RunSemiLepTTbar() :
 
         #self.hCutFlow[ilep][index].Fill(self.passedCutCount[ilep][index])
         self.WeightHist[ilep][index].Fill(self.theWeight )
-
+        '''
         if b.ak8JetP4 != None :
             self.AK8PtHist[ilep][index].Fill( b.ak8JetP4.Perp()* b.PtSmear   , self.theWeight )  ### TO-DO : Implement Pt smear in hadselection and replace 1.000 with b.PtSmear
             self.AK8HTHist[ilep][index].Fill( b.ak8JetHT  , self.theWeight )
@@ -353,6 +356,7 @@ class RunSemiLepTTbar() :
 
         if b.ak8SDJetP4 != None :
             self.AK8SDPtHist[ilep][index].Fill( b.ak8SDJetP4.Perp() * b.PtSmear  , self.theWeight )
+            self.AK8MSDHist[ilep][index].Fill( b.ak8PuppiSD_m  , self.theWeight )
 
         if b.ak8PuppiJetP4 != None :
             self.AK8PuppiPtHist[ilep][index].Fill( b.ak8PuppiJetP4.Perp() * b.PuppiPtSmear  , self.theWeight )
@@ -370,7 +374,6 @@ class RunSemiLepTTbar() :
 
 
         if b.ak8PuppiSDJetP4 != None :
-            self.AK8MSDHist[ilep][index].Fill( b.ak8PuppiSD_m  , self.theWeight )
             self.AK8PuppiSDPtHist[ilep][index].Fill( b.ak8PuppiSDJetP4.Perp() * b.PuppiPtSmear  , self.theWeight )
             self.AK8SDSJ0PtHist[ilep][index].Fill( b.ak8PuppiSDJetP4_Subjet0.Perp() * b.PuppiPtSmear  , self.theWeight )
             self.AK8MSDSJ0Hist[ilep][index].Fill( b.ak8SDsj0_m  , self.theWeight )
