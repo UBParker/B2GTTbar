@@ -195,13 +195,19 @@ class RunSemiLepTTbar() :
         self.lepNames = ['Electron', 'Muon' ]
         
         
-        # Create histos for type 1 selection binned by pt of leading SD subjet 
-        #self.ak8Jet_Ptbins = [200, 300, 400, 500, 800, 1000]
-        self.AK8MPtBinnedHistList = []* len(b.ak8Jet_Ptbins)
-        self.AK8MSDPtBinnedHistList = [] * len(b.ak8Jet_Ptbins)
-        self.AK8MSDSJ0PtBinnedHistList = [] * len(b.ak8Jet_Ptbins)
-        self.AK8MSDSJ1PtBinnedHistList = [] * len(b.ak8Jet_Ptbins)
- 
+        # Create histos for type 1 selection binned by pt of leading SD subjet
+        self.AK8MPtBinnedHistList = [[], [] ,[], [] , []]
+        self.AK8MSDPtBinnedHistList = [[], [] ,[], [] , []]
+        self.AK8MSDSJ0PtBinnedHistList = [[], [] ,[], [] , []]
+        self.AK8MSDSJ1PtBinnedHistList = [[], [] ,[], [] , []]
+        '''
+        for iptbin, ptbin in enumerate(b.ak8Jet_Ptbins) :
+            if iptbin < 5:
+                self.AK8MPtBinnedHistList.append([])
+                self.AK8MSDPtBinnedHistList.append([])
+                self.AK8MSDSJ0PtBinnedHistList.append([])
+                self.AK8MSDSJ1PtBinnedHistList.append([])
+        '''
         ### Weights histogram with total weight applied to the event when filling histograms
         self.WeightHist = []
 
@@ -235,14 +241,14 @@ class RunSemiLepTTbar() :
             self.AK4BdiscHist.append( [] )
 
             for iptbin, ptbin in enumerate(b.ak8Jet_Ptbins) :
-                if iptbin < 4:
+                if iptbin < 5:
                     print"self.AK8MPtBinnedHistList {} of length {}".format(self.AK8MPtBinnedHistList, len(self.AK8MPtBinnedHistList))
                     self.AK8MPtBinnedHistList[iptbin].append( [] )
                     self.AK8MSDPtBinnedHistList[iptbin].append( [] )
                     self.AK8MSDSJ0PtBinnedHistList[iptbin].append( [] )
                     self.AK8MSDSJ1PtBinnedHistList[iptbin].append( [] )
             
-            self.hCutFlow.append([]  )
+            #self.hCutFlow.append([]  )
 
             self.WeightHist.append( [] )
 
@@ -282,7 +288,7 @@ class RunSemiLepTTbar() :
                         self.AK8MSDSJ0PtBinnedHistList[iptbin][ilep].append( ROOT.TH1F("AK8MSDSJ0Pt%sTo%sHist"%(ptbin, b.ak8Jet_Ptbins[iptbin+1]) +  self.lepNames[ilep] + str(ival), "Leading Subjet Soft Dropped Mass, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 500) )
                         self.AK8MSDSJ1PtBinnedHistList[iptbin][ilep].append( ROOT.TH1F("AK8MSDSJ1Pt%sTo%sHist"%(ptbin, b.ak8Jet_Ptbins[iptbin+1]) +  self.lepNames[ilep] + str(ival), "Sub-Leading Subjet Soft Dropped Mass, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 500) )
                 
-                self.hCutFlow[ilep].append(ROOT.TH1F("hCutFlow" +  self.lepNames[ilep]+  str(ival), " ;Stage " +  self.lepNames[ilep]+  str(ival)+" of Selection; Events passing cuts ", 1, 0, 2 ) )
+                #self.hCutFlow[ilep].append(ROOT.TH1F("hCutFlow" +  self.lepNames[ilep]+  str(ival), " ;Stage " +  self.lepNames[ilep]+  str(ival)+" of Selection; Events passing cuts ", 1, 0, 2 ) )
 
                 self.WeightHist[ilep].append( ROOT.TH1F("WeightHist" +  self.lepNames[ilep]+  str(ival), "Total Weight, Stage "+  self.lepNames[ilep] + str(ival), 1000, -1.,2.) )
 
@@ -336,7 +342,7 @@ class RunSemiLepTTbar() :
         #if self.verbose : print "Event weight {1:2.4f} * PU weight {2:2.4f} *Trigger Eff. {3:2.4f} * Cut ID {4:2.4f} * HIP SF {5:2.4f} * Btag SF {6:2.4f}".format(self.EventWeight , self.PUWeight , self.TriggEffIs , self.CutIDScaleFIs, self.MuonHIPScaleFIs, self.BtagWeight)
 
 
-        self.hCutFlow[ilep][index].Fill(self.passedCutCount[ilep][index])
+        #self.hCutFlow[ilep][index].Fill(self.passedCutCount[ilep][index])
         self.WeightHist[ilep][index].Fill(self.theWeight )
 
         if b.ak8JetP4 != None :

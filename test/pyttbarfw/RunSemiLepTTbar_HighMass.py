@@ -71,6 +71,12 @@ class RunSemiLepTTbar_HighMass() :
                           dest='ignoreTrig',
                           default = False,
                           help='Ignore the trigger?')
+
+        parser.add_option('--verbose', action='store_true',
+                          default=False,
+                          dest='verbose',
+                          help='Do you want to print values of key variables?')
+
         
 
         (options, args) = parser.parse_args(argv)
@@ -176,12 +182,12 @@ class RunSemiLepTTbar_HighMass() :
         '''
         a = self.lepSelection
         b = self.hadSelection        
-        if b.ak8Jet != None :
-            self.AK8PtHist[index].Fill( b.ak8Jet.Perp() )
-            self.AK8EtaHist[index].Fill( b.ak8Jet.Eta() )
-            self.AK8MHist[index].Fill( b.ak8Jet.M() )
-            self.AK8MSDHist[index].Fill( b.ak8SDJet.M() )
-            self.AK8MSDSJ0Hist[index].Fill( b.ak8SDJet_Subjet0.M() )
+        if b.ak8JetP4 != None :
+            self.AK8PtHist[index].Fill( b.ak8JetP4.Perp() )
+            self.AK8EtaHist[index].Fill( b.ak8JetP4.Eta() )
+            self.AK8MHist[index].Fill( b.ak8JetP4.M() )
+            self.AK8MSDHist[index].Fill( b.ak8SDJetP4.M() )
+            self.AK8MSDSJ0Hist[index].Fill( b.ak8PuppiSDJetP4_Subjet0.M() )
 
         if a.leptonP4 != None : 
             self.LeptonPtHist[index].Fill( a.leptonP4.Perp() )

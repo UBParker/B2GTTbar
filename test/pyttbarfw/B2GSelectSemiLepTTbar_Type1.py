@@ -145,6 +145,26 @@ class B2GSelectSemiLepTTbar_Type1( ) :
     """
     def select( self ) :
 
+        self.PuppiCorr = None
+        self.Corr = None
+        self.CorrL2L3 = None
+        self.CorrL2L3SD = None
+        self.PtSmear = None
+        self.PuppiPtSmear = None
+
+
+        self.PuppiCorr = self.tree.JetPuppiCorrFactor[0]
+        self.Corr = self.tree.JetCorrFactor[0]
+        self.CorrL2L3 = self.tree.JetSDptCorrL23[0]
+        self.CorrL2L3SD = self.tree.JetSDmassCorrL23[0]
+        if self.itIsData :
+            self.PtSmear = 1.
+            self.PuppiPtSmear = 1.
+        else:
+            self.PtSmear = self.tree.JetPtSmearFactor[0]
+            self.PuppiPtSmear = self.tree.JetPuppiPtSmearFactor[0]
+
+
             
         self.ak8JetP4 = None
         self.ak8JetP4Raw = None
@@ -423,28 +443,7 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.ak8SDsubjet0tau21 = 1.0
         if self.ak8SDsubjet0tau1 > 0.001:
             self.ak8SDsubjet0tau21 = self.ak8SDsubjet0tau2 / self.ak8SDsubjet0tau1
-            #if self.verbose : print "SD subjet 0 tau21 is: {0:2.2f}".format(self.ak8SDsubjet0tau21)
-
-
-        self.PuppiCorr = None
-        self.Corr = None
-        self.CorrL2L3 = None
-        self.CorrL2L3SD = None
-        self.PtSmear = None
-        self.PuppiPtSmear = None
-            
-            
-        self.PuppiCorr = self.tree.JetPuppiCorrFactor[0]  
-        self.Corr = self.tree.JetCorrFactor[0]  
-        self.CorrL2L3 = self.tree.JetSDptCorrL23[0]  
-        self.CorrL2L3SD = self.tree.JetSDmassCorrL23[0]
-        if self.itIsData :
-            self.PtSmear = 1.
-            self.PuppiPtSmear = 1.
-        else:
-            self.PtSmear = self.tree.JetPtSmearFactor[0]
-            self.PuppiPtSmear = self.tree.JetPuppiPtSmearFactor[0]
-            
+            #if self.verbose : print "SD subjet 0 tau21 is: {0:2.2f}".format(self.ak8SDsubjet0tau21)            
 
         # Work the cut flow
         self.passedCount = [0] * self.nstages
@@ -491,7 +490,7 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.passedCount[5] += 1
         if self.verbose : print "Stage 15: AK8 SD subjet 0 mass  ({0}) < {1:2.2f} GeV < ({2})  [mass is after puppi mass corr]".format( self.minAK8sjMass ,  self.ak8PuppiSD_subjet0_m  , self.maxAK8sjMass)
 
-        if self.verbose : print "mass of sd subjet 0 after puppi corr in bin 200-300 {0:2.3f}, 300-400 {1:2.3f}, 400-500 {2:2.3f}, 500-800 {3:2.3f}".format(self.ak8SDsj0_m200,self.ak8SDsj0_m300,self.ak8SDsj0_m400,self.ak8SDsj0_m500)
+        #if self.verbose : print "mass of sd subjet 0 after puppi corr in bin 200-300 {0:2.3f}, 300-400 {1:2.3f}, 400-500 {2:2.3f}, 500-800 {3:2.3f}".format(self.ak8SDsj0_m200,self.ak8SDsj0_m300,self.ak8SDsj0_m400,self.ak8SDsj0_m500)
 
 
         if self.verbose :print " tau21 of SD subjet 0 is: {0:2.2f}".format( float( self.ak8SDsubjet0tau21) )

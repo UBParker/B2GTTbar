@@ -188,38 +188,39 @@ class B2GSelectSemiLepTTbar_IsoStd( ) :
             self.passed[1] = True
         self.passedCount[1] += 1
 
-        if not ( self.tree.LeptonIsMu[0] == 1  and self.tree.MuHighPt[0] ==1 ): return self.passed #or  (self.tree.LeptonIsMu[0] == 0 and self.leptonP4.Perp() > 120. and (0. < abs(self.leptonP4.Eta()) < 1.442 or 1.56  < abs(self.leptonP4.Eta()) < 2.5 )and self.tree.Electron_noiso_passTight[0] == 1 and  self.tree.Electron_iso_passHEEP[0] ==1  )  ): return self.passed
+        if not ( self.tree.LeptonIsMu[0] == 1  and self.tree.MuHighPt[0] ==1 ) or (self.tree.LeptonIsMu[0] == 0 and  self.tree.Electron_iso_passHEEP[0] ==1 ): return self.passed #or  (self.tree.LeptonIsMu[0] == 0 and self.leptonP4.Perp() > 120. and (0. < abs(self.leptonP4.Eta()) < 1.442 or 1.56  < abs(self.leptonP4.Eta()) < 2.5 )and self.tree.Electron_noiso_passTight[0] == 1 and  self.tree.Electron_iso_passHEEP[0] ==1  )  ): return self.passed
         self.passed[2] = True
         self.passedCount[2] += 1 
         
-        if not ( self.tree.LeptonIsMu[0] == 1 and  self.tree.MuTight[0] == 1  ) :  return self.passed  #or  (self.tree.LeptonIsMu[0] == 0 and self.leptonP4.Perp() > 120. and (0. < abs(self.leptonP4.Eta()) < 1.442 or 1.56  < abs(self.leptonP4.Eta()) < 2.5 )and self.tree.Electron_noiso_passTight[0] == 1 and  self.tree.Electron_iso_passHEEP[0] ==1  )  ): return self.passed
+        if not ( self.tree.LeptonIsMu[0] == 1 and  self.tree.MuTight[0] == 1  ) or (self.tree.LeptonIsMu[0] == 0 and self.tree.Electron_noiso_passTight[0] == 1 ):  return self.passed  #or  (self.tree.LeptonIsMu[0] == 0 and self.leptonP4.Perp() > 120. and (0. < abs(self.leptonP4.Eta()) < 1.442 or 1.56  < abs(self.leptonP4.Eta()) < 2.5 )and self.tree.Electron_noiso_passTight[0] == 1 and  self.tree.Electron_iso_passHEEP[0] ==1  )  ): return self.passed
         self.passed[3] = True
         self.passedCount[3] += 1         
 
 
-        if not ( self.tree.LeptonIsMu[0] == 1 and self.leptonP4.Perp() > 53. and abs(self.leptonP4.Eta()) < 2.1 ): return self.passed  # and self.tree.MuTight[0] == 1 and self.tree.MuIso[0] < 0.1 and self.tree.MuHighPt[0] ==1 ) or  (self.tree.LeptonIsMu[0] == 0 and self.leptonP4.Perp() > 120. and (0. < abs(self.leptonP4.Eta()) < 1.442 or 1.56  < abs(self.leptonP4.Eta()) < 2.5 )and self.tree.Electron_noiso_passTight[0] == 1 and  self.tree.Electron_iso_passHEEP[0] ==1  )  ): return self.passed
+        if not ( self.tree.LeptonIsMu[0] == 1 and self.leptonP4.Perp() > 53. and abs(self.leptonP4.Eta()) < 2.1 ) or  (self.tree.LeptonIsMu[0] == 0 and self.leptonP4.Perp() > 120. and (0. < abs(self.leptonP4.Eta()) < 1.442 or 1.56  < abs(self.leptonP4.Eta()) < 2.5 )  ): return self.passed
         self.passed[4] = True
         self.passedCount[4] += 1        
 
 
-        if not ( self.tree.LeptonIsMu[0] == 1 and self.tree.MuIso[0] < 0.1 ): return self.passed  # and self.tree.MuTight[0] == 1 and self.tree.MuIso[0] < 0.1 and self.tree.MuHighPt[0] ==1 ) or  (self.tree.LeptonIsMu[0] == 0 and self.leptonP4.Perp() > 120. and (0. < abs(self.leptonP4.Eta()) < 1.442 or 1.56  < abs(self.leptonP4.Eta()) < 2.5 )and self.tree.Electron_noiso_passTight[0] == 1 and  self.tree.Electron_iso_passHEEP[0] ==1  )  ): return self.passed
+        if not ( self.tree.LeptonIsMu[0] == 1 and self.tree.MuIso[0] < 0.1 )  or  (self.tree.LeptonIsMu[0] == 0 ):
+            return self.passed
         self.passed[5] = True
         self.passedCount[5] += 1 
         
         
-        if not ( self.tree.LeptonIsMu[0] == 1 and self.nuP4.Perp() > 40.): return self.passed  #or ( self.tree.LeptonIsMu[0] == 0 and self.nuP4.Perp() > 80.) : return self.passed
+        if not ( self.tree.LeptonIsMu[0] == 1 and self.nuP4.Perp() > 40.) or ( self.tree.LeptonIsMu[0] == 0 and self.nuP4.Perp() > 80.) : return self.passed
         self.passed[6] = True
         self.passedCount[6] += 1
         
-        if not ( self.tree.LeptonIsMu[0] == 1 and self.ak4Jet.Perp() > 30. and abs(self.ak4Jet.Eta()) < 2.4  ) : return self.passed
+        if not ( self.ak4Jet.Perp() > 30. and abs(self.ak4Jet.Eta()) < 2.4  ) : return self.passed
         self.passed[7] = True
         self.passedCount[7] += 1
         
-        if not ( self.tree.LeptonIsMu[0] == 1 and self.tree.DeltaRJetLep[0] > .4 ) : return self.passed # To-do: Hemisphere cut btw lepton and W candidate ak8 , check this is actually dR(lep, AK8)
+        if not (  self.tree.DeltaRJetLep[0] > .4 ) : return self.passed # To-do: Hemisphere cut btw lepton and W candidate ak8 , check this is actually dR(lep, AK8)
         self.passed[8] = True
         self.passedCount[8] += 1
 
-        if not (  self.tree.LeptonIsMu[0] == 1 and (self.leptonP4 + self.nuP4).Perp() > 200. )    : return self.passed
+        if not (  (self.leptonP4 + self.nuP4).Perp() > 200. )    : return self.passed
         self.passed[9] = True
         self.passedCount[9] += 1
         

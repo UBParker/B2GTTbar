@@ -59,7 +59,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
 
 
         # Stage 6 : Leptonic-side AK4 jet selection
-        self.AK4jet0PtCut = 50.
+        self.AK4jetPtCut = 50.
         self.AK4EtaCut = 2.4
 
         # Stage 7 : 2D cut (decrease QCD contamination)
@@ -321,9 +321,9 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         self.passed[6] = True
         self.passedCount[6] += 1
         if self.verbose : print "Stage 6: AK4 jet pt {0:2.2f} GeV > ( {1:2.2f} GeV ) and eta {2:2.2f} < ( {3:2.2f} )".format( 
-                                                                                             self.ak4Jet0.Perp(),
-                                                                                             self.AK4jet0PtCut, 
-                                                                                             self.ak4Jet0.Eta(),
+                                                                                             self.ak4Jet.Perp(),
+                                                                                             self.AK4jetPtCut, 
+                                                                                             self.ak4Jet.Eta(),
                                                                                              self.AK4EtaCut)       
 
         # NOTE: This jet cut was found to be strongly suboptimal by the semileptonic team. They had better performance at pt > 15 GeV, with 
