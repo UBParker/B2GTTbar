@@ -131,7 +131,8 @@ class RunSemiLepTTbar() :
 
         ### TO-DO: Apply additional 1.5% systematic uncertainty to account for SFs and efficiencies 
 
-        ### Array to count events passing each stage 
+        ### Array to count events passing each stage
+        self.passedCutCount = [] 
         for ilep in xrange(self.nlep):
             self.passedCutCount.append([]) 
             for count in xrange(0, self.lepSelection.nstages):
