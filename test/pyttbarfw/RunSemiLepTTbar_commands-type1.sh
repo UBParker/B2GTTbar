@@ -12,6 +12,21 @@ python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/aparker/B2
 
 python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/rappocc/B2GAnaFWFiles16Dec2016/singlemu_run2016H.root --outfile singlemu_run2016H_hists_Type1_weight1.root  >& singlemu_run2016H_hists_Type1_weight1.txt &
 
+
+
+python RunSemiLepTTbar.py --infile root://131.225.207.127:1094//store/user/rappocc/B2GAnaFWFiles16Dec2016/singleelectron_run2016B_promptreco.root  --outfile singleel_run2016B_hists_Type1_weight1.root >& singleel_run2016B_hists_Type1_weight1.txt &
+
+python RunSemiLepTTbar.py --infile root://131.225.207.127:1094//store/user/rappocc/B2GAnaFWFiles16Dec2016/singleelectron_run2016C_promptreco.root  --outfile singleel_run2016C_hists_Type1_weight1.root >& singleel_run2016C_hists_Type1_weight1.txt &
+
+python RunSemiLepTTbar.py --infile root://131.225.207.127:1094//store/user/rappocc/B2GAnaFWFiles16Dec2016/singleelectron_run2016D_promptreco.root  --outfile singleel_run2016D_hists_Type1_weight1.root >& singleel_run2016D_hists_Type1_weight1.txt &
+
+python RunSemiLepTTbar.py --infile root://131.225.207.127:1094//store/user/rappocc/B2GAnaFWFiles16Dec2016/singleelectron_run2016E_promptreco.root  --outfile singleel_run2016E_hists_Type1_weight1.root >& singleel_run2016E_hists_Type1_weight1.txt &
+
+python RunSemiLepTTbar.py --infile root://131.225.207.127:1094//store/user/rappocc/B2GAnaFWFiles16Dec2016/singleelectron_run2016F_promptreco.root  --outfile singleel_run2016F_hists_Type1_weight1.root >& singleel_run2016F_hists_Type1_weight1.txt &
+
+python RunSemiLepTTbar.py --infile root://131.225.207.127:1094//store/user/rappocc/B2GAnaFWFiles16Dec2016/singleelectron_run2016G_promptreco.root  --outfile singleel_run2016G_hists_Type1_weight1.root >& singleel_run2016G_hists_Type1_weight1.txt &
+
+
 python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/haddFiles/Puppi_ttjets_b2gtreeV3.root --outfile ttjets__hists_Type1_weight1.root    >& ttjets_hists_Type1_weight1.txt &
 
 
@@ -29,6 +44,8 @@ python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B
 
 python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_2500_V4.root --outfile wjets_2500toInf_hists_Type1_weight1.root --ignoreTrig >& wjets2500_hists_Type1_weight1.txt &
 
+
+
 python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ST_schannel_V4.root --outfile ST_schannel_hists_Type1_weight1.root --ignoreTrig >& ST_schannel_hists_Type1_weight1.txt &
 
 python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ST_tW-top_V4.root --outfile ST_tW-top_hists_Type1_weight1.root --ignoreTrig >& ST_tW-top_hists_Type1_weight1.txt &
@@ -38,6 +55,8 @@ python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B
 python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtreeV4_ST_t-channel_top_1of1.root --outfile ST_t-channel_top_hists_Type1_weight1.root --ignoreTrig >& ST_t-channel_top_hists_Type1_weight1.txt &
 
 python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtreeV4_ST_tW_antitop_1of1.root --outfile ST_tW_antitop_hists_Type1_weight1.root --ignoreTrig >& ST_tW_antitop_hists_Type1_weight1.txt &
+
+
 
 python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht100_V4.root --outfile QCD_Ht100_hists_Type1_weight1.root --ignoreTrig >& QCD_Ht100_hists_Type1_weight1.txt &
 

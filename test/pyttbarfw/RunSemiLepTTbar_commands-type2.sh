@@ -12,6 +12,21 @@ python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/aparker/B2
 
 python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/rappocc/B2GAnaFWFiles16Dec2016/singlemu_run2016H.root --Type2 --outfile singlemu_run2016H_hists_Type2_weight1.root  >& singlemu_run2016H_hists_Type2_weight1.txt &
 
+
+python RunSemiLepTTbar.py --infile root://131.225.207.127:1094//store/user/rappocc/B2GAnaFWFiles16Dec2016/singleelectron_run2016B_promptreco.root --Type2  --outfile singleel_run2016B_hists_Type2_weight1.root >& singleel_run2016B_hists_Type2_weight1.txt &
+
+python RunSemiLepTTbar.py --infile root://131.225.207.127:1094//store/user/rappocc/B2GAnaFWFiles16Dec2016/singleelectron_run2016C_promptreco.root  --Type2 --outfile singleel_run2016C_hists_Type2_weight1.root >& singleel_run2016C_hists_Type2_weight1.txt &
+
+python RunSemiLepTTbar.py --infile root://131.225.207.127:1094//store/user/rappocc/B2GAnaFWFiles16Dec2016/singleelectron_run2016D_promptreco.root  --Type2 --outfile singleel_run2016D_hists_Type2_weight1.root >& singleel_run2016D_hists_Type2_weight1.txt &
+
+python RunSemiLepTTbar.py --infile root://131.225.207.127:1094//store/user/rappocc/B2GAnaFWFiles16Dec2016/singleelectron_run2016E_promptreco.root  --Type2 --outfile singleel_run2016E_hists_Type2_weight1.root >& singleel_run2016E_hists_Type2_weight1.txt &
+
+python RunSemiLepTTbar.py --infile root://131.225.207.127:1094//store/user/rappocc/B2GAnaFWFiles16Dec2016/singleelectron_run2016F_promptreco.root  --Type2 --outfile singleel_run2016F_hists_Type2_weight1.root >& singleel_run2016F_hists_Type2_weight1.txt &
+
+python RunSemiLepTTbar.py --infile root://131.225.207.127:1094//store/user/rappocc/B2GAnaFWFiles16Dec2016/singleelectron_run2016G_promptreco.root  --Type2 --outfile singleel_run2016G_hists_Type2_weight1.root >& singleel_run2016G_hists_Type2_weight1.txt &
+
+
+
 python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/asparker/B2G2016/haddFiles/Puppi_ttjets_b2gtreeV3.root --Type2 --outfile ttjets__hists_Type2_weight1.root    >& ttjets_hists_Type2_weight1.txt &
 
 
