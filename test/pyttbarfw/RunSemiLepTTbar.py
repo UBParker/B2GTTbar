@@ -201,10 +201,6 @@ class RunSemiLepTTbar() :
         self.AK8MSDPtBinnedHistList = [] * len(b.ak8Jet_Ptbins)
         self.AK8MSDSJ0PtBinnedHistList = [] * len(b.ak8Jet_Ptbins)
         self.AK8MSDSJ1PtBinnedHistList = [] * len(b.ak8Jet_Ptbins)
-        ### ^^^ Check this, may be wrong
-
-        ### Cut-Flow Histogram with number of events passing each cut
-        self.hCutFlow = []
  
         ### Weights histogram with total weight applied to the event when filling histograms
         self.WeightHist = []
@@ -240,6 +236,7 @@ class RunSemiLepTTbar() :
 
             for iptbin, ptbin in enumerate(b.ak8Jet_Ptbins) :
                 if iptbin < 4:
+                    print"self.AK8MPtBinnedHistList {} of length {}".format(self.AK8MPtBinnedHistList, len(self.AK8MPtBinnedHistList))
                     self.AK8MPtBinnedHistList[iptbin].append( [] )
                     self.AK8MSDPtBinnedHistList[iptbin].append( [] )
                     self.AK8MSDSJ0PtBinnedHistList[iptbin].append( [] )
