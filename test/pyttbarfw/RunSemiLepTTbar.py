@@ -323,16 +323,16 @@ class RunSemiLepTTbar() :
         print 'ilep = ', ilep       
 
         ### Define the weights used for histo filling
-        self.theWeight = self.lepSelection.theWeight
-        self.EventWeight =  self.lepSelection.EventWeight
-        self.PUWeight = self.lepSelection.PUWeight
-        self.TriggEffIs  = self.lepSelection.TriggEffIs
-        self.CutIDScaleFIs = self.lepSelection.CutIDScaleFIs
-        self.CutIDScaleFLooseIs = self.lepSelection.CutIDScaleFLooseIs
-        self.MuonHIPScaleFIs = self.lepSelection.MuonHIPScaleFIs
-        self.BtagWeight =  self.lepSelection.BtagWeight
+        self.theWeight = a.theWeight
+        self.EventWeight =  a.EventWeight
+        self.PUWeight = a.PUWeight
+        self.TriggEffIs  = a.TriggEffIs
+        self.CutIDScaleFIs = a.CutIDScaleFIs
+        self.CutIDScaleFLooseIs = a.CutIDScaleFLooseIs
+        self.MuonHIPScaleFIs = a.MuonHIPScaleFIs
+        self.BtagWeight =  a.BtagWeight
 
-        if self.verbose and index == 0 : print "Event weight {0:2.4f} * PU weight {1:2.4f} *Trigger Eff. {2:2.4f} * Cut ID {3:2.4f} * HIP SF {4:2.4f} * Btag SF {5:2.4f} * self.CutIDScaleFLooseIs {6:2.4f}".format(self.EventWeight , self.PUWeight , self.TriggEffIs , self.CutIDScaleFIs, self.MuonHIPScaleFIs, self.BtagWeight, self.CutIDScaleFLooseIs)
+        #if self.verbose and index == 0 : print "Event weight {0:2.4f} * PU weight {1:2.4f} *Trigger Eff. {2:2.4f} * Cut ID {3:2.4f} * HIP SF {4:2.4f} * Btag SF {5:2.4f} * self.CutIDScaleFLooseIs {6:2.4f}".format(self.EventWeight , self.PUWeight , self.TriggEffIs , self.CutIDScaleFIs, self.MuonHIPScaleFIs, self.BtagWeight, self.CutIDScaleFLooseIs)
 
         ### The total weight depends on the stage of selection
         #self.theWeight =  self.EventWeight * self.PUWeight
@@ -364,7 +364,8 @@ class RunSemiLepTTbar() :
 
         self.hCutFlow[ilep][index].Fill(self.passedCutCount[ilep][index])
         self.WeightHist[ilep][index].Fill(self.theWeight )
-
+        self.theWeight = 1.
+        print"Set weight to 1 for filling histos"
         if b.ak8JetP4 != None :
             self.AK8PtHist[ilep][index].Fill( b.ak8JetP4.Perp()* b.PtSmear   , self.theWeight )  ### TO-DO : Implement Pt smear in hadselection and replace 1.000 with b.PtSmear
             self.AK8HTHist[ilep][index].Fill( b.ak8JetHT  , self.theWeight )

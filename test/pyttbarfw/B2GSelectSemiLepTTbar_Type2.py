@@ -82,8 +82,6 @@ class B2GSelectSemiLepTTbar_Type2( ) :
     """
     def select( self ) :
 
-        self.passedCount = [0] * self.nstages
-
         self.PuppiCorr = self.tree.JetPuppiCorrFactor[0]  
         self.Corr = self.tree.JetCorrFactor[0]  
         self.CorrL2L3 = self.tree.JetSDptCorrL23[0]  

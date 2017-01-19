@@ -28,19 +28,10 @@ class B2GSelectSemiLepTTbar_IsoStd( ) :
         self.passed = [False] * self.nstages  
         self.passedCount = [0] * self.nstages
         
-
-        self.passed = [False] * self.nstages  
-        self.passedCount = [0] * self.nstages
-
         ### Create empty weights used for histo filling
         self.theWeight = 1.
         self.EventWeight = 1.
         self.PUWeight = 1.
-        self.TriggEffIs  = 1.
-        self.CutIDScaleFIs = 1.
-        self.CutIDScaleFLooseIs = 1.
-        self.MuonHIPScaleFIs = 1.
-
 
         ### Muon trigger efficiency corrections
   
@@ -82,7 +73,7 @@ class B2GSelectSemiLepTTbar_IsoStd( ) :
 
         # make a reader instance and load the sf data
         self.reader = ROOT.BTagCalibrationReader(
-            0,              # 0 is for loose op, 1: medium, 2: tight, 3: discr. reshaping
+            1,              # 0 is for loose op, 1: medium, 2: tight, 3: discr. reshaping
             "central",      # central systematic type
             self.v_sys,          # vector of other sys. types
         )    
@@ -111,24 +102,21 @@ class B2GSelectSemiLepTTbar_IsoStd( ) :
     """
     def select( self ) :
 
-        self.leptonP4 = None
         self.nuP4 = None
         self.ak4Jet = None
+        self.leptonP4 = None
+                
         self.ak8Jet = None
         self.ak8SDJet = None
         
 
         self.nuP4 = ROOT.TLorentzVector( self.tree.SemiLeptMETpt[0], self.tree.SemiLeptMETpx[0], self.tree.SemiLeptMETpy[0], 0. )
+        
+        
         self.ak4Jet = ROOT.TLorentzVector()
         self.ak4Jet.SetPtEtaPhiM( self.tree.AK4_dRminLep_Pt[0], self.tree.AK4_dRminLep_Eta[0], self.tree.AK4_dRminLep_Phi[0], self.tree.AK4_dRminLep_Mass[0] )
 
-        ### MC generator weights and PU  weights
-        if self.itIsData :
-            self.EventWeight = 1.0
-            self.PUWeight = 1.0
-        else:
-            self.EventWeight = self.tree.SemiLeptEventWeight[0]
-            self.PUWeight = self.tree.SemiLeptPUweight[0]               
+             
 
         self.leptonP4 = ROOT.TLorentzVector()
         self.leptonP4.SetPtEtaPhiM( 
@@ -137,6 +125,21 @@ class B2GSelectSemiLepTTbar_IsoStd( ) :
                                    self.tree.LeptonPhi[0], 
                                                        0. )
 
+
+        self.ak4Jet = ROOT.TLorentzVector( )        
+        self.ak4Jet.SetPtEtaPhiM( self.tree.AK4_dRminLep_Pt[0],
+                                  self.tree.AK4_dRminLep_Eta[0],
+                                  self.tree.AK4_dRminLep_Phi[0],
+                                  self.tree.AK4_dRminLep_Mass[0] )
+
+        ### MC generator weights and PU  weights
+        if self.itIsData :
+            self.EventWeight = 1.0
+            self.PUWeight = 1.0
+        else:
+            self.EventWeight = self.tree.SemiLeptEventWeight[0]
+            self.PUWeight = self.tree.SemiLeptPUweight[0]  
+            
         ### Muon trigger efficiency and cut based ID weights  (NOTE: Add these to type 2 and also add Iso SF in that case)
         if self.tree.LeptonIsMu[0] == 1 and not self.itIsData and self.leptonP4 != None  :
             self.TriggEffIs = self.MuonTriggEff( self.leptonP4.Perp() , abs(self.leptonP4.Eta())   , self.tree.SemiLeptRunNum[0] )
@@ -152,19 +155,16 @@ class B2GSelectSemiLepTTbar_IsoStd( ) :
             if self.verbose : "Muon HIP SF is {0:2.2f} for eta {1:2.2f}".format(self.MuonHIPScaleFIs, self.leptonP4.Eta()  )
 
         ### B tag SF (To be applied after b-tag is required)
-        self.ak4Jet = ROOT.TLorentzVector( )        
-        self.ak4Jet.SetPtEtaPhiM( self.tree.AK4_dRminLep_Pt[0],
-                                  self.tree.AK4_dRminLep_Eta[0],
-                                  self.tree.AK4_dRminLep_Phi[0],
-                                  self.tree.AK4_dRminLep_Mass[0] )
 
         if  self.itIsData :        self.BtagWeight = 1.0
-        else: self.BtagWeight = self.reader.eval_auto_bounds(
+        else: 
+			self.BtagWeight = self.reader.eval_auto_bounds(
                                                         'central',      # systematic (here also 'up'/'down' possible)
                                                         0,              # jet flavor (0 for b jets)
                                                         self.ak4Jet.Eta() ,            # eta
                                                         self.ak4Jet.Perp()            # pt
                                                     )
+            print".BtagWeight is {0;2.2f}".format(self.BtagWeight)                                        
 
         # Work the cut flow
         # Stage 0 : None.
@@ -284,11 +284,11 @@ class B2GSelectSemiLepTTbar_IsoStd( ) :
     def MuonHIPScaleF(self,  muoneta) : #{ROOT file from
         #https://twiki.cern.ch/twiki/bin/view/CMS/MuonReferenceEffsRun2#Tracking_efficiency_provided_by       
         ### TO-DO: Implement this for type 2 selection
-        MuonHIPScaleF = 1.
+        theMuonHIPScaleF = 1.
 
-        MuonHIPScaleF = self.ratio_eta.Eval(muoneta)
-        if self.verbose : print "(using eta) {}, HIP SF is {}".format(muoneta,  MuonHIPScaleF )
-        return float(MuonHIPScaleF)    
+        theMuonHIPScaleF = self.ratio_eta.Eval(muoneta)
+        if self.verbose : print "(using eta) {}, HIP SF is {}".format(muoneta,  theMuonHIPScaleF )
+        return float(theMuonHIPScaleF)    
 
 
     ### TO-DO: Eventually apply Kalman corrections
