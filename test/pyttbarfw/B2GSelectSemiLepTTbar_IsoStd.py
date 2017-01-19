@@ -164,7 +164,7 @@ class B2GSelectSemiLepTTbar_IsoStd( ) :
                                                         self.ak4Jet.Eta() ,            # eta
                                                         self.ak4Jet.Perp()            # pt
                                                     )
-            print".BtagWeight is {0;2.2f}".format(self.BtagWeight)                                        
+        print"BtagWeight is {0:2.2f}".format(self.BtagWeight)                                        
 
         # Work the cut flow
         # Stage 0 : None.
