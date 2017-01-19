@@ -50,7 +50,7 @@ class B2GSelectSemiLepTTbar_Type2( ) :
         self.SDptGenpt = None
         self.ak8JetHT = None
         self.SDRhoRatio = None
-
+        self.ak8JetHT = None
         self.ak8Jet_Ptbins = [200, 300, 400, 500, 800, 1000]
 
         ### PUPPI jet mass corrections
@@ -130,6 +130,8 @@ class B2GSelectSemiLepTTbar_Type2( ) :
                                   self.tree.JetMass[0] )        
         self.ak8JetP4Raw =   self.ak8JetP4
         self.ak8JetP4 =   self.ak8JetP4 * self.Corr
+        
+        self.ak8JetHT = 0.
         if self.ak8JetP4Raw != None :
             self.ak8_m = self.CorrPUPPIMass( self.ak8JetP4Raw.Perp() , self.ak8JetP4Raw.Eta(), self.ak8JetP4Raw.M()  )
             self.ak8JetHT =         self.ak8JetHT + self.ak8JetP4.Perp()
