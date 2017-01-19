@@ -158,7 +158,7 @@ class B2GSelectSemiLepTTbar_IsoStd( ) :
 
         if  self.itIsData :        self.BtagWeight = 1.0
         else: 
-			self.BtagWeight = self.reader.eval_auto_bounds(
+            self.BtagWeight = self.reader.eval_auto_bounds(
                                                         'central',      # systematic (here also 'up'/'down' possible)
                                                         0,              # jet flavor (0 for b jets)
                                                         self.ak4Jet.Eta() ,            # eta
