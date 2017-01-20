@@ -225,8 +225,14 @@ class B2GSelectSemiLepTTbar_Type2( ) :
                     self.ak8PuppiSDJetP4Subjet0_Binned[iptbin].SetPtEtaPhiM( self.tree.JetPuppiSDsubjet0pt[0], self.tree.JetPuppiSDsubjet0eta[0], self.tree.JetPuppiSDsubjet0phi[0], self.tree.JetPuppiSDsubjet0mass[0] )
                     self.ak8PuppiSDJetP4Subjet1_Binned[iptbin].SetPtEtaPhiM( self.tree.JetPuppiSDsubjet1pt[0], self.tree.JetPuppiSDsubjet1eta[0], self.tree.JetPuppiSDsubjet1phi[0], self.tree.JetPuppiSDsubjet1mass[0] )
                     self.ak8PuppiSDJetP4_Binned[iptbin] =  self.ak8PuppiSDJetP4Subjet0_Binned[iptbin] + self.ak8PuppiSDJetP4Subjet1_Binned[iptbin]
-                    self.ak8PuppiSDJetP4Subjet0PuppiCorrMass_Binned[iptbin] = self.ak8SDsj0_m
-                    self.ak8PuppiSDJetP4Subjet1PuppiCorrMass_Binned[iptbin] = self.ak8SDsj1_m
+                    ak8SDsj0_m =  self.CorrPUPPIMass( self.tree.JetPuppiSDsubjet0pt[0]* self.PuppiCorr,
+                                                        self.tree.JetPuppiSDsubjet0eta[0],
+                                                        self.tree.JetPuppiSDsubjet0mass[0] )
+                    self.ak8PuppiSDJetP4Subjet0PuppiCorrMass_Binned[iptbin] = ak8SDsj0_m
+                    ak8SDsj1_m =  self.CorrPUPPIMass( self.tree.JetPuppiSDsubjet1pt[0]* self.PuppiCorr,
+                                                        self.tree.JetPuppiSDsubjet1eta[0],
+                                                        self.tree.JetPuppiSDsubjet1mass[0] )
+                    self.ak8PuppiSDJetP4Subjet1PuppiCorrMass_Binned[iptbin] = ak8SDsj1_m
 
         self.puppitau21 = self.tree.JetPuppiTau21[0]
         self.puppitau32 = self.tree.JetPuppiTau32[0]
