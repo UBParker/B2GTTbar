@@ -85,15 +85,7 @@ class RunSemiLepTTbar_HighMass() :
         (options, args) = parser.parse_args(argv)
         argv = []
 
-        self.startTime = time.time()
-
-
-
-
-        (options, args) = parser.parse_args(argv)
-        argv = []
-
-
+        #self.startTime = time.time()
 
         self.outfile = ROOT.TFile(options.outfile, "RECREATE")
 
@@ -122,7 +114,7 @@ class RunSemiLepTTbar_HighMass() :
         self.hadSelection = B2GSelectSemiLepTTbar_Type1.B2GSelectSemiLepTTbar_Type1( options, self.treeobj, self.lepSelection )
 
         self.nstages = self.lepSelection.nstages + self.hadSelection.nstages
-        
+        self.nlep = 2 # Electron and Muon
 
         ### Book histograms
         self.book()
