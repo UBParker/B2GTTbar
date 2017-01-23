@@ -19,12 +19,13 @@ python RunSemiLepTTbar.py --infile root://cmseos.fnal.gov//store/user/aparker/B2
 python RunSemiLepTTbar.py --infile root://cmsxrootd.fnal.gov//store/user/rappocc/B2GAnaFWFiles16Dec2016/singlemu_run2016H.root --outfile singlemu_run2016H_histos.root >& singlemu_run2016H_histos.txt &
 
 
-python RunSemiLepTTbar.py --infile root://131.225.207.127:1094//store/user/rappocc/B2GAnaFWFiles16Dec2016/singleelectron_run2016B_histos.root  --outfile singleel_run2016B_histos.root >& singleel_run2016B_histos.txt &
-python RunSemiLepTTbar.py --infile root://131.225.207.127:1094//store/user/rappocc/B2GAnaFWFiles16Dec2016/singleelectron_run2016C_histos.root  --outfile singleel_run2016C_histos.root >& singleel_run2016C_histos.txt &
-python RunSemiLepTTbar.py --infile root://131.225.207.127:1094//store/user/rappocc/B2GAnaFWFiles16Dec2016/singleelectron_run2016D_histos.root  --outfile singleel_run2016D_histos.root >& singleel_run2016D_histos.txt &
-python RunSemiLepTTbar.py --infile root://131.225.207.127:1094//store/user/rappocc/B2GAnaFWFiles16Dec2016/singleelectron_run2016E_histos.root  --outfile singleel_run2016E_histos.root >& singleel_run2016E_histos.txt &
-python RunSemiLepTTbar.py --infile root://131.225.207.127:1094//store/user/rappocc/B2GAnaFWFiles16Dec2016/singleelectron_run2016F_histos.root  --outfile singleel_run2016F_histos.root >& singleel_run2016F_histos.txt &
-python RunSemiLepTTbar.py --infile root://131.225.207.127:1094//store/user/rappocc/B2GAnaFWFiles16Dec2016/singleelectron_run2016G_histos.root  --outfile singleel_run2016G_histos.root >& singleel_run2016G_histos.txt &
+python RunSemiLepTTbar.py --infile root://131.225.207.127//store/user/aparker/B2G2016/V4Trees/b2gtree_eldata_Run2016B-23Sep_all_V4.root  --outfile singleel_run2016B_histos.root >& singleel_run2016B_histos.txt &
+python RunSemiLepTTbar.py --infile root://131.225.207.127//store/user/aparker/B2G2016/V4Trees/b2gtree_eldata_Run2016C-23Sep_all_V4.root  --outfile singleel_run2016C_histos.root >& singleel_run2016C_histos.txt &
+python RunSemiLepTTbar.py --infile root://131.225.207.127//store/user/aparker/B2G2016/V4Trees/b2gtree_eldata_Run2016D-23Sep_all_V4.root  --outfile singleel_run2016D_histos.root >& singleel_run2016D_histos.txt &
+python RunSemiLepTTbar.py --infile root://131.225.207.127//store/user/aparker/B2G2016/V4Trees/b2gtree_eldata_Run2016E-23Sep_all_V4.root  --outfile singleel_run2016E_histos.root >& singleel_run2016E_histos.txt &
+python RunSemiLepTTbar.py --infile root://131.225.207.127//store/user/aparker/B2G2016/V4Trees/b2gtree_eldata_Run2016F-23Sep_all_V4.root  --outfile singleel_run2016F_histos.root >& singleel_run2016F_histos.txt &
+python RunSemiLepTTbar.py --infile root://131.225.207.127//store/user/aparker/B2G2016/V4Trees/b2gtree_eldata_Run2016G-23Sep_all_V4.root  --outfile singleel_run2016G_histos.root >& singleel_run2016G_histos.txt &
+python RunSemiLepTTbar.py --infile root://131.225.207.127//store/user/aparker/B2G2016/V4Trees/b2gtree_eldata_Run2016H-PromptReco_all_V4.root  --outfile singleel_run2016H_histos.root >& singleel_run2016H_histos.txt &
 
 
 python RunSemiLepTTbar.py --infile root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht100_V4.root --outfile qcd100_outfile.root --ignoreTrig >& qcd100_outfile_out.log &
