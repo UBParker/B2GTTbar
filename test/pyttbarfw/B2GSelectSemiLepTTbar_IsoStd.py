@@ -17,6 +17,8 @@ class B2GSelectSemiLepTTbar_IsoStd( ) :
         self.infile = options.infile
 
         # Cached class member variables for plotting
+        self.RunNum = None
+        self.theWeight = None
         self.leptonP4 = None
         self.nuP4 = None
         self.ak4Jet = None
@@ -38,7 +40,7 @@ class B2GSelectSemiLepTTbar_IsoStd( ) :
         self.passedCount = [0] * self.nstages
         
         ### Create empty weights used for histo filling
-        self.theWeight = 1.
+        #self.theWeight = 1.
         self.EventWeight = 1.
         self.PUWeight = 1.
 
@@ -111,10 +113,14 @@ class B2GSelectSemiLepTTbar_IsoStd( ) :
     """
     def select( self ) :
 
+        self.RunNum = None
+        
         self.leptonP4 = None
         self.nuP4 = None
         self.ak4Jet = None
         
+        ### Get Run Number of data event
+        self.RunNum = self.tree.SemiLeptRunNum[0]
 
         ### Define the 4 vectors of the leptonic top system
 

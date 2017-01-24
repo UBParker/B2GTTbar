@@ -18,6 +18,8 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         self.tree = tree        
         self.trigMap = TrigMap.TrigMap()
 
+
+       
         # Define Kinematic Cut Values
         
         # Work the cut flow
@@ -80,6 +82,8 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         self.ElectronHtLepCut = 0.
 
         # Cached class member variables for plotting
+        self.RunNum = None
+        self.theWeight = None
         self.leptonP4 = None
         self.nuP4 = None
         self.ak4Jet = None
@@ -170,13 +174,19 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         stuff to do, do it here and create a class member variable to cache the results. 
     """
     def select( self ) :
-
+        self.RunNum = None
+        self.theWeight = None
+        
         self.leptonP4 = None
         self.nuP4 = None
         self.ak4Jet = None
         
 
+        ### Get Run Number of data event
+        self.RunNum = self.tree.SemiLeptRunNum[0]
+
         ### Define the 4 vectors of the leptonic top system
+
 
 
         self.leptonP4 = ROOT.TLorentzVector()
@@ -262,32 +272,21 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
 
         self.passed[0] = True
         self.passedCount[0] += 1
+        print"Stage 0: Preliminary cuts from B2GTreeMaker V4"
 
-        if not self.ignoreTrig : 
+        if not self.ignoreTrig :
+            self.trigIs = "" 
             for itrig in self.trigIndex :
                 if bool ( self.tree.SemiLeptTrigPass[itrig] ) == True :
+                    print"trigIs {}".format( self.trigMap.names[itrig] )
+                    self.trigIs = self.trigMap.names[itrig]              
                     self.passed[1] = True
-                    self.passedCount[1] += 1
-                    self.passedTrigIndex = itrig 
             if not self.passed[1] : return self.passed
-            #if self.verbose :             print "Passed trig index is {}".format( self.passedTrigIndex)
-
-            self.passedTrig = "Passed"
-            #if self.passedTrigIndex == 16 :        self.passedTrig = "HLT_Mu45_eta2p1_v"
-            #if self.passedTrigIndex == 22 :        self.passedTrig = "HLT_Mu30_eta2p1_PFJet150_PFJet50_v"
-            #if self.passedTrigIndex == 23 :        self.passedTrig = "HLT_Mu40_eta2p1_PFJet200_PFJet50_v"
-            #if ( self.passedTrigIndex != 16 ) :   print "TRIGGER ERROR! Passed unexpected trigger {}".format(self.TrigMap.names[self.passedTrigIndex])
-            # See trigger list here https://github.com/UBParker/B2GTTbar/blob/TreeV4/test/pyttbarfw/TrigMap.py
-
-            if self.verbose : 
-                print "Event number {0:5.0f} passed :".format(self.tree.SemiLeptEventNum[0])
-                print "Stage 1: Trigger {}".format(self.passedTrig) 
         else :
             self.passed[1] = True
-            self.passedCount[1] += 1
-            if self.verbose : 
-                print "Event passed :"
-                print "Stage 1: No Trigger cut applied to this MC sample"
+        self.passedCount[1] += 1
+        print"Stage 1: Passed trigger {}".format(self.trigIs)
+
 
         if not ( self.passMuon_Eta or self.passElectron_Eta ) and  ( self.passMuon_Pt or self.passElectron_Pt) :                                                                                                  
             return self.passed

@@ -163,11 +163,17 @@ class RunSemiLepTTbar() :
         '''
         Book histograms, one for each stage of the selection. 
         '''
+        ### Run number - Use to check luminosity of data samples
+        self.RunNumberHist = []
+        ### Weights histogram with total weight applied to the event when filling histograms
+        self.WeightHist = []     
         
         self.LeptonPtHist = []
         self.LeptonEtaHist = []
         self.METPtHist = []
         self.HTLepHist = []
+        
+        
         self.Iso2DHist = []
         self.AK4BdiscHist = []        
 
@@ -176,20 +182,14 @@ class RunSemiLepTTbar() :
         self.AK8SDPtHist = [] 
         self.AK8PuppiSDPtHist = [] 
         self.AK8PuppiPtHist = [] 
-
         self.AK8PuppiSDPtResponse = []
         self.AK8SDPtResponse = []
-
-
         self.AK8puppitau21Hist = []
         self.AK8puppitau32Hist = []
-
         self.AK8EtaHist = []
         self.AK8MHist = []
         self.AK8MSDHist = []
         self.AK8SDRhoRatioHist = []
-
-
         self.AK8MSDSJ0Hist = []
         self.AK8SDSJ0PtHist = []      
             
@@ -209,12 +209,13 @@ class RunSemiLepTTbar() :
                 self.AK8MSDSJ0PtBinnedHistList.append([])
                 self.AK8MSDSJ1PtBinnedHistList.append([])
         '''
-        ### Weights histogram with total weight applied to the event when filling histograms
-        self.WeightHist = []
-
         ### List of all histograms
         self.hists = []
-        for ilep in xrange(self.nlep) :     
+        
+        for ilep in xrange(self.nlep) :
+            self.RunNumberHist.append( [ROOT.TH1F("RunNumberHist"+str(ilep) , "Run Number for lepton "+str(ilep) , 286591, 0, 286591) )                   
+            self.WeightHist.append( [] )
+            
             self.AK8PtHist.append([])       
             self.AK8HTHist.append( [] )
             self.AK8SDPtHist.append( [] )
@@ -248,12 +249,10 @@ class RunSemiLepTTbar() :
                     self.AK8MSDPtBinnedHistList[iptbin].append( [] )
                     self.AK8MSDSJ0PtBinnedHistList[iptbin].append( [] )
                     self.AK8MSDSJ1PtBinnedHistList[iptbin].append( [] )
-            
-            #self.hCutFlow.append([]  )
-
-            self.WeightHist.append( [] )
 
             for ival in xrange(self.nstages):
+                self.WeightHist[ilep].append( ROOT.TH1F("WeightHist" +  self.lepNames[ilep]+  str(ival), "Total Weight, Stage "+  self.lepNames[ilep] + str(ival), 1000, -1.,2.) )
+
                 self.AK8PtHist[ilep].append( ROOT.TH1F("AK8PtHist" +  self.lepNames[ilep] + str(ival), "Jet p_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 1000) )
                 self.AK8HTHist[ilep].append( ROOT.TH1F("AK8HTHist" +  self.lepNames[ilep] + str(ival), "Jet H_{T}, Stage " + self.lepNames[ilep] + str(ival), 4000, 0, 4000) )
                 self.AK8SDPtHist[ilep].append( ROOT.TH1F("AK8SDPtHist" +  self.lepNames[ilep] + str(ival), "Jet SD p_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 1000) )
@@ -289,9 +288,6 @@ class RunSemiLepTTbar() :
                         self.AK8MSDSJ0PtBinnedHistList[iptbin][ilep].append( ROOT.TH1F("AK8MSDSJ0Pt%sTo%sHist"%(ptbin, b.ak8Jet_Ptbins[iptbin+1]) +  self.lepNames[ilep] + str(ival), "Leading Subjet Soft Dropped Mass, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 500) )
                         self.AK8MSDSJ1PtBinnedHistList[iptbin][ilep].append( ROOT.TH1F("AK8MSDSJ1Pt%sTo%sHist"%(ptbin, b.ak8Jet_Ptbins[iptbin+1]) +  self.lepNames[ilep] + str(ival), "Sub-Leading Subjet Soft Dropped Mass, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 500) )
                 
-                #self.hCutFlow[ilep].append(ROOT.TH1F("hCutFlow" +  self.lepNames[ilep]+  str(ival), " ;Stage " +  self.lepNames[ilep]+  str(ival)+" of Selection; Events passing cuts ", 1, 0, 2 ) )
-
-                self.WeightHist[ilep].append( ROOT.TH1F("WeightHist" +  self.lepNames[ilep]+  str(ival), "Total Weight, Stage "+  self.lepNames[ilep] + str(ival), 1000, -1.,2.) )
 
     def fill( self, index ) :
         '''
@@ -348,7 +344,12 @@ class RunSemiLepTTbar() :
         #self.hCutFlow[ilep][index].Fill(self.passedCutCount[ilep][index])
         self.WeightHist[ilep][index].Fill(self.theWeight )
         '''
-        if b.ak8JetP4 != None :
+        if a.RunNum > 0. :
+            self.RunNumberHist[ilep][index].Fill(a.RunNum)
+        if a.theWeight > -1. :
+            self.WeightHist[ilep][index].Fill(a.theWeight)
+            
+        if b.ak8JetP4 != None :                 
             self.AK8PtHist[ilep][index].Fill( b.ak8JetP4.Perp()* b.PtSmear   , self.theWeight )  ### TO-DO : Implement Pt smear in hadselection and replace 1.000 with b.PtSmear
             self.AK8HTHist[ilep][index].Fill( b.ak8JetHT  , self.theWeight )
             if b.ak8SDJetP4 != None and b.SDptGenpt != None :

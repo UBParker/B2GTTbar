@@ -8,22 +8,33 @@ type2 is correct updated Jan 12, 2017
     0                           NOTE: weight for filling histos varies with stage
 
 
-    1        trigger                    (applied to data and tt but not other MCs for both selection types)    HLT_Mu50_v  
+    1        trigger                    (applied to data and tt but not other MCs for both selection types)    
+    [ self.trigMap.HLT_Mu50_v,
+            self.trigMap.HLT_Mu45_eta2p1_v,
+            self.trigMap.HLT_Mu30_eta2p1_PFJet150_PFJet50_v,
+            self.trigMap.HLT_Mu40_eta2p1_PFJet200_PFJet50_v,
+            self.trigMap.HLT_Ele32_eta2p1_WPTight_Gsf_v,
+            self.trigMap.HLT_Ele35_WPLoose_Gsf_v,
+            self.trigMap.HLT_Ele45_CaloIdVT_GsfTrkIdT_PFJet200_PFJet50_v,
+            self.trigMap.HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet140_v,
+            self.trigMap.HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165_v,
+            self.trigMap.HLT_Ele105_CaloIdVT_GsfTrkIdT_v      
+            
 
 
-    2         muon1                                       HighPt ID
+    2         muon1                                       HighPt ID Muon, pass HEEP NOT YET APPLIED to Electron
 
-    3         muon2                                       Tight cut based ID
+    3         muon2                                       Tight cut based ID for either lepton, Electron_noiso_passTight
 
 
-    4         muon3                                      pt>53 , eta <2.1
+    4         muon3                                      Muon pt>53 , eta <2.1   ---    Electron pt>120, 0. < abs(self.leptonP4.Eta()) < 1.442 or 1.56  < abs(self.leptonP4.Eta()) < 2.5
 
 
     5         muon                       Iso <0.1
 
 
 
-    6          MET                                        Pt > 40
+    6          MET                                      Muon  Pt > 40, Electron Pt > 80
 
 
     7          AK4                                               Pt > 30 , eta < 2.4
@@ -47,6 +58,6 @@ type2 is correct updated Jan 12, 2017
     13                                                   30 < AK8 PuppiSD Mass < 150  
 
 
-    14                                                   tau21 < 0.4
+    14                                                   tau21 < 0.7
 
 
