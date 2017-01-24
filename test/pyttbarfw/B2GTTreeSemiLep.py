@@ -258,10 +258,10 @@ class B2GTTreeSemiLep( ) :
             'MuIso':'f',
             'DeltaRJetLep':'f',
             'DeltaPhiJetLep':'f',
-	        'Electron_iso_passHEEP' : 'i',
-	        'Electron_noiso_passLoose' : 'i',
-	        'Electron_noiso_passMedium' : 'i',
-	        'Electron_noiso_passTight' : 'i'
+	    'Electron_iso_passHEEP' : 'i',
+            'Electron_noiso_passLoose' : 'i',
+            'Electron_noiso_passMedium' : 'i',
+            'Electron_noiso_passTight' : 'i'
           }
 
 
