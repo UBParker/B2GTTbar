@@ -81,8 +81,8 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         self.MuonHtLepCut = 300.
         self.ElectronHtLepCut = 0.
 
-        # Cached class member variables for plotting
-        self.RunNum = None
+        ### Cached class member variables for plotting
+        self.runNum = None
         self.theWeight = None
         self.leptonP4 = None
         self.nuP4 = None
@@ -97,7 +97,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         self.passedCount = [0] * self.nstages
 
         ### Create empty weights used for histo filling
-        self.theWeight = 1.
+        #self.theWeight = 1.
         self.EventWeight = 1.
         self.PUWeight = 1.
         self.TriggEffIs  = 1.
@@ -174,7 +174,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         stuff to do, do it here and create a class member variable to cache the results. 
     """
     def select( self ) :
-        self.RunNum = None
+        self.runNum = None
         self.theWeight = None
         
         self.leptonP4 = None
@@ -183,7 +183,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         
 
         ### Get Run Number of data event
-        self.RunNum = self.tree.SemiLeptRunNum[0]
+        self.runNum = self.tree.SemiLeptRunNum[0]
 
         ### Define the 4 vectors of the leptonic top system
 
@@ -272,20 +272,20 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
 
         self.passed[0] = True
         self.passedCount[0] += 1
-        print"Stage 0: Preliminary cuts from B2GTreeMaker V4"
+        if self.verbose: print"Stage 0: Preliminary cuts from B2GTreeMaker V4"
 
         if not self.ignoreTrig :
             self.trigIs = "" 
             for itrig in self.trigIndex :
                 if bool ( self.tree.SemiLeptTrigPass[itrig] ) == True :
-                    print"trigIs {}".format( self.trigMap.names[itrig] )
+                    if self.verbose: print"trigIs {}".format( self.trigMap.names[itrig] )
                     self.trigIs = self.trigMap.names[itrig]              
                     self.passed[1] = True
             if not self.passed[1] : return self.passed
         else :
             self.passed[1] = True
         self.passedCount[1] += 1
-        print"Stage 1: Passed trigger {}".format(self.trigIs)
+        if self.verbose: print"Stage 1: Passed trigger {}".format(self.trigIs)
 
 
         if not ( self.passMuon_Eta or self.passElectron_Eta ) and  ( self.passMuon_Pt or self.passElectron_Pt) :                                                                                                  

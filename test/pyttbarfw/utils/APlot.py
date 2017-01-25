@@ -1,11 +1,11 @@
 import ROOT
 
-from hist.titles import HistoTitles
+from utils.HistoTitles import HistoTitles
 import tdrstyle
 
 class APlot () :
     
-    def __init__(self, isstage = None , y_max = None, histofAlldata = None, histofAlldata2 = None, histofAllMC = None, histofAllMC2 = None, mcStack = None, httbar = None, hwjets = None, hST = None, hQCD = None, histoName = None, lumi = None) :
+    def __init__(self, isstage = None , y_max = None, histofAlldata = None, histofAlldata2 = None, histofAllMC = None, histofAllMC2 = None, mcStack = None, httbar = None, hwjets = None, hST = None, hQCD = None, histoName = None, lumi = None, tagg = None, cuttag = None) :
         self.isstage = isstage
         self.y_max = y_max
         self.histofAlldata = histofAlldata
@@ -20,6 +20,9 @@ class APlot () :
         self.hQCD = hQCD
         self.histoName = histoName
         self.lumi = lumi
+        
+        self.tagg = tagg
+        self.cuttag = cuttag
         
         ROOT.gStyle.SetOptStat(000000)
         self.c1 = ROOT.TCanvas("c" + str(self.isstage), "c" + str(self.isstage),1,1,745,701)
@@ -64,7 +67,7 @@ class APlot () :
         self.histofAlldata.GetYaxis().SetTitle("Events")
         self.histofAlldata.GetYaxis().SetTitleSize(0.065)
         self.histofAlldata.GetYaxis().SetTitleOffset(0.9) ## 0.7)
-        self.histofAlldata.GetYaxis().SetLabelSize(0.06)
+        self.histofAlldata.GetYaxis().SetLabelSize(0.04)
         self.histofAlldata.SetLineColor(1)
         self.histofAlldata.SetFillColor(1)
         self.histofAlldata.SetFillStyle(0)
@@ -83,7 +86,7 @@ class APlot () :
         self.histofAlldata.GetYaxis().SetNdivisions(506)
         self.histofAlldata.GetYaxis().SetLabelFont(42)
         self.histofAlldata.GetYaxis().SetLabelSize(0.06375)
-        self.histofAlldata.GetYaxis().SetTitleSize(0.07125)
+        self.histofAlldata.GetYaxis().SetTitleSize(0.06225)
         self.histofAlldata.GetYaxis().SetTitleOffset(0.9)
         self.histofAlldata.GetYaxis().SetTitleFont(42)
         #self.histofAlldata.SetXTitle(HistoTitle +" , Stage "+str(self.isstage))
@@ -113,6 +116,14 @@ class APlot () :
         self.words1.SetLineWidth(2)
         self.words1.Draw()
         
+        self.words2 = ROOT.TLatex(0.8, 0.34,"%s"%(self.cuttag))
+        self.words2.SetNDC()
+        self.words2.SetTextAlign(31)
+        self.words2.SetTextFont(42)
+        self.words2.SetTextSize(0.03725)
+        self.words2.SetLineWidth(1)
+        self.words2.Draw()
+                
         self.leg = ROOT.TLegend(0.63,0.4,0.78,0.84)
         self.leg.SetFillColor(0)
         self.leg.SetBorderSize(0)
@@ -122,7 +133,7 @@ class APlot () :
         self.leg.AddEntry( self.hST, 'Single Top', 'f')
         self.leg.AddEntry( self.hwjets, 'W+jets', 'f')
         self.leg.AddEntry( self.hQCD, 'QCD', 'f')
-        self.leg.AddEntry( self.histofAlldata, 'Data', 'p')
+        self.leg.AddEntry( self.histofAlldata, str(self.tagg), 'p')
         self.leg.Draw()
         self.pad1.Modified()
         self.c1.cd()
@@ -181,18 +192,18 @@ class APlot () :
         self.hRatio.GetXaxis().SetLabelFont(42)
         self.hRatio.GetXaxis().SetLabelOffset(0.015)
         self.hRatio.GetXaxis().SetLabelSize(0.1275)
-        self.hRatio.GetXaxis().SetTitleSize(0.132)
+        self.hRatio.GetXaxis().SetTitleSize(0.12)
         self.hRatio.GetXaxis().SetTickLength(0.09)
-        self.hRatio.GetXaxis().SetTitleOffset(0.85)
+        self.hRatio.GetXaxis().SetTitleOffset(1.35)
         self.hRatio.GetXaxis().SetTitleFont(42)
         self.hRatio.GetYaxis().SetTitle("#frac{Data}{MC}")
         #self.hRatio.GetYaxis().CenterTitle(true)
         self.hRatio.GetYaxis().SetNdivisions(304)
         self.hRatio.GetYaxis().SetLabelFont(42)
         self.hRatio.GetYaxis().SetLabelSize(0.1275)
-        self.hRatio.GetYaxis().SetTitleSize(0.1425)
+        self.hRatio.GetYaxis().SetTitleSize(0.121)
         self.hRatio.GetYaxis().SetTickLength(0.045)
-        self.hRatio.GetYaxis().SetTitleOffset(0.45)
+        self.hRatio.GetYaxis().SetTitleOffset(0.415)
         self.hRatio.GetYaxis().SetTitleFont(42)
 
         self.hRatio.Draw("lepe0")
