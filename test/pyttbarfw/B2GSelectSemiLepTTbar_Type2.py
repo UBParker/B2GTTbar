@@ -253,30 +253,30 @@ class B2GSelectSemiLepTTbar_Type2( ) :
 
         if not self.passed[0]==True : return self.passed
         self.passedCount[0] += 1
-        print"Stage 10: Leptonic top decay selection passed"
+        if self.verbose: print"Stage 10: Leptonic top decay selection passed"
 
 
         if not (self.ak8PuppiSDJetP4.Perp() > 200. and abs(self.ak8PuppiSDJetP4.Eta()) < 2.4 and self.ak8JetP4.DeltaR( self.lepsel.leptonP4) > 1.0  ) : return self.passed
         self.passed[1] = True
         self.passedCount[1] += 1
-        print"Stage 11: AK8 Pt>200 GeV, eta < 2.4 and hemisphere cut with lepton > 1."
+        if self.verbose: print"Stage 11: AK8 Pt>200 GeV, eta < 2.4 and hemisphere cut with lepton > 1."
 
 
         if not ( self.ak4JetBdisc > self.bdiscmin ) : return self.passed
         self.passed[2] = True
         self.passedCount[2] += 1
-        print"Stage 12: B-tag , medium WP CSVv2"
+        if self.verbose: print"Stage 12: B-tag , medium WP CSVv2"
 
         if not ( 30. < self.ak8PuppiSDJetP4.M() < 150. ) : return self.passed
         self.passed[3] = True
         self.passedCount[3] += 1
-        print"Stage 13: AK8 W mass window cut , 30< MAK8 (GeV) < 150"
+        if self.verbose: print"Stage 13: AK8 W mass window cut , 30< MAK8 (GeV) < 150"
 
 
         if not ( self.puppitau21 < self.puppitau21Cut ) : return self.passed
         self.passed[4] = True
         self.passedCount[4] += 1
-        print"Stage 14: W tag tau21 cut"
+        if self.verbose: print"Stage 14: W tag tau21 cut"
 
         return self.passed
 

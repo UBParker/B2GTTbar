@@ -216,7 +216,7 @@ class RunSemiLepTTbar_HighMass() :
         self.hists = []
         
         for ilep in xrange(self.nlep) :   
-            self.RunNumberHist.append( [ROOT.TH1F("RunNumberHist"+str(ilep) , "Run Number for lepton "+str(ilep) , 286591, 0, 286591) )        			     
+            self.RunNumberHist.append( [] )
             self.WeightHist.append( [] ) 
             self.AK8PtHist.append([])       
             self.AK8HTHist.append( [] )
@@ -246,14 +246,15 @@ class RunSemiLepTTbar_HighMass() :
 
             for iptbin, ptbin in enumerate(b.ak8Jet_Ptbins) :
                 if iptbin < 5:
-                    print"self.AK8MPtBinnedHistList {} of length {}".format(self.AK8MPtBinnedHistList, len(self.AK8MPtBinnedHistList))
+                    if self.verbose: print"self.AK8MPtBinnedHistList {} of length {}".format(self.AK8MPtBinnedHistList, len(self.AK8MPtBinnedHistList))
                     self.AK8MPtBinnedHistList[iptbin].append( [] )
                     self.AK8MSDPtBinnedHistList[iptbin].append( [] )
                     self.AK8MSDSJ0PtBinnedHistList[iptbin].append( [] )
                     self.AK8MSDSJ1PtBinnedHistList[iptbin].append( [] )
             
             for ival in xrange(self.nstages):
-                self.WeightHist[ilep].append( [ROOT.TH1F("WeightHist" +  self.lepNames[ilep] + str(ival), "Jet p_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 1000) )
+                self.RunNumberHist[ilep].append( ROOT.TH1F("RunNumberHist" + self.lepNames[ilep] + str(ival) , "Run Number for lepton "+self.lepNames[ilep] + str(ival), 286591, 0, 286591) )
+                self.WeightHist[ilep].append( ROOT.TH1F("WeightHist" +  self.lepNames[ilep] + str(ival), "Jet p_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 1000) )
                 self.AK8PtHist[ilep].append( ROOT.TH1F("AK8PtHist" +  self.lepNames[ilep] + str(ival), "Jet p_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 1000) )
                 self.AK8HTHist[ilep].append( ROOT.TH1F("AK8HTHist" +  self.lepNames[ilep] + str(ival), "Jet H_{T}, Stage " + self.lepNames[ilep] + str(ival), 4000, 0, 4000) )
                 self.AK8SDPtHist[ilep].append( ROOT.TH1F("AK8SDPtHist" +  self.lepNames[ilep] + str(ival), "Jet SD p_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 1000) )
@@ -289,9 +290,6 @@ class RunSemiLepTTbar_HighMass() :
                         self.AK8MSDSJ0PtBinnedHistList[iptbin][ilep].append( ROOT.TH1F("AK8MSDSJ0Pt%sTo%sHist"%(ptbin, b.ak8Jet_Ptbins[iptbin+1]) +  self.lepNames[ilep] + str(ival), "Leading Subjet Soft Dropped Mass, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 500) )
                         self.AK8MSDSJ1PtBinnedHistList[iptbin][ilep].append( ROOT.TH1F("AK8MSDSJ1Pt%sTo%sHist"%(ptbin, b.ak8Jet_Ptbins[iptbin+1]) +  self.lepNames[ilep] + str(ival), "Sub-Leading Subjet Soft Dropped Mass, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 500) )
                 
-                #self.hCutFlow[ilep].append(ROOT.TH1F("hCutFlow" +  self.lepNames[ilep]+  str(ival), " ;Stage " +  self.lepNames[ilep]+  str(ival)+" of Selection; Events passing cuts ", 1, 0, 2 ) )
-
-                self.WeightHist[ilep].append( ROOT.TH1F("WeightHist" +  self.lepNames[ilep]+  str(ival), "Total Weight, Stage "+  self.lepNames[ilep] + str(ival), 1000, -1.,2.) )
 
 
     def fill( self, index ) :
@@ -302,7 +300,7 @@ class RunSemiLepTTbar_HighMass() :
         a = self.lepSelection
         b = self.hadSelection 
         ilep = a.tree.LeptonIsMu[0]     
-        print 'ilep = ', ilep       
+        if self.verbose: print 'ilep = ', ilep       
 
         ### Define the weights used for histo filling
         self.theWeight = a.theWeight
@@ -350,8 +348,9 @@ class RunSemiLepTTbar_HighMass() :
         #self.hCutFlow[ilep][index].Fill(self.passedCutCount[ilep][index])
         self.WeightHist[ilep][index].Fill(self.theWeight )
         '''
-        if a.RunNum > 0. :
-            self.RunNumberHist[ilep][index].Fill(a.RunNum)
+        if a.runNum > 0. :
+            if self.verbose: print"run number is filled as {}".format(a.runNum)
+            self.RunNumberHist[ilep][index].Fill(a.runNum)
         if a.theWeight > -1. :
             self.WeightHist[ilep][index].Fill(a.theWeight)
             
