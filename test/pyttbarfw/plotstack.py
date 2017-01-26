@@ -44,7 +44,7 @@ argv = []
 
 import ROOT
 
-theOutfile = ROOT.TFile( 'plotstack3_outfile_'+ str(options.hist) + '.root' , "RECREATE") 
+theOutfile = ROOT.TFile( 'plotstack_outfile_'+ str(options.hist) + '.root' , "RECREATE") 
 
 theOutfile.cd()
         
@@ -53,6 +53,7 @@ xs_ttbar = 831.
 nev_ttbar = 92925926.
 
 lumi = 36220. # pb-1
+
 
 xs_wjets = [
     1345.,     #100To200  
@@ -118,13 +119,15 @@ instring = ''
 endstring = ''
 
 if options.highmass :
-    instring = '_highmassPt400METFilters'
-else: endstring = 'Pt200METFilters'
+    instring = '_highmass'
+else: endstring = ''
 ttbarfile = ROOT.TFile('ttbar' + instring + '_outfile'+ endstring +'.root')
 
-datafile = ROOT.TFile('singleElMu' + instring + '_outfile'+ endstring +'.root') ### hadd of singleel and singlemu 
 if  options.el :  datafile = ROOT.TFile('singleel' + instring + '_outfile'+ endstring +'.root')
 if options.mu :  datafile = ROOT.TFile('singlemu' + instring + '_outfile'+ endstring +'.root')
+if not (options.el or options.mu):
+    datafile = ROOT.TFile('singleel' + instring + '_outfile'+ endstring +'.root')
+    datafile1 = ROOT.TFile('singlemu' + instring + '_outfile'+ endstring +'.root')
 
 wjetsfiles = [
     ROOT.TFile('wjets100to200' + instring + '_outfile'+ endstring +'.root'),
@@ -204,16 +207,16 @@ for istage in range(rangenum) :
         httbar1.Sumw2()
         httbar.Add(httbar1)
     httbar.Sumw2()
-    httbar.Scale( xs_ttbar / nev_ttbar * lumi ) 
+    httbar.Scale( xs_ttbar / nev_ttbar* lumi ) 
     httbar.SetFillColor(ROOT.kGreen + 2)
 
 
     hdata = datafile.Get(histName)
+    if not (options.el or options.mu):
+        hdata1 = datafile1.Get(histName1)
+        hdata1.Sumw2()
+        hdata.Add(hdata1)
     print ("Extracting histo titled {}".format(histName))
-    if not (options.el or options.mu): 
-        hd1 = ttbarfile.Get(histName1)
-        hd1.Sumw2()
-        hdata.Add(hd1)
     hdata.Sumw2()    
     hdata.SetMarkerStyle(20)
    
