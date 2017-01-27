@@ -28,8 +28,8 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         
         self.trigIndex = [
             self.trigMap.HLT_Mu45_eta2p1_v,
-            self.trigMap.HLT_Mu30_eta2p1_PFJet150_PFJet50_v,
-            self.trigMap.HLT_Mu40_eta2p1_PFJet200_PFJet50_v,
+            #self.trigMap.HLT_Mu30_eta2p1_PFJet150_PFJet50_v,
+            #self.trigMap.HLT_Mu40_eta2p1_PFJet200_PFJet50_v,
             self.trigMap.HLT_Ele45_CaloIdVT_GsfTrkIdT_PFJet200_PFJet50_v,
             self.trigMap.HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet140_v,
             self.trigMap.HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165_v
@@ -62,7 +62,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         
         # Stage 5 : MET selection
         self.muonMETPtCut = 50.
-        self.electronMETPtCut = 50 #120.
+        self.electronMETPtCut = 120.
 
 
         # Stage 6 : Leptonic-side AK4 jet selection
@@ -78,8 +78,8 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         #  DR(AK8, Lepton) > 1.
 
         # Stage 9 : Wlep pt selection
-        self.MuonHtLepCut = 300.
-        self.ElectronHtLepCut = 0.
+        self.MuonHtLepCut = 200.
+        self.ElectronHtLepCut = 200.
 
         ### Cached class member variables for plotting
         self.runNum = None
@@ -136,8 +136,8 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         #ROOT.gROOT.ProcessLine('.L BTagCalibrationStandalone.cpp+') 
 
         # get the sf data loaded
-        self.calib = ROOT.BTagCalibration('csvv2_ichep', 'CSVv2_ichep.csv')
-
+        self.calib = ROOT.BTagCalibration('CSVv2Moriond17_2017_1_26_BtoH','CSVv2Moriond17_2017_1_26_BtoH.csv')#('csvv2_ichep', 'CSVv2_ichep.csv')
+       
         # making a std::vector<std::string>> in python is a bit awkward, 
         # but works with root (needed to load other sys types):
         self.v_sys = getattr(ROOT, 'vector<string>')()
@@ -244,9 +244,9 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
             if self.verbose : "Muon HIP SF is {0:2.2f} for eta {1:2.2f}".format(self.MuonHIPScaleFIs, self.leptonP4.Eta()  )
 
         if self.tree.LeptonIsMu[0] == 0 and not self.itIsData and self.leptonP4 != None  :
-            print"WARNING: Electron scale factors, trigger efficiencies and weights not yet applied"    
+            print"WARNING: Electron cut based ID scale factors and trigger efficiencies not applied bc the new versions for Moriond are not available yet"    
             '''
-              self.TriggEffIs = self.MuonTriggEff( self.leptonP4.Perp() , abs(self.leptonP4.Eta())   , self.tree.SemiLeptRunNum[0] )
+            self.TriggEffIs = self.MuonTriggEff( self.leptonP4.Perp() , abs(self.leptonP4.Eta())   , self.tree.SemiLeptRunNum[0] )
             if self.verbose : "Muon trigger eff is {0:2.2f} for pt {1:2.2f} and abs(eta) {2:2.2f}".format(self.TriggEffIs,self.leptonP4.Perp() , abs(self.leptonP4.Eta())  )
 
             self.CutIDScaleFLooseIs = self.MuonCutIDScaleFLoose( self.leptonP4.Perp() , abs(self.leptonP4.Eta())  )
@@ -257,8 +257,8 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
 
             self.MuonHIPScaleFIs = self.MuonHIPScaleF( self.leptonP4.Eta() )
             if self.verbose : "Muon HIP SF is {0:2.2f} for eta {1:2.2f}".format(self.MuonHIPScaleFIs, self.leptonP4.Eta()  )
-
             '''
+            
         if  self.itIsData :        self.BtagWeight = 1.0
         else: self.BtagWeight = self.reader.eval_auto_bounds(
                                                         'central',      # systematic (here also 'up'/'down' possible)
