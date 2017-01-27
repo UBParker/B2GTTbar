@@ -97,7 +97,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         self.passedCount = [0] * self.nstages
 
         ### Create empty weights used for histo filling
-        #self.theWeight = 1.
+        self.theWeight = 1.
         self.EventWeight = 1.
         self.PUWeight = 1.
         self.TriggEffIs  = 1.
@@ -214,13 +214,13 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
 
 
                                                                 
-        self.EventWeight = None
-        self.PUWeight = None
-        self.TriggEffIs = None
-        self.CutIDScaleFLooseIs = None
-        self.CutIDScaleFIs = None
-        self.MuonHIPScaleFIs = None
-        self.BtagWeight = None
+        self.EventWeight = 1.
+        self.PUWeight = 1.
+        self.TriggEffIs = 1.
+        self.CutIDScaleFLooseIs = 1.
+        self.CutIDScaleFIs = 1.
+        self.MuonHIPScaleFIs = 1.
+        self.BtagWeight = 1.
         
         ### MC generator weights and PU  weights
         if self.itIsData :
@@ -243,6 +243,22 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
             self.MuonHIPScaleFIs = self.MuonHIPScaleF( self.leptonP4.Eta() )
             if self.verbose : "Muon HIP SF is {0:2.2f} for eta {1:2.2f}".format(self.MuonHIPScaleFIs, self.leptonP4.Eta()  )
 
+        if self.tree.LeptonIsMu[0] == 0 and not self.itIsData and self.leptonP4 != None  :
+            print"WARNING: Electron scale factors, trigger efficiencies and weights not yet applied"    
+            '''
+              self.TriggEffIs = self.MuonTriggEff( self.leptonP4.Perp() , abs(self.leptonP4.Eta())   , self.tree.SemiLeptRunNum[0] )
+            if self.verbose : "Muon trigger eff is {0:2.2f} for pt {1:2.2f} and abs(eta) {2:2.2f}".format(self.TriggEffIs,self.leptonP4.Perp() , abs(self.leptonP4.Eta())  )
+
+            self.CutIDScaleFLooseIs = self.MuonCutIDScaleFLoose( self.leptonP4.Perp() , abs(self.leptonP4.Eta())  )
+            if self.verbose : "Muon Cut ID LOOSE  eff is {0:2.2f} for pt {1:2.2f} and abs(eta) {2:2.2f}".format(self.CutIDScaleFLooseIs ,self.leptonP4.Perp() , abs(self.leptonP4.Eta())  )
+
+            self.CutIDScaleFIs = self.MuonCutIDScaleFTight( self.leptonP4.Perp() , abs(self.leptonP4.Eta())  )
+            if self.verbose : "Muon Cut ID MEDIUM eff is {0:2.2f} for pt {1:2.2f} and abs(eta) {2:2.2f}".format(self.CutIDScaleFIs,self.leptonP4.Perp() , abs(self.leptonP4.Eta())  )
+
+            self.MuonHIPScaleFIs = self.MuonHIPScaleF( self.leptonP4.Eta() )
+            if self.verbose : "Muon HIP SF is {0:2.2f} for eta {1:2.2f}".format(self.MuonHIPScaleFIs, self.leptonP4.Eta()  )
+
+            '''
         if  self.itIsData :        self.BtagWeight = 1.0
         else: self.BtagWeight = self.reader.eval_auto_bounds(
                                                         'central',      # systematic (here also 'up'/'down' possible)

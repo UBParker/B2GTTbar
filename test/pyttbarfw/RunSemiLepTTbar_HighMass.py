@@ -314,7 +314,7 @@ class RunSemiLepTTbar_HighMass() :
 
         self.theWeight = 1.
 
-        '''
+        
         #if self.verbose and index == 0 : print "Event weight {0:2.4f} * PU weight {1:2.4f} *Trigger Eff. {2:2.4f} * Cut ID {3:2.4f} * HIP SF {4:2.4f} * Btag SF {5:2.4f} * self.CutIDScaleFLooseIs {6:2.4f}".format(self.EventWeight , self.PUWeight , self.TriggEffIs , self.CutIDScaleFIs, self.MuonHIPScaleFIs, self.BtagWeight, self.CutIDScaleFLooseIs)
 
         ### The total weight depends on the stage of selection
@@ -338,21 +338,23 @@ class RunSemiLepTTbar_HighMass() :
         if index == 4: 
             self.theWeight =  self.EventWeight * self.PUWeight * self.TriggEffIs  * self.CutIDScaleFIs *self.MuonHIPScaleFIs
             if self.verbose : print "theWeight for stage {} is : {}".format(index ,self.theWeight)
+        if 4 < index < 12: # Same as stage 4
+            self.theWeight =  self.EventWeight * self.PUWeight * self.TriggEffIs  * self.CutIDScaleFIs *self.MuonHIPScaleFIs 
+            if self.verbose : print "theWeight for stage {} is {} ".format(index ,self.theWeight )
         ### B tag SF
-        if index == 12: 
+        if index >= 12: 
             self.theWeight =  self.EventWeight * self.PUWeight * self.TriggEffIs  * self.CutIDScaleFIs *self.MuonHIPScaleFIs * self.BtagWeight
             if self.verbose : print "theWeight for stage {} is : {}".format(index ,self.theWeight)
         #if self.verbose : print "Event weight {1:2.4f} * PU weight {2:2.4f} *Trigger Eff. {3:2.4f} * Cut ID {4:2.4f} * HIP SF {5:2.4f} * Btag SF {6:2.4f}".format(self.EventWeight , self.PUWeight , self.TriggEffIs , self.CutIDScaleFIs, self.MuonHIPScaleFIs, self.BtagWeight)
 
-
         #self.hCutFlow[ilep][index].Fill(self.passedCutCount[ilep][index])
-        self.WeightHist[ilep][index].Fill(self.theWeight )
-        '''
+        #self.WeightHist[ilep][index].Fill(self.theWeight )
+        
         if a.runNum > 0. :
             if self.verbose: print"run number is filled as {}".format(a.runNum)
             self.RunNumberHist[ilep][index].Fill(a.runNum)
-        if a.theWeight > -1. :
-            self.WeightHist[ilep][index].Fill(a.theWeight)
+        if self.theWeight > -1. :
+            self.WeightHist[ilep][index].Fill(self.theWeight)
             
         if b.ak8JetP4 != None :
             self.AK8PtHist[ilep][index].Fill( b.ak8JetP4.Perp()* b.PtSmear   , self.theWeight )  ### TO-DO : Implement Pt smear in hadselection and replace 1.000 with b.PtSmear
@@ -388,7 +390,8 @@ class RunSemiLepTTbar_HighMass() :
             # Filling jet mass histos binned by pt of the leading SD subjet
 
             # self.ak8Jet_Ptbins = [200., 300., 400., 500., 800., 1000.]
-            
+            ak8SDPuppiMass = -1.
+            ak8Mass = -1.
             for iptbin, ptbin in enumerate(b.ak8Jet_Ptbins) :
                 if iptbin < 4:
                     thePthist = self.AK8MPtBinnedHistList[iptbin]
@@ -396,10 +399,14 @@ class RunSemiLepTTbar_HighMass() :
                     theSDsj0Pthist = self.AK8MSDSJ0PtBinnedHistList[iptbin]
                     theSDsj1Pthist = self.AK8MSDSJ1PtBinnedHistList[iptbin]
 
+                    ak8SDPuppiP4 = b.ak8PuppiJetP4_Binned[iptbin]
+                    ak8SDPuppiMass =  ak8SDPuppiP4.M()
+                    ak8PuppiP4 = b.ak8PuppiJetP4_Binned[iptbin]
+                    ak8PuppiMass =  ak8PuppiP4.M()
 
-                    if  b.ak8PuppiJetP4_Binned[iptbin].M() > 0 :
-                        thePthist[ilep][index].Fill( b.ak8PuppiJetP4_Binned[iptbin].M()  , self.theWeight )
-                        theSDPthist[ilep][index].Fill(  b.ak8PuppiSDJetP4_Binned[iptbin].M() , self.theWeight )
+                    if  ak8SDPuppiMass > 0. :
+                        thePthist[ilep][index].Fill( ak8PuppiMass  , self.theWeight )
+                        theSDPthist[ilep][index].Fill(  ak8SDPuppiMass , self.theWeight )
                     if  b.ak8PuppiSDJetP4Subjet0PuppiCorrMass_Binned[iptbin]  > 0 :
                         theSDsj0Pthist[ilep][index].Fill(  b.ak8PuppiSDJetP4Subjet0PuppiCorrMass_Binned[iptbin] , self.theWeight )
                         theSDsj1Pthist[ilep][index].Fill(  b.ak8PuppiSDJetP4Subjet1PuppiCorrMass_Binned[iptbin] , self.theWeight )
