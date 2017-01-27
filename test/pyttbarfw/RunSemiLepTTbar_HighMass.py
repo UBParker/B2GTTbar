@@ -54,7 +54,7 @@ class RunSemiLepTTbar_HighMass() :
 
         parser.add_option('--tau21Cut', type='float', action='store',
                           dest='tau21Cut',
-                          default = 0.7,
+                          default = 0.55,
                           help='Tau 21 cut')
 
         parser.add_option('--tau32Cut', type='float', action='store',
