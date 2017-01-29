@@ -83,7 +83,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         self.ElectronHtLepCut = 200.
 
         ### Cached class member variables for plotting
-        self.runNum = None
+        self.RunNumber = None
         self.theWeight = None
         self.leptonP4 = None
         self.nuP4 = None
@@ -175,7 +175,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         stuff to do, do it here and create a class member variable to cache the results. 
     """
     def select( self ) :
-        self.runNum = None
+        self.RunNumber = None
         self.theWeight = None
         
         self.leptonP4 = None
@@ -184,11 +184,9 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         
 
         ### Get Run Number of data event
-        self.runNum = self.tree.SemiLeptRunNum[0]
-
+        self.RunNumber =  self.tree.SemiLeptRunNum[0]
+        if self.verbose : print"run number in Iso2D is self.runNum {} from tree value is  {}".format(self.RunNumber, self.tree.SemiLeptRunNum[0])
         ### Define the 4 vectors of the leptonic top system
-
-
 
         self.leptonP4 = ROOT.TLorentzVector()
         self.leptonP4.SetPtEtaPhiM( 
@@ -196,6 +194,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
                                    self.tree.LeptonEta[0],
                                    self.tree.LeptonPhi[0], 
                                                        0. )
+        #if self.verbose : print"lepton pt from iso2D is {0:2.2f}".format(self.tree.LeptonPt[0])
 
         self.nuP4 = ROOT.TLorentzVector()
         self.nuP4 = ROOT.TLorentzVector( 
@@ -347,7 +346,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         if self.verbose  : print "Stage 4: Muon is HighPt and lepton pass self.tree.SemiLeptPassMETFilters[0] == {} ".format(self.tree.SemiLeptPassMETFilters[0] )
 
 
-        if self.verbose: print"Stage 5 CHECK: Lepton is a Muon bool {}, MET is {} GeV".format(self.tree.LeptonIsMu[0] , self.nuP4.Perp() )
+        if self.verbose: print"Stage 5 CHECK: Lepton is a Muon bool {0:}, MET is {1:2.2f} GeV".format(self.tree.LeptonIsMu[0] , self.nuP4.Perp() )
 
         if self.tree.LeptonIsMu[0] > 0. :
             if not self.nuP4.Perp() > self.muonMETPtCut  : return self.passed

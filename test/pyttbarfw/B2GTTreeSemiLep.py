@@ -233,7 +233,7 @@ class B2GTTreeSemiLep( ) :
             ## 'SemiLeptQ2weight_CorrUp':'f',
             ## 'SemiLeptNNPDF3weight_CorrDn':'f',
             ## 'SemiLeptNNPDF3weight_CorrUp':'f',
-            'SemiLeptRunNum':'f',
+            'SemiLeptRunNum':'i',
             'SemiLeptLumiBlock':'f',
             'SemiLeptEventNum':'f',
             'SemiLeptPassMETFilters':'i',
