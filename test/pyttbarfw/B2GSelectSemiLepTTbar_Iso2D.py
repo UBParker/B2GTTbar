@@ -28,11 +28,8 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         
         self.trigIndex = [
             self.trigMap.HLT_Mu45_eta2p1_v,
-<<<<<<< HEAD
             #elf.trigMap.HLT_Mu30_eta2p1_PFJet150_PFJet50_v,
-=======
             #self.trigMap.HLT_Mu30_eta2p1_PFJet150_PFJet50_v,
->>>>>>> 7783621985198667ec99fdf0f65340aa23b7a7d4
             #self.trigMap.HLT_Mu40_eta2p1_PFJet200_PFJet50_v,
             self.trigMap.HLT_Ele45_CaloIdVT_GsfTrkIdT_PFJet200_PFJet50_v,
             self.trigMap.HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet140_v,
