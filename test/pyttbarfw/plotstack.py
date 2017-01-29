@@ -35,19 +35,19 @@ parser.add_option('--el', action='store_true',
 parser.add_option('--mu', action='store_true',
                   dest='mu',
                   default = False,
-                  help='plot only muons?')                  
-
+                  help='plot only muons?')   
+                                 
+parser.add_option('--fixFit', action='store_true',
+                  dest='fixFit',
+                  default = False,
+                  help='Fix the fit of the tau21 cut distribution to the value from the mass cut ?') 
+                  
 (options, args) = parser.parse_args(sys.argv)
 argv = []
 
-
-
 import ROOT
 
-theOutfile = ROOT.TFile( 'plotstack_outfile_'+ str(options.hist) + '.root' , "RECREATE") 
-
-theOutfile.cd()
-        
+       
         
 xs_ttbar = 831.
 nev_ttbar = 92925926.
@@ -116,18 +116,27 @@ nev_singletop = [
 ROOT.gStyle.SetOptStat(000000)
 
 instring = ''
-endstring = ''
+endstring1 = 'Commit8651dac'
+endstringIS = 'Commit8651dac' # plotstack_Commite39827c
+endstring2 = 'Commit8651dac' # plotstack_Commite39827c
+endstring = 'Commit8651dac'
+
+
+theOutfile = ROOT.TFile( 'plotstack_outfile_'+ str(options.hist)+'_' +str(endstring)+ '.root' , "RECREATE") 
+
+theOutfile.cd()
+ 
 
 if options.highmass :
     instring = '_highmass'
 else: endstring = ''
-ttbarfile = ROOT.TFile('ttbar' + instring + '_outfile'+ endstring +'.root')
+ttbarfile = ROOT.TFile('ttbar' + instring + '_outfile'+ endstring1 +'.root')
 
-if  options.el :  datafile = ROOT.TFile('singleel' + instring + '_outfile'+ endstring +'.root')
-if options.mu :  datafile = ROOT.TFile('singlemu' + instring + '_outfile'+ endstring +'.root')
+if  options.el :  datafile = ROOT.TFile('singleel' + instring + '_outfile'+ endstring1 +'.root')
+if options.mu :  datafile = ROOT.TFile('singlemu' + instring + '_outfile'+ endstring1 +'.root')
 if not (options.el or options.mu):
-    datafile = ROOT.TFile('singleel' + instring + '_outfile'+ endstring +'.root')
-    datafile1 = ROOT.TFile('singlemu' + instring + '_outfile'+ endstring +'.root')
+    datafile = ROOT.TFile('singleel' + instring + '_outfile'+ endstring1 +'.root')
+    datafile1 = ROOT.TFile('singlemu' + instring + '_outfile'+ endstring1 +'.root')
 
 wjetsfiles = [
     ROOT.TFile('wjets100to200' + instring + '_outfile'+ endstring +'.root'),
@@ -164,7 +173,7 @@ singletopfiles = [
 objs = []
 
 ### Set the maximum y axis increment with respect to the maximum y axis value
-y_max_scale = 4.2
+y_max_scale = 4.9
 
 
 lepName0 = 'Electron'
@@ -177,7 +186,7 @@ histName0 = options.hist
     
     
 rangenum = 14
-if options.highmass: rangenum = 14
+if options.highmass: rangenum = 18 #14
 
 for istage in range(rangenum) : 
 
@@ -194,7 +203,6 @@ for istage in range(rangenum) :
         lepTag = 'Muon Data'
 
     if not (options.el or options.mu): 
-        ROOT.gStyle.SetOptStat(000000)
         histName = options.hist + lepName0 + str(istage)
         histName1 = options.hist + lepName1 + str(istage)
         lepTag = 'Electron and Muon Data'
@@ -210,11 +218,13 @@ for istage in range(rangenum) :
     httbar.Scale( xs_ttbar / nev_ttbar* lumi ) 
     httbar.SetFillColor(ROOT.kGreen + 2)
 
-
+    ROOT.gStyle.SetOptStat(000000)
     hdata = datafile.Get(histName)
     if not (options.el or options.mu):
         hdata1 = datafile1.Get(histName1)
         hdata1.Sumw2()
+        hdata1.GetXaxis().SetTitle("")#Electron and Muon Data at Stage, {}".format( str(istage)))
+
         hdata.Add(hdata1)
     print ("Extracting histo titled {}".format(histName))
     hdata.Sumw2()    
@@ -322,43 +332,15 @@ for istage in range(rangenum) :
         cutTag = CutsPerStage_Type1[str(istage)][1]    
     else: cutTag =  CutsPerStage_Type2[str(istage)][1]
     
-    zplot = APlot(istage , y_max_scale, hdata, hdata2, hmc,hmc2 , hstack, httbar, hwjets, hsingletop, hqcd, str(histName0), lumi/1000., lepTag, cutTag)
+    zplot = APlot(istage , y_max_scale, hdata, hdata2, hmc,hmc2 , hstack, httbar, hwjets, hsingletop, hqcd, str(histName0), lumi/1000., lepTag, cutTag, options.fixFit)
     #def __init__(self, isstage = None , y_max = None, histofAlldata = None, histofAlldata2 = None, histofAllMC = None, histofAllMC2 = None, mcStack = None, httbar = None, hwjets = None, hST = None, hQCD = None, histoName = None, lumi = None) :
         
     theCanvas = zplot.GetPlotCanvas()
     
-    theCanvas.Print("./plotstack/" + histName0 + lep + str(istage)  + instring + endstring+".pdf", "pdf")
-    theCanvas.Print("./plotstack/" + histName0 + lep + str(istage)  + instring + endstring+".png", "png")
+    theCanvas.Print("./0plotstack_"+ str(endstring2)+ "/" + histName0 + lep + str(istage)  + instring + endstring+".pdf", "pdf")
+    theCanvas.Print("./0plotstack_"+ str(endstring2)+ "/" + histName0 + lep + str(istage)  + instring + endstring+".png", "png")
 
     theOutfile.cd()
                     
     objs.append( [hdata, httbar, hwjets, theCanvas, hstack] )
 
-    
-'''
-    c1 = ROOT.TCanvas("c" + str(istage), "c" + str(istage) )
-
-
-    
-    hdata.Draw("e")
-    hstack.Draw("hist same")
-    maxval = max( hdata.GetMaximum(), hstack.GetMaximum() )
-    hdata.SetMaximum( maxval * 1.2 )
-    hdata.Draw("e same")
-    
-
-    leg = ROOT.TLegend(0.8, 0.8, 1.0, 1.0)
-    leg.SetFillColor(0)
-    leg.SetBorderSize(0)
-    leg.AddEntry( hdata, 'Data', 'p')
-    leg.AddEntry( httbar, 't#bar{t}', 'f')
-    leg.AddEntry( hwjets, 'W+jets', 'f')
-    leg.AddEntry( hsingletop, 'Single top', 'f')
-    leg.AddEntry( hqcd, 'QCD', 'f')
-    leg.Draw()
-    
-    c1.Update()
-
-    c1.Print("plot_" + options.hist + str(istage) + instring + ".pdf", "pdf")
-    c1.Print("plot_" + options.hist + str(istage) + instring + ".png", "png")
-'''

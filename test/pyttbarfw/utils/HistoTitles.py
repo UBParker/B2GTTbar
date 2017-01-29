@@ -1,12 +1,15 @@
 '''
 # DONE Jan 24 : Add all possible histo names to HistoTitles
-'''
 
+'''
+      
 HistoTitles =            {
-                              "RunNumberHist" :  [ "Run Number" ,   270000. ,    286591. ],  
+                              "RunNumberHist" :  [ "Run Number" ,   271000. ,    286591. ],  
                               "WeightHist" :  [ "Weight used for filling" ,   -2. ,    2. ],  
-                              "AK8PuppiSDPtResponse" :  [ "Response AK8/PUPPISD" ,   -2., 2. ],  
-                              "AK8SDPtResponse" :  [ "Response AK8/SD ",   -2., 2. ],  
+                              "AK8PuppiSDPtResponse" :  [ "Response AK8/PUPPISD" ,   0., 500. ],  
+                              "AK8SDPtResponse" :  [ "Response AK8/SD ",   0., 500. ],  
+                              "AK8SDPuppiptGenptResponse" :  [ "Response AK8 SD Puppi/ AK8 jet pt",   0., 500. ],  
+                              "AK8SDPuppiMasswithPuppiCorrvsSDPuppiMassResponse" :  [ "Response AK8 mass after PUPPi corr/ AK8 mass JECs vs. SD puppi Mass GeV ",   0., 500. ],  
                               "AK8SDRhoRatioHist" :  [ "SD Rho ratio ",  0., 1.0 ],  
                               "AK8MSDHist" :  [ "AK8 Jet SD Mass (GeV)" ,  0.0  ,   300. ],  
                               "AK8MSDHist" :  [ "AK8 Jet SD Mass (GeV)" ,  0.0  ,   300. ],  
@@ -26,27 +29,39 @@ HistoTitles =            {
                               "HTLepHist" : [  "Lepton P_{T} + Missing P_{T} (GeV)", 0.     ,   700. ],
                               #"Iso2DHist" : [ "Lepton 2D isolation (#Delta R vs p_{T}^{REL} )", 0.     ,   300. ],
                               "AK4BdiscHist" : [ "CSVv2 B Disc", 0. , 1. ],
-                              ### Mass of SD subjet 0 (of leading AK8 jet) binned by it's own Pt
-                              "AK8MSDSJ0Pt200To300Hist" : [ "(200<P_{t}<300)  Subjet 0 SD Mass (GeV)", 45.    ,   151. ], # TO-DO : [ move pt label elsewhere on canvas
-                              "AK8MSDSJ0Pt300To400Hist" : [  "(300<P_{t}<400) Subjet 0 SD Mass (GeV)", 45.    ,   151. ], # TO-DO : [ move pt label elsewhere on canvas
-                              "AK8MSDSJ0Pt400To500Hist" : [  "(400<P_{t}<500) Subjet 0 SD Mass (GeV)", 45.    ,   151. ], # TO-DO : [ move pt label elsewhere on canvas
-                              "AK8MSDSJ0Pt500To800Hist" : [  "(500<P_{t}<800) Subjet 0 SD Mass (GeV)", 5.    ,   151. ], # TO-DO : [ move pt label elsewhere on canvas
-                              ### Mass of SD subjet 1 (of leading AK8 jet) binned by Pt of SD subjet 0 e.g. https://github.com/UBParker/B2GTTbar/blob/TreeV4/test/pyttbarfw/B2GSelectSemiLepTTbar_Type1.py#L302
-                              "AK8MSDSJ1Pt200To300Hist" : [ "(200<P_{t}<300) Subjet 1 SD Mass (GeV)", 5.    ,   151. ], # TO-DO : [ move pt label elsewhere on canvas
-                              "AK8MSDSJ1Pt300To400Hist" : [  "(300<P_{t}<400) Subjet 1 SD Mass (GeV)", 5.    ,   151. ], # TO-DO : [ move pt label elsewhere on canvas
-                              "AK8MSDSJ1Pt400To500Hist" : [  "(400<P_{t}<500) Subjet 1 SD Mass (GeV)", 5.    ,   151. ], # TO-DO : [ move pt label elsewhere on canvas
-                              "AK8MSDSJ1Pt500To800Hist" : [  "(500<P_{t}<800) Subjet 1 SD Mass (GeV)", 5.    ,   151. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "AK8MSDSJ0Pt200To300Hist" : [ "(200<P_{t}<300) Subjet 0 SD Mass (GeV)", 45.    ,   251. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "AK8MSDSJ0Pt300To400Hist" : [  "(300<P_{t}<400) Subjet 0 SD Mass (GeV)", 45.    ,   251. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "AK8MSDSJ0Pt400To500Hist" : [  "(400<P_{t}<500) Subjet 0 SD Mass (GeV)", 45.    ,   251. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "AK8MSDSJ0Pt500To800Hist" : [  "(500<P_{t}<800) Subjet 0 SD Mass (GeV)", 5.    ,   251. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "AK8MSDSJ1Pt200To300Hist" : [ "(200<P_{t}<300) Subjet 1 SD Mass (GeV)", 5.    ,   251. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "AK8MSDSJ1Pt300To400Hist" : [  "(300<P_{t}<400) Subjet 1 SD Mass (GeV)", 5.    ,   251. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "AK8MSDSJ1Pt400To500Hist" : [  "(400<P_{t}<500) Subjet 1 SD Mass (GeV)", 5.    ,   251. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "AK8MSDSJ1Pt500To800Hist" : [  "(500<P_{t}<800) Subjet 1 SD Mass (GeV)", 5.    ,   251. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "0AK8MSDSJ0Pt200To300Hist" : [ "(200<P_{t}<300) Subjet 0 SD Mass (GeV)", 45.    ,   251. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "0AK8MSDSJ0Pt300To400Hist" : [  "(300<P_{t}<400) Subjet 0 SD Mass (GeV)", 45.    ,   251. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "0AK8MSDSJ0Pt400To500Hist" : [  "(400<P_{t}<500) Subjet 0 SD Mass (GeV)", 45.    ,   251. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "0AK8MSDSJ0Pt500To800Hist" : [  "(500<P_{t}<800) Subjet 0 SD Mass (GeV)", 5.    ,   251. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "0AK8MSDSJ1Pt200To300Hist" : [ "(200<P_{t}<300) Subjet 1 SD Mass (GeV)", 5.    ,   251. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "0AK8MSDSJ1Pt300To400Hist" : [  "(300<P_{t}<400) Subjet 1 SD Mass (GeV)", 5.    ,   251. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "0AK8MSDSJ1Pt400To500Hist" : [  "(400<P_{t}<500) Subjet 1 SD Mass (GeV)", 5.    ,   251. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "0AK8MSDSJ1Pt500To800Hist" : [  "(500<P_{t}<800) Subjet 1 SD Mass (GeV)", 5.    ,   251. ], # TO-DO : [ move pt label elsewhere on canvas             
                               "AK8HTHist" : [ "AK8 Jet H_{T} (GeV)", 0.     ,  1000. ],
-                              ### Mass of AK8 jet binned by pt of leading SD subjet
                               "AK8MPt200To300Hist" : [ "(200<P_{t}<300)  AK8 Jet Mass (GeV)", 0.    ,   300.   ], # TO-DO : [ move pt label elsewhere on canvas
                               "AK8MPt300To400Hist" : [ "(300<P_{t}<400)  AK8 Jet Mass (GeV)", 0.    ,   300.   ], # TO-DO : [ move pt label elsewhere on canvas
                               "AK8MPt400To500Hist" : [ "(400<P_{t}<500)  AK8 Jet Mass (GeV)", 0.    ,   300.   ],# TO-DO : [ move pt label elsewhere on canvas
                               "AK8MPt500To800Hist" : [ "(500<P_{t}<800)  AK8 Jet Mass (GeV)", 0.    ,   300.   ],# TO-DO : [ move pt label elsewhere on canvas
-                              ### Soft Drop Mass of AK8 jet binned by pt of leading SD subjet
                               "AK8MSDPt200To300Hist" : [ "(200<P_{t}<300)  AK8 SD Jet Mass (GeV)", 0.    ,   300.   ],# TO-DO : [ move pt label elsewhere on canvas
                               "AK8MSDPt300To400Hist" : [  "(300<P_{t}<400)  AK8 SD Jet Mass (GeV)", 0.    ,   300.   ],# TO-DO : [ move pt label elsewhere on canvas
                               "AK8MSDPt400To500Hist" : [ "(400<P_{t}<500)  AK8 SD Jet Mass (GeV)", 0.    ,   300.   ],# TO-DO : [ move pt label elsewhere on canvas
                               "AK8MSDPt500To800Hist" : [ "(500<P_{t}<800)  AK8 SD Jet Mass (GeV)", 0.    ,   300.   ],# TO-DO : [ move pt label elsewhere on canvas
+                              "0AK8MPt200To300Hist" : [ "(200<P_{t}<300)  AK8 Jet Mass (GeV)", 0.    ,   300.   ], # TO-DO : [ move pt label elsewhere on canvas
+                              "0AK8MPt300To400Hist" : [ "(300<P_{t}<400)  AK8 Jet Mass (GeV)", 0.    ,   300.   ], # TO-DO : [ move pt label elsewhere on canvas
+                              "0AK8MPt400To500Hist" : [ "(400<P_{t}<500)  AK8 Jet Mass (GeV)", 0.    ,   300.   ],# TO-DO : [ move pt label elsewhere on canvas
+                              "0AK8MPt500To800Hist" : [ "(500<P_{t}<800)  AK8 Jet Mass (GeV)", 0.    ,   300.   ],# TO-DO : [ move pt label elsewhere on canvas
+                              "0AK8MSDPt200To300Hist" : [ "(200<P_{t}<300)  AK8 SD Jet Mass (GeV)", 0.    ,   300.   ],# TO-DO : [ move pt label elsewhere on canvas
+                              "0AK8MSDPt300To400Hist" : [  "(300<P_{t}<400)  AK8 SD Jet Mass (GeV)", 0.    ,   300.   ],# TO-DO : [ move pt label elsewhere on canvas
+                              "0AK8MSDPt400To500Hist" : [ "(400<P_{t}<500)  AK8 SD Jet Mass (GeV)", 0.    ,   300.   ],# TO-DO : [ move pt label elsewhere on canvas
+                              "0AK8MSDPt500To800Hist" : [ "(500<P_{t}<800)  AK8 SD Jet Mass (GeV)", 0.    ,   300.   ],# TO-DO : [ move pt label elsewhere on canvas
                               }
 
                                  
