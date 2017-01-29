@@ -75,7 +75,8 @@ class B2GSelectSemiLepTTbar_IsoStd( ) :
         #ROOT.gROOT.ProcessLine('.L BTagCalibrationStandalone.cpp+') 
 
         # get the sf data loaded
-        self.calib = ROOT.BTagCalibration('csvv2_ichep', 'CSVv2_ichep.csv')
+        self.calib = ROOT.BTagCalibration('CSVv2Moriond17_2017_1_26_BtoH','CSVv2Moriond17_2017_1_26_BtoH.csv')#('csvv2_ichep', 'CSVv2_ichep.csv')
+
 
         # making a std::vector<std::string>> in python is a bit awkward, 
         # but works with root (needed to load other sys types):

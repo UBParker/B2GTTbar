@@ -314,7 +314,7 @@ class RunSemiLepTTbar() :
         self.BtagWeight =  a.BtagWeight
         
         self.theWeight = 1.
-        '''
+        
         #if self.verbose and index == 0 : print "Event weight {0:2.4f} * PU weight {1:2.4f} *Trigger Eff. {2:2.4f} * Cut ID {3:2.4f} * HIP SF {4:2.4f} * Btag SF {5:2.4f} * self.CutIDScaleFLooseIs {6:2.4f}".format(self.EventWeight , self.PUWeight , self.TriggEffIs , self.CutIDScaleFIs, self.MuonHIPScaleFIs, self.BtagWeight, self.CutIDScaleFLooseIs)
 
         ### The total weight depends on the stage of selection
@@ -335,19 +335,19 @@ class RunSemiLepTTbar() :
             self.theWeight =  self.EventWeight * self.PUWeight * self.TriggEffIs  * self.CutIDScaleFIs
             if self.verbose : print "theWeight for stage {} is : {}".format(index ,self.theWeight)
         ### HighPt ID
-        if index == 4: 
+        if 4<= index < 12: 
             self.theWeight =  self.EventWeight * self.PUWeight * self.TriggEffIs  * self.CutIDScaleFIs *self.MuonHIPScaleFIs
             if self.verbose : print "theWeight for stage {} is : {}".format(index ,self.theWeight)
         ### B tag SF
-        if index == 12: 
+        if index >= 12: 
             self.theWeight =  self.EventWeight * self.PUWeight * self.TriggEffIs  * self.CutIDScaleFIs *self.MuonHIPScaleFIs * self.BtagWeight
             if self.verbose : print "theWeight for stage {} is : {}".format(index ,self.theWeight)
         #if self.verbose : print "Event weight {1:2.4f} * PU weight {2:2.4f} *Trigger Eff. {3:2.4f} * Cut ID {4:2.4f} * HIP SF {5:2.4f} * Btag SF {6:2.4f}".format(self.EventWeight , self.PUWeight , self.TriggEffIs , self.CutIDScaleFIs, self.MuonHIPScaleFIs, self.BtagWeight)
 
 
-        #self.hCutFlow[ilep][index].Fill(self.passedCutCount[ilep][index])
-        self.WeightHist[ilep][index].Fill(self.theWeight )
-        '''
+     
+     
+    
             
         if b.ak8JetP4 != None :                 
             self.AK8PtHist[ilep][index].Fill( b.ak8JetP4.Perp()* b.PtSmear   , self.theWeight )  ### TO-DO : Implement Pt smear in hadselection and replace 1.000 with b.PtSmear
