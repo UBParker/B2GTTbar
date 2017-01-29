@@ -28,8 +28,8 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         
         self.trigIndex = [
             self.trigMap.HLT_Mu45_eta2p1_v,
-            self.trigMap.HLT_Mu30_eta2p1_PFJet150_PFJet50_v,
-            self.trigMap.HLT_Mu40_eta2p1_PFJet200_PFJet50_v,
+            #elf.trigMap.HLT_Mu30_eta2p1_PFJet150_PFJet50_v,
+            #self.trigMap.HLT_Mu40_eta2p1_PFJet200_PFJet50_v,
             self.trigMap.HLT_Ele45_CaloIdVT_GsfTrkIdT_PFJet200_PFJet50_v,
             self.trigMap.HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet140_v,
             self.trigMap.HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165_v
@@ -62,7 +62,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         
         # Stage 5 : MET selection
         self.muonMETPtCut = 50.
-        self.electronMETPtCut = 50 #120.
+        self.electronMETPtCut = 120.
 
 
         # Stage 6 : Leptonic-side AK4 jet selection
@@ -78,8 +78,8 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         #  DR(AK8, Lepton) > 1.
 
         # Stage 9 : Wlep pt selection
-        self.MuonHtLepCut = 300.
-        self.ElectronHtLepCut = 0.
+        self.MuonHtLepCut = 200.
+        self.ElectronHtLepCut = 200.
 
         ### Cached class member variables for plotting
         self.runNum = None
@@ -304,8 +304,10 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         if self.verbose: print"Stage 1: Passed trigger {}".format(self.trigIs)
 
 
-        if not ( self.passMuon_Eta or self.passElectron_Eta ) and  ( self.passMuon_Pt or self.passElectron_Pt) :                                                                                                  
-            return self.passed
+        if self.tree.LeptonIsMu[0] > 0. : ### Muon
+            if not ( self.leptonP4.Perp() > self.muonPtCut and   abs(self.leptonP4.Eta()) < self.muonEtaCut ) : return self.passed
+        if self.tree.LeptonIsMu[0] < 1. : ### Electron
+            if not ( self.leptonP4.Perp() > self.electronPtCut and   abs(self.leptonP4.Eta()) < self.electronEtaCut ) : return self.passed
         self.passed[2] = True
         self.passedCount[2] += 1
         if self.verbose :
@@ -315,7 +317,6 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
             else :print "Stage 2a: Exactly 1 electron candidate  eta {0:2.2f} < ( {1:2.2f} )".format(
                                                                         self.leptonP4.Eta(),
                                                                         self.electronEtaCut)
-
 
         if self.verbose : print "Stage 2b: lepton candidate pt {0:2.2f} GeV > ({1:2.2f} GeV)".format(
                                                                         self.leptonP4.Perp(),
@@ -328,14 +329,15 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
                                  self.tree.MuHighPt[0],
                                  self.tree.MuTight[0]  )                                                                       
                                                                        
-                                                                       
-                                                                      
-        
-        if not( self.passMuon_Tight or  self.passElectron_Tight_noIso) :
-            return self.passed
+
+        if self.tree.LeptonIsMu[0] > 0. : ### Muon
+            if not self.tree.MuTight[0] > 0.  : return self.passed
+        if self.tree.LeptonIsMu[0] < 1. : ### Electron
+            if not self.tree.Electron_noiso_passMedium[0] > 0.  : return self.passed
         self.passed[3] = True
         self.passedCount[3] += 1
-        if self.verbose  : print "Stage 3: Muon (Electron) passed Tight (Medium) Cut based ID (with no iso) NOT APPLIED TO ELECTRON YET passnoiso loose {} med {} tight {}".format(self.tree.Electron_noiso_passLoose[0] , self.tree.Electron_noiso_passMedium[0], self.tree.Electron_noiso_passTight[0] )
+        if self.verbose  : print "Stage 3: Muon (Electron) passed Tight (Medium) Cut based ID (with no iso) passnoiso loose {} med {} tight {}".format(self.tree.Electron_noiso_passLoose[0] , self.tree.Electron_noiso_passMedium[0], self.tree.Electron_noiso_passTight[0] )
+
         ### NOTE : High Pt Muon ID is now required as suggested here https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideMuonIdRun2#2016_Data
         if not (( self.tree.LeptonIsMu[0] == 1 and self.tree.MuHighPt[0] == 1 and self.tree.SemiLeptPassMETFilters[0] == 1) or  (self.tree.LeptonIsMu[0] == 0 and  self.tree.SemiLeptPassMETFilters[0] == 1 )) : 
             return self.passed
@@ -345,10 +347,11 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
 
 
         if self.verbose: print"Stage 5 CHECK: Lepton is a Muon bool {}, MET is {} GeV".format(self.tree.LeptonIsMu[0] , self.nuP4.Perp() )
-        self.MuMet = self.tree.LeptonIsMu[0] == 1 and self.nuP4.Perp() > self.muonMETPtCut
-        self.ElMet = self.tree.LeptonIsMu[0] == 0 and self.nuP4.Perp() > self.electronMETPtCut 
-       
-        if not ( self.MuMet or self.ElMet)  : return self.passed 
+
+        if self.tree.LeptonIsMu[0] > 0. :
+            if not self.nuP4.Perp() > self.muonMETPtCut  : return self.passed
+        if self.tree.LeptonIsMu[0] < 1. :
+            if not self.nuP4.Perp() > self.electronMETPtCut  : return self.passed
         self.passed[5] = True
         self.passedCount[5] += 1
         if self.verbose : 

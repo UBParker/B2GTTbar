@@ -9,11 +9,11 @@ CutsPerStage_Type1 =            {
                               "2" :  [ "Stage 2", "Lep Pt > 53 GeV"], # , eta < 2.1 (2.5)"],  
                               "3" :  [ "Stage 3", "Tight(noiso)"],   
                               "4" :  [ "Stage 4" , "MuHighPt(MET Filters)"],  
-                              "5" :  [ "Stage 5", "E_{T}^{miss} > 50 GeV " ],  
+                              "5" :  [ "Stage 5", "E_{T}^{miss} > 50(120) GeV " ],  
                               "6" :  [ "Stage 6", "AK4 Pt > 50 GeV"],  
                               "7" :  [ "Stage 7", "2Dcut"],  # 2D cut (decrease QCD contamination) self.DrAK4Lep = 0.4 self.PtRel = 40.
                               "8" :  [ "Stage 8" , "Hemi"],          # Stage 8 : Hemisphere cut (keep leptons far from AK8 Jet DR(AK8, Lepton) > 1.
-                              "9" :  [ "Stage 9", "W_{lep} Pt > 300(0)GeV" ],  
+                              "9" :  [ "Stage 9", "W_{lep} Pt > 200(0)GeV" ],  
                               "10" :  [ "Stage 10", ""],  
                               "11" :  [ "Stage 11", "AK8 Pt > 400 GeV"],   
                               "12" :  [ "Stage 12" , "AK4 Btag CSVv2Med"],  
