@@ -28,7 +28,7 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         ### Define the cut values for the select function
 
 
-        # Stage 0 (10)- Pass Leptonic Selection
+        # Stage 0 (10)- Pass Leptonic Selection uppiSDJetP4Subjet0PuppiCorrMass_Binned
 
         # Stage 1 (11)- AK8 Jet Pt and eta cut
         self.AK8PtCut = 400.
@@ -196,7 +196,7 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.ak8_m = None          # JECs applied, currently Spring 2016
         self.ak8_m_Pcorr = None    # PUPPI corrections from Thea applied
         self.ak8_m_PcorrSmear = None    # PUPPI corrections from Thea applied and Pt smearing applied to mass
-        self.ak8JetHT = None
+        self.ak8JetHT = 1. ### Done to avoid type error on += in select function                                                                                                             
         self.tau32      = None
         self.tau21      = None
 
@@ -271,7 +271,7 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         
         if self.ak8PuppiJetP4Raw != None :
             self.ak8Puppi_m = self.ak8PuppiJetP4.M()
-            self.ak8PuppiSD_m_Pcorr = self.CorrPUPPIMass( self.ak8PuppiJetP4Raw.Perp() , self.ak8PuppiJetP4Raw.Eta(), self.ak8PuppiJetP4Raw.M()  )
+            self.ak8Puppi_m_Pcorr = self.CorrPUPPIMass( self.ak8PuppiJetP4Raw.Perp() , self.ak8PuppiJetP4Raw.Eta(), self.ak8PuppiJetP4Raw.M()  )
             self.puppitau32 = self.tree.JetPuppiTau32[0]
             self.puppitau21 = self.tree.JetPuppiTau21[0]
             
@@ -327,12 +327,12 @@ class B2GSelectSemiLepTTbar_Type1( ) :
       
             self.SDPuppiptGenpt = float(self.ak8PuppiSDJetP4.Perp())  / float(self.ak8JetP4.Perp() ) 
     
-            self.ak8PuppiSD_m = self.CorrPUPPIMass( 
+            self.ak8PuppiSD_m_Pcorr = self.CorrPUPPIMass( 
                                                    self.ak8PuppiSDJetP4Raw.Perp(),
                                                    self.ak8PuppiSDJetP4Raw.Eta(),
                                                    self.ak8PuppiSDJetP4Raw.M()  )
-                                                   
-            self.SDPuppiMasswithPuppiCorrvsSDPuppiMass = float(self.ak8PuppiSD_m)  / float(self.ak8PuppiSDJetP4.M()) 
+            if float(self.ak8PuppiSDJetP4.M()) > 0.1 :                                       
+                self.SDPuppiMasswithPuppiCorrvsSDPuppiMass = float(self.ak8PuppiSD_m_Pcorr)  / float(self.ak8PuppiSDJetP4.M()) 
 
         if self.ak8PuppiSDJetP4_Subjet0Raw != None :
             self.ak8SDsj0_m = self.CorrPUPPIMass( 
@@ -346,7 +346,7 @@ class B2GSelectSemiLepTTbar_Type1( ) :
                                                  self.ak8PuppiSDJetP4_Subjet1Raw.M()  )
                                                  
         self.ak8Jet_Ptbins = [200, 300, 400, 500, 800, 1000]
-        
+        '''
         ### These Histos are binned by AK8 PUPPI Soft Drop jet Pt
         self.ak8PuppiJetP4_Binned = [ROOT.TLorentzVector()] * len(self.ak8Jet_Ptbins)
         self.ak8PuppiSDJetP4_Binned = [ROOT.TLorentzVector()] * len(self.ak8Jet_Ptbins)
@@ -367,7 +367,7 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         for iptbin, ptbin in enumerate(self.ak8Jet_Ptbins) :
             if ptbin <  1000.:
                 if (  ptbin < self.ak8PuppiSDJetP4.Perp() < self.ak8Jet_Ptbins[iptbin+1] ) :
-                    if self.verbose : print"The corrected ak8 puppi SD jet pt is {} which is btw pt min {} and pt max {}".format(self.ak8PuppiSDJetP4.Perp(), ptbin,self.ak8Jet_Ptbins[iptbin+1] )
+                    if self.verbose : print"The corrected ak8 puppi SD jet pt is {0:2.2f} which is btw pt min {1:} and pt max {2:}".format(self.ak8PuppiSDJetP4.Perp(), ptbin,self.ak8Jet_Ptbins[iptbin+1] )
                     self.ak8PuppiJetP4_Binned[iptbin] = self.ak8PuppiSDJetP4
                     self.ak8PuppiSDJetP4Subjet0_Binned[iptbin] = self.ak8PuppiSDJetP4_Subjet0
                     self.ak8PuppiSDJetP4Subjet1_Binned[iptbin] = self.ak8PuppiSDJetP4_Subjet1
@@ -376,15 +376,15 @@ class B2GSelectSemiLepTTbar_Type1( ) :
                     self.ak8PuppiSDJetP4Subjet1PuppiCorrMass_Binned[iptbin] = self.ak8SDsj1_m
                     
                 if (  ptbin < self.ak8PuppiSDJetP4_Subjet0.Perp() < self.ak8Jet_Ptbins[iptbin+1] ) :
-                    if self.verbose : print"The SD subjet 0 jet pt is {} which is btw pt min {} and pt max {}".format(self.ak8PuppiSDJetP4_Subjet0.Perp(), ptbin,self.ak8Jet_Ptbins[iptbin+1] )
-                    self.ak8PuppiJetP4_Binned[iptbin] = self.ak8PuppiSDJetP4
-                    self.ak8PuppiSDJetP4Subjet0_Binned[iptbin] = self.ak8PuppiSDJetP4_Subjet0
-                    self.ak8PuppiSDJetP4Subjet1_Binned[iptbin] = self.ak8PuppiSDJetP4_Subjet1
-                    self.ak8PuppiSDJetP4_Binned[iptbin] = self.ak8PuppiSDJetP4
-                    self.ak8PuppiSDJetP4Subjet0PuppiCorrMass_Binned[iptbin] = self.ak8SDsj0_m
-                    self.ak8PuppiSDJetP4Subjet1PuppiCorrMass_Binned[iptbin] = self.ak8SDsj1_m
+                    if self.verbose : print"The SD subjet 0 jet pt is {0:2.2f} which is btw pt min {1:} and pt max {2:}".format(self.ak8PuppiSDJetP4_Subjet0.Perp(), ptbin,self.ak8Jet_Ptbins[iptbin+1] )
+                    self.ak8PuppiJetP4_Binned0[iptbin] = self.ak8PuppiSDJetP4
+                    self.ak8PuppiSDJetP4Subjet0_Binned0[iptbin] = self.ak8PuppiSDJetP4_Subjet0
+                    self.ak8PuppiSDJetP4Subjet1_Binned0[iptbin] = self.ak8PuppiSDJetP4_Subjet1
+                    self.ak8PuppiSDJetP4_Binned0[iptbin] = self.ak8PuppiSDJetP4
+                    self.ak8PuppiSDJetP4Subjet0PuppiCorrMass_Binned0[iptbin] = self.ak8SDsj0_m
+                    self.ak8PuppiSDJetP4Subjet1PuppiCorrMass_Binned0[iptbin] = self.ak8SDsj1_m
                     
-                    
+        '''            
         self.ak8SDsubjet0tau1 = self.tree.JetSDsubjet0tau1[0]
         self.ak8SDsubjet0tau2 = self.tree.JetSDsubjet0tau2[0]
 
@@ -426,7 +426,7 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.passedCount[2] += 1
         if self.verbose : print "Stage 12 :AK4 bdisc {0:2.2f}  > ( {1:2.2f} ) ".format(  self.ak4JetBdisc , self.bdiscmin )
         
-        if not ( self.minAK8Mass < self.ak8_SDm < self.maxAK8Mass ) : return self.passed
+        if not ( self.minAK8Mass < self.ak8SD_m < self.maxAK8Mass ) : return self.passed
         self.passed[3] = True
         self.passedCount[3] += 1
         if self.verbose : print "Stage 13: AK8 SD mass  ({0:2.2f}) < {1:2.2f} GeV < ({2:2.2f})  [For comparison SD Puppi mass after puppi corr is  {2:2.2f} ]".format(  self.minAK8Mass , self.ak8SDJetP4.M() , self.maxAK8Mass, self.ak8PuppiSD_m)
@@ -442,7 +442,7 @@ class B2GSelectSemiLepTTbar_Type1( ) :
 
         #W tag the SD subjet 0 fix this: later see if bdisc is higher for subjet 0 or 1
         if self.verbose : print "Mass of SD subjet 0 before puppi corr is: {0:2.2f}".format( float(self.ak8PuppiSDJetP4_Subjet0.M()))
-        if not ( self.minAK8sjMass <  self.ak8PuppiSD_subjet0_m  <  self.maxAK8sjMass) : return self.passed
+        if not ( self.minAK8sjMass <  self.ak8SDsj0_m  <  self.maxAK8sjMass) : return self.passed
         self.passed[5] = True
         self.passedCount[5] += 1
         if self.verbose : print "Stage 15: AK8 SD subjet 0 mass  ({0}) < {1:2.2f} GeV < ({2})  [mass is after puppi mass corr]".format( self.minAK8sjMass ,  self.ak8PuppiSD_subjet0_m  , self.maxAK8sjMass)

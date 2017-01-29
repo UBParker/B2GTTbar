@@ -113,6 +113,7 @@ class RunSemiLepTTbar_HighMass() :
         self.lepSelection = B2GSelectSemiLepTTbar_Iso2D.B2GSelectSemiLepTTbar_Iso2D( options, self.treeobj )
         self.hadSelection = B2GSelectSemiLepTTbar_Type1.B2GSelectSemiLepTTbar_Type1( options, self.treeobj, self.lepSelection )
 
+
         self.nstages = self.lepSelection.nstages + self.hadSelection.nstages
         self.nlep = 2 # Electron and Muon
 
@@ -182,10 +183,9 @@ class RunSemiLepTTbar_HighMass() :
 
         self.AK8PuppiSDPtResponse = []
         self.AK8SDPtResponse = []
-        self.SDPuppiptGenptResponse = []
-        self.SDPuppiMasswithPuppiCorrvsSDPuppiMassResponse = []
+        self.AK8SDPuppiptGenptResponse = []
+        self.AK8SDPuppiMasswithPuppiCorrvsSDPuppiMassResponse = []
           
-
         self.AK8puppitau21Hist = []
         self.AK8puppitau32Hist = []
 
@@ -194,26 +194,22 @@ class RunSemiLepTTbar_HighMass() :
         self.AK8MSDHist = []
         self.AK8SDRhoRatioHist = []
 
-
         self.AK8MSDSJ0Hist = []
         self.AK8SDSJ0PtHist = []      
             
         self.lepNames = ['Electron', 'Muon' ]
-        
         
         # Create histos for type 1 selection binned by pt of leading SD subjet
         self.AK8MPtBinnedHistList = [[], [] ,[], [] , []]
         self.AK8MSDPtBinnedHistList = [[], [] ,[], [] , []]
         self.AK8MSDSJ0PtBinnedHistList = [[], [] ,[], [] , []]
         self.AK8MSDSJ1PtBinnedHistList = [[], [] ,[], [] , []]
-        '''
-        for iptbin, ptbin in enumerate(b.ak8Jet_Ptbins) :
-            if iptbin < 5:
-                self.AK8MPtBinnedHistList.append([])
-                self.AK8MSDPtBinnedHistList.append([])
-                self.AK8MSDSJ0PtBinnedHistList.append([])
-                self.AK8MSDSJ1PtBinnedHistList.append([])
-        '''
+       
+        self.AK8MPtBinnedHistList0 = [[], [] ,[], [] , []]
+        self.AK8MSDPtBinnedHistList0 = [[], [] ,[], [] , []]
+        self.AK8MSDSJ0PtBinnedHistList0 = [[], [] ,[], [] , []]
+        self.AK8MSDSJ1PtBinnedHistList0 = [[], [] ,[], [] , []]       
+       
         ### List of all histograms
         self.hists = []
         
@@ -272,7 +268,7 @@ class RunSemiLepTTbar_HighMass() :
 
                 self.AK8PuppiSDPtResponse[ilep].append( ROOT.TH1F("AK8PuppiSDPtResponse" +  self.lepNames[ilep] + str(ival), "Jet p_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000,-10, 1000) )
                 self.AK8SDPtResponse[ilep].append( ROOT.TH1F("AK8SDPtResponse" +  self.lepNames[ilep] + str(ival), "Jet p_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000, -10, 1000) )
-                self.AK8SDPuppiptGenptResponse[ilep].append( ROOT.TH1F("AK8SDPuppiptGenptResponse" +  self.lepNames[ilep] + str(ival), "Jet p_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000, -10, 1000)) )
+                self.AK8SDPuppiptGenptResponse[ilep].append( ROOT.TH1F("AK8SDPuppiptGenptResponse" +  self.lepNames[ilep] + str(ival), "Jet p_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000, -10, 1000)) 
                 self.AK8SDPuppiMasswithPuppiCorrvsSDPuppiMassResponse[ilep].append( ROOT.TH1F("AK8SDPuppiMasswithPuppiCorrvsSDPuppiMassResponse" +  self.lepNames[ilep] + str(ival), "Jet p_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000, -10, 1000))
 
                 self.AK8SDSJ0PtHist[ilep].append( ROOT.TH1F("AK8SDSJ0PtHist" +  self.lepNames[ilep] + str(ival), "SD subjet 0 P_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 1000) )
@@ -366,9 +362,9 @@ class RunSemiLepTTbar_HighMass() :
         #self.hCutFlow[ilep][index].Fill(self.passedCutCount[ilep][index])
         #self.WeightHist[ilep][index].Fill(self.theWeight )
         
-        if a.runNum > 0. :
-            if self.verbose: print"run number is filled as {}".format(a.runNum)
-            self.RunNumberHist[ilep][index].Fill(a.runNum)
+        if self.verbose: print"run number is filled as a.runNum value {}".format( a.RunNumber)
+        if a.RunNumber > 0. :
+            self.RunNumberHist[ilep][index].Fill(a.RunNumber)
         if self.theWeight > -1. :
             self.WeightHist[ilep][index].Fill(self.theWeight)
             
@@ -376,23 +372,24 @@ class RunSemiLepTTbar_HighMass() :
             self.AK8PtHist[ilep][index].Fill( b.ak8JetP4.Perp()* b.PtSmear   , self.theWeight )  ### TO-DO : Implement Pt smear in hadselection and replace 1.000 with b.PtSmear
             self.AK8HTHist[ilep][index].Fill( b.ak8JetHT  , self.theWeight )
             if b.ak8SDJetP4 != None and b.SDptGenpt != None :
-                self.AK8SDPtResponse[ilep][index].Fill( b.SDptGenpt , b.ak8JetP4.Perp() * b.PtSmear )    
-                self.AK8SDPuppiptGenptResponse[ilep][index].Fill( b.SDPuppiptGenpt , b.ak8JetP4.Perp() * b.PtSmear )
-                self.AK8SDPuppiMasswithPuppiCorrvsSDPuppiMassResponse[ilep][index].Fill( b.SDPuppiMasswithPuppiCorrvsSDPuppiMass , b.ak8PuppiSD_m_Pcorr ) #* b.PtSmear )
+                self.AK8SDPtResponse[ilep][index].Fill(  b.ak8JetP4.Perp() * b.PtSmear, b.SDptGenpt  )    
+                self.AK8SDPuppiptGenptResponse[ilep][index].Fill(  b.ak8JetP4.Perp() * b.PtSmear, b.SDPuppiptGenpt  )
+                if b.SDPuppiMasswithPuppiCorrvsSDPuppiMass > 0. and  b.ak8PuppiSD_m_Pcorr > 0.  :
+                    self.AK8SDPuppiMasswithPuppiCorrvsSDPuppiMassResponse[ilep][index].Fill( b.ak8PuppiSD_m_Pcorr , b.SDPuppiMasswithPuppiCorrvsSDPuppiMass )#, b.ak8PuppiSD_m_Pcorr ) #* b.PtSmear )
         if b.ak8SDJetP4 != None :
             self.AK8SDPtHist[ilep][index].Fill( b.ak8SDJetP4.Perp() * b.PtSmear  , self.theWeight )
-            self.AK8MSDHist[ilep][index].Fill( b.ak8PuppiSD_m  , self.theWeight )
+            self.AK8MSDHist[ilep][index].Fill( b.ak8PuppiSD_m_Pcorr  , self.theWeight )
 
         if b.ak8PuppiJetP4 != None :
             self.AK8PuppiPtHist[ilep][index].Fill( b.ak8PuppiJetP4.Perp() * b.PuppiPtSmear  , self.theWeight )
             self.AK8EtaHist[ilep][index].Fill( b.ak8PuppiJetP4.Eta()  , self.theWeight )
             self.AK8puppitau21Hist[ilep][index].Fill( b.puppitau21  , self.theWeight )
             self.AK8puppitau32Hist[ilep][index].Fill( b.puppitau32  , self.theWeight )
-
-            self.AK8MHist[ilep][index].Fill( b.ak8_Puppim  , self.theWeight )
+            if b.ak8Puppi_m_Pcorr != None: 
+                self.AK8MHist[ilep][index].Fill( b.ak8Puppi_m_Pcorr , self.theWeight )
             if b.ak8PuppiSDJetP4 != None :
                 if b.ak8PuppiJetP4  != None and b.SDptPuppipt != None :
-                    self.AK8PuppiSDPtResponse[ilep][index].Fill(b.SDptPuppipt  , b.ak8PuppiJetP4.Perp() )# * b.PuppiPtSmear )  
+                    self.AK8PuppiSDPtResponse[ilep][index].Fill( b.ak8PuppiJetP4.Perp()* b.PuppiPtSmear , b.SDptPuppipt )# * b.PuppiPtSmear )  
 
         if  b.SDRhoRatio  != None :
             self.AK8SDRhoRatioHist[ilep][index].Fill(b.SDRhoRatio  , self.theWeight ) 
@@ -406,69 +403,73 @@ class RunSemiLepTTbar_HighMass() :
 
             # Filling jet mass histos binned by pt of the leading SD subjet
 
-            # self.ak8Jet_Ptbins = [200., 300., 400., 500., 800., 1000.]
-            ak8SDPuppiP4 = None
-            ak8SDPuppiMass =  None
-            ak8PuppiP4 =  None
-            ak8PuppiMass = None
+            self.ak8Jet_Ptbins = [200., 300., 400., 500., 800., 1000.]
+            '''
+            self.ak8SDPuppiP4 = None
+            self.ak8SDPuppiMass =  None
+            self.ak8PuppiP4 =  None
+            self.ak8PuppiMass = None
             
-            ak8SDPuppiP40 = None
-            ak8SDPuppiMass0 =  None
-            ak8PuppiP40 =  None
-            ak8PuppiMass0 = None
-                        
-            theMassHist =  None
-            theSDMassHist =  None
-            theSDsj0Masshist =  None
-            theSDsj1Masshist =  None
+            self.ak8SDPuppiP40 = None
+            self.ak8SDPuppiMass0 =  None
+            self.ak8PuppiP40 =  None
+            self.ak8PuppiMass0 = None
+            '''            
+            self.theMassHist =  None
+            self.theSDMassHist =  None
+            self.theSDsj0Masshist =  None
+            self.theSDsj1Masshist =  None
             
-            theMassHist0 =  None
-            theSDMassHist0 =  None
-            theSDsj0Masshist0 =  None
-            theSDsj1Masshist0 =  None         
+            self.theMassHist0 =  None
+            self.theSDMassHist0 =  None
+            self.theSDsj0Masshist0 =  None
+            self.theSDsj1Masshist0 =  None         
               
             for iptbin, ptbin in enumerate(b.ak8Jet_Ptbins) :
-                if ptbin <  1000.:
-                    if (  ptbin < b.ak8PuppiSD_m_Pcorr < b.ak8Jet_Ptbins[iptbin+1] ) :
-                        if self.verbose : print"The corrected ak8 puppi SD jet pt is {} which is btw pt min {} and pt max {}".format(self.ak8PuppiSDJetP4.Perp(), ptbin,self.ak8Jet_Ptbins[iptbin+1] )
+                if ptbin <  800.:
+                    if (  ptbin < b.ak8PuppiSDJetP4.Perp()  < b.ak8Jet_Ptbins[iptbin+1] ) :
+                        if self.verbose : print"The corrected ak8 puppi SD jet pt is {0:3.2f} which is btw pt min {1:} and pt max {2:}".format( b.ak8PuppiSDJetP4.Perp(), ptbin, b.ak8Jet_Ptbins[iptbin+1] )
                         
-                        ak8SDPuppiP4 = b.ak8PuppiJetP4_Binned[iptbin]
-                        ak8SDPuppiMass =  b.ak8PuppiSD_m_Pcorr
-                        ak8PuppiP4 = b.ak8PuppiJetP4_Binned[iptbin]
-                        ak8PuppiMass = b.ak8Puppi_m_Pcorr
+                        self.ak8SDPuppiMass =  b.ak8PuppiSD_m_Pcorr
+                        self.ak8PuppiMass = b.ak8Puppi_m_Pcorr
+                        self.ak8SDsj0_m    = b.ak8SDsj0_m
+                        self.ak8SDsj1_m    =b.ak8SDsj1_m
+                        self.theMassHist = self.AK8MPtBinnedHistList[iptbin]
+                        self.theSDMassHist = self.AK8MSDPtBinnedHistList[iptbin]
+                        self.theSDsj0Masshist = self.AK8MSDSJ0PtBinnedHistList[iptbin]
+                        self.theSDsj1Masshist = self.AK8MSDSJ1PtBinnedHistList[iptbin]
+                        if  self.theMassHist != None and self.ak8PuppiMass != None :
+                            if self.verbose: print"Filling Pt binned arrays e.g. this one {0:} with the value of ak8puppimass {1:2.2f} for ipt {2:} ptbin {3:}".format(self.theMassHist[ilep][index], self.ak8PuppiMass , iptbin, ptbin)
 
-                        
-                        theMassHist = self.AK8MPtBinnedHistList[iptbin]
-                        theSDMassHist = self.AK8MSDPtBinnedHistList[iptbin]
-                        theSDsj0Masshist = self.AK8MSDSJ0PtBinnedHistList[iptbin]
-                        theSDsj1Masshist = self.AK8MSDSJ1PtBinnedHistList[iptbin]
+                            self.theMassHist[ilep][index].Fill( self.ak8PuppiMass  , self.theWeight )
+                            self.theSDMassHist[ilep][index].Fill(  self.ak8SDPuppiMass , self.theWeight )
+                        if  self.theSDsj0Masshist != None :
+                            self.theSDsj0Masshist[ilep][index].Fill(  self.ak8SDsj0_m  , self.theWeight )
+                            self.theSDsj1Masshist[ilep][index].Fill(  self.ak8SDsj1_m  , self.theWeight )
+
                     if (  ptbin < b.ak8PuppiSDJetP4_Subjet0.Perp() < self.ak8Jet_Ptbins[iptbin+1] ) :
-                        if self.verbose : print"The SD subjet 0 jet pt is {} which is btw pt min {} and pt max {}".format(self.ak8PuppiSDJetP4_Subjet0.Perp(), ptbin,self.ak8Jet_Ptbins[iptbin+1] )
-                        ak8SDPuppiP40 = b.ak8PuppiJetP4_Binned0[iptbin]
-                        ak8SDPuppiMass0 =  ak8SDPuppiP4.M()
-                        ak8PuppiP40 = b.ak8PuppiJetP4_Binned0[iptbin]
-                        ak8PuppiMass0 =  ak8PuppiP4.M()
+                        if self.verbose : print"The SD subjet 0 jet pt is {0:3.2f} which is btw pt min {1:} and pt max {2:}".format( b.ak8PuppiSDJetP4_Subjet0.Perp(), ptbin, b.ak8Jet_Ptbins[iptbin+1] )
+                    
+                        self.ak8SDPuppiMass0 =  b.ak8PuppiSD_m_Pcorr
+                        self.ak8PuppiMass0 =  b.ak8Puppi_m_Pcorr
+                        print"ak8 puppi mass0 from b.ak8Puppi_m_Pcorr is {0:2.2f}".format(b.ak8Puppi_m_Pcorr)
+                        self.ak8SDsj0_m0    =b.ak8SDsj0_m
+                        self.ak8SDsj1_m0    =b.ak8SDsj1_m
+                        self.theMassHist0 = self.AK8MPtBinnedHistList0[iptbin]
+                        self.theSDMassHist0 = self.AK8MSDPtBinnedHistList0[iptbin]
+                        self.theSDsj0Masshist0 = self.AK8MSDSJ0PtBinnedHistList0[iptbin]
+                        self.theSDsj1Masshist0 = self.AK8MSDSJ1PtBinnedHistList0[iptbin] 
+                      
 
-                        theMassHist0 = self.AK8MPtBinnedHistList0[iptbin]
-                        theSDMassHist0 = self.AK8MSDPtBinnedHistList0[iptbin]
-                        theSDsj0Masshist0 = self.AK8MSDSJ0PtBinnedHistList0[iptbin]
-                        theSDsj1Masshist0 = self.AK8MSDSJ1PtBinnedHistList0[iptbin]
-                    if  theMassHist != None :
-                        if self.verbose: print"Filling Pt binned arrays e.g. this one {} with the value of ak8puppimass {} for ipt {} ptbin {}".format(theMassHist[ilep][index], ak8PuppiMass , iptbin, ptbin)
+                        if  self.theMassHist0 != None and self.ak8PuppiMass0 != None :
+                            if self.verbose: print"Filling Pt binned by SD subjet 0 pt arrays e.g. this one {0:} with the value of ak8puppimass0 {1:2.2f} for ipt {2:d} ptbin {3:d}".format(self.theMassHist0[ilep][index],float( self.ak8PuppiMass0 ), iptbin, ptbin)
 
-                        theMassHist[ilep][index].Fill( ak8PuppiMass  , self.theWeight )
-                        theSDMassHist[ilep][index].Fill(  ak8SDPuppiMass , self.theWeight )
-                    if  theMassHist0 != None :
-                        if self.verbose: print"Filling Pt binned by Sd subjet 0 pt arrays e.g. this one {} with the value of ak8puppimass0 {} for ipt {} ptbin {}".format(theMassHist[ilep][index], ak8PuppiMass , iptbin, ptbin)
+                            self.theMassHist0[ilep][index].Fill( self.ak8PuppiMass0  , self.theWeight )                       
+                            self.theSDMassHist0[ilep][index].Fill(  self.ak8SDPuppiMass0 , self.theWeight )
 
-                        theMassHist0[ilep][index].Fill( ak8PuppiMass0  , self.theWeight )
-                        theSDMassHist0[ilep][index].Fill(  ak8SDPuppiMass0 , self.theWeight )
-                    if  theSDsj0Masshist != None :
-                        theSDsj0Masshist[ilep][index].Fill(  b.ak8PuppiSDJetP4Subjet0PuppiCorrMass_Binned[iptbin] , self.theWeight )
-                        theSDsj1Masshist[ilep][index].Fill(  b.ak8PuppiSDJetP4Subjet1PuppiCorrMass_Binned[iptbin] , self.theWeight )
-                    if  theSDsj0Masshist0 != None :
-                        theSDsj0Masshist0[ilep][index].Fill(  b.ak8PuppiSDJetP4Subjet0PuppiCorrMass_Binned0[iptbin] , self.theWeight )
-                        theSDsj1Masshist0[ilep][index].Fill(  b.ak8PuppiSDJetP4Subjet1PuppiCorrMass_Binned0[iptbin] , self.theWeight )
+                        if  self.theSDsj0Masshist0 != None :
+                            self.theSDsj0Masshist0[ilep][index].Fill(  self.ak8SDsj0_m0  , self.theWeight )
+                            self.theSDsj1Masshist0[ilep][index].Fill(  self.ak8SDsj1_m0  , self.theWeight )
 
         ### Fill the Lepton and AK4 histos
         if a.leptonP4 != None : 
