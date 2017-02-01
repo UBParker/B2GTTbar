@@ -1,194 +1,344 @@
 
-
-python plotstack.py --hist AK8PtHistElectron
-
-python plotstack.py --hist AK8HTHistElectron
-python plotstack.py --hist AK8SDPtHistElectron
-python plotstack.py --hist AK8PuppiSDPtHistElectron
-python plotstack.py --hist AK8PuppiPtHistElectron
-python plotstack.py --hist AK8PuppiSDPtResponseElectron
-python plotstack.py --hist AK8SDPtResponseElectron
-python plotstack.py --hist AK8SDSJ0PtHistElectron
-python plotstack.py --hist AK8EtaHistElectron
-python plotstack.py --hist AK8puppitau21HistElectron
-python plotstack.py --hist AK8puppitau32HistElectron
-python plotstack.py --hist AK8MHistElectron
-python plotstack.py --hist AK8MSDHistElectron
-python plotstack.py --hist AK8SDRhoRatioHistElectron
-python plotstack.py --hist AK8MSDSJ0HistElectron
-python plotstack.py --hist  LeptonPtHistElectron
-python plotstack.py --hist  LeptonEtaHistElectron
-python plotstack.py --hist  METPtHistElectron
-python plotstack.py --hist  HTLepHistElectron
-python plotstack.py --hist  Iso2DHistElectron
-python plotstack.py --hist  AK4BdiscHistElectron
-python plotstack.py --hist AK8MPt200To300HistElectron
-python plotstack.py --hist AK8MSDSJ0Pt200To300HistElectron
-python plotstack.py --hist AK8MSDSJ0Pt200To300HistElectron
-python plotstack.py --hist AK8MSDSJ1Pt200To300HistElectron
-python plotstack.py --hist AK8MPt300To400HistElectron
-python plotstack.py --hist AK8MSDSJ0Pt300To400HistElectron
-python plotstack.py --hist AK8MSDSJ0Pt300To400HistElectron
-python plotstack.py --hist AK8MSDSJ1Pt300To400HistElectron
-python plotstack.py --hist AK8MPt400To500HistElectron
-python plotstack.py --hist AK8MSDPt400To500HistElectron
-python plotstack.py --hist AK8MSDSJ0Pt400To500HistElectron
-python plotstack.py --hist AK8MSDSJ1Pt400To500HistElectron
-python plotstack.py --hist AK8MPt500To800HistElectron
-python plotstack.py --hist AK8MSDPt500To800HistElectron
-python plotstack.py --hist AK8MSDSJ0Pt500To800HistElectron
-python plotstack.py --hist AK8MSDSJ1Pt500To800HistElectron
-python plotstack.py --hist WeightHistElectron
-
-python plotstack.py --hist AK8PtHistMuon
-python plotstack.py --hist AK8HTHistMuon
-python plotstack.py --hist AK8SDPtHistMuon
-python plotstack.py --hist AK8PuppiSDPtHistMuon
-python plotstack.py --hist AK8PuppiPtHistMuon
-python plotstack.py --hist AK8PuppiSDPtResponseMuon
-python plotstack.py --hist AK8SDPtResponseMuon
-python plotstack.py --hist AK8SDSJ0PtHistMuon
-python plotstack.py --hist AK8EtaHistMuon
-python plotstack.py --hist AK8puppitau21HistMuon
-python plotstack.py --hist AK8puppitau32HistMuon
-python plotstack.py --hist AK8MHistMuon
-python plotstack.py --hist AK8MSDHistMuon
-python plotstack.py --hist AK8SDRhoRatioHistMuon
-python plotstack.py --hist AK8MSDSJ0HistMuon
-python plotstack.py --hist LeptonPtHistMuon
-python plotstack.py --hist LeptonEtaHistMuon
-python plotstack.py --hist METPtHistMuon
-python plotstack.py --hist HTLepHistMuon
-python plotstack.py --hist Iso2DHistMuon
-python plotstack.py --hist AK4BdiscHistMuon
-python plotstack.py --hist AK8MPt200To300HistMuon
-python plotstack.py --hist AK8MSDSJ0Pt200To300HistMuon
-python plotstack.py --hist AK8MSDSJ0Pt200To300HistMuon
-python plotstack.py --hist AK8MSDSJ1Pt200To300HistMuon
-python plotstack.py --hist AK8MPt300To400HistMuon
-python plotstack.py --hist AK8MSDSJ0Pt300To400HistMuon
-python plotstack.py --hist AK8MSDSJ0Pt300To400HistMuon
-python plotstack.py --hist AK8MSDSJ1Pt300To400HistMuon
-python plotstack.py --hist AK8MPt400To500HistMuon
-python plotstack.py --hist AK8MSDPt400To500HistMuon
-python plotstack.py --hist AK8MSDSJ0Pt400To500HistMuon
-python plotstack.py --hist AK8MSDSJ1Pt400To500HistMuon
-python plotstack.py --hist AK8MPt500To800HistMuon
-python plotstack.py --hist AK8MSDPt500To800HistMuon
-python plotstack.py --hist AK8MSDSJ0Pt500To800HistMuon
-python plotstack.py --hist AK8MSDSJ1Pt500To800HistMuon
-python plotstack.py --hist WeightHistMuon
+python plotstack.py --hist AK8PtHist
+python plotstack.py --hist AK8HTHist
+python plotstack.py --hist AK8SDPtHist
+python plotstack.py --hist AK8PuppiSDPtHist
+python plotstack.py --hist AK8PuppiPtHist
+python plotstack.py --hist AK8PuppiSDPtResponse
+python plotstack.py --hist AK8SDPtResponse
+python plotstack.py --hist AK8SDSJ0PtHist
+python plotstack.py --hist AK8EtaHist
+python plotstack.py --hist AK8puppitau21Hist
+python plotstack.py --hist AK8puppitau32Hist
+python plotstack.py --hist AK8MHist
+python plotstack.py --hist AK8MSDHist
+python plotstack.py --hist AK8SDRhoRatioHist
+python plotstack.py --hist AK8MSDSJ0Hist
+python plotstack.py --hist LeptonPtHist
+python plotstack.py --hist LeptonEtaHist
+python plotstack.py --hist METPtHist
+python plotstack.py --hist HTLepHist
+python plotstack.py --hist Iso2DHist
+python plotstack.py --hist AK4BdiscHist
+python plotstack.py --hist AK8MPt200To300Hist
+python plotstack.py --hist AK8MSDSJ0Pt200To300Hist
+python plotstack.py --hist AK8MSDSJ0Pt200To300Hist
+python plotstack.py --hist AK8MSDSJ1Pt200To300Hist
+python plotstack.py --hist AK8MPt300To400Hist
+python plotstack.py --hist AK8MSDSJ0Pt300To400Hist
+python plotstack.py --hist AK8MSDSJ0Pt300To400Hist
+python plotstack.py --hist AK8MSDSJ1Pt300To400Hist
+python plotstack.py --hist AK8MPt400To500Hist
+python plotstack.py --hist AK8MSDPt400To500Hist
+python plotstack.py --hist AK8MSDSJ0Pt400To500Hist
+python plotstack.py --hist AK8MSDSJ1Pt400To500Hist
+python plotstack.py --hist AK8MPt500To800Hist
+python plotstack.py --hist AK8MSDPt500To800Hist
+python plotstack.py --hist AK8MSDSJ0Pt500To800Hist
+python plotstack.py --hist AK8MSDSJ1Pt500To800Hist
+python plotstack.py  --hist 0AK8MPt200To300HistMuon
+python plotstack.py  --hist 0AK8MSDSJ0Pt200To300HistMuon
+python plotstack.py  --hist 0AK8MSDSJ0Pt200To300HistMuon
+python plotstack.py  --hist 0AK8MSDSJ1Pt200To300HistMuon
+python plotstack.py  --hist 0AK8MPt300To400HistMuon
+python plotstack.py  --hist 0AK8MSDSJ0Pt300To400HistMuon
+python plotstack.py  --hist 0AK8MSDSJ0Pt300To400HistMuon
+python plotstack.py  --hist 0AK8MSDSJ1Pt300To400HistMuon
+python plotstack.py  --hist 0AK8MPt400To500HistMuon
+python plotstack.py  --hist 0AK8MSDPt400To500HistMuon
+python plotstack.py  --hist 0AK8MSDSJ0Pt400To500HistMuon
+python plotstack.py  --hist 0AK8MSDSJ1Pt400To500HistMuon
+python plotstack.py  --hist 0AK8MPt500To800HistMuon
+python plotstack.py  --hist 0AK8MSDPt500To800HistMuon
+python plotstack.py  --hist 0AK8MSDSJ0Pt500To800HistMuon
+python plotstack.py  --hist 0AK8MSDSJ1Pt500To800HistMuon
+python plotstack.py --hist WeightHist
+python plotstack.py --hist RunNumberHist
 
 
 
-python plotstack.py --highmass --hist AK8PtHistElectron
-
-python plotstack.py --highmass --hist AK8HTHistElectron
-python plotstack.py --highmass --hist AK8SDPtHistElectron
-python plotstack.py --highmass --hist AK8PuppiSDPtHistElectron
-python plotstack.py --highmass --hist AK8PuppiPtHistElectron
-python plotstack.py --highmass --hist AK8PuppiSDPtResponseElectron
-python plotstack.py --highmass --hist AK8SDPtResponseElectron
-python plotstack.py --highmass --hist AK8SDSJ0PtHistElectron
-python plotstack.py --highmass --hist AK8EtaHistElectron
-python plotstack.py --highmass --hist AK8puppitau21HistElectron
-python plotstack.py --highmass --hist AK8puppitau32HistElectron
-python plotstack.py --highmass --hist AK8MHistElectron
-python plotstack.py --highmass --hist AK8MSDHistElectron
-python plotstack.py --highmass --hist AK8SDRhoRatioHistElectron
-python plotstack.py --highmass --hist AK8MSDSJ0HistElectron
-python plotstack.py --highmass --hist  LeptonPtHistElectron
-python plotstack.py --highmass --hist  LeptonEtaHistElectron
-python plotstack.py --highmass --hist  METPtHistElectron
-python plotstack.py --highmass --hist  HTLepHistElectron
-python plotstack.py --highmass --hist  Iso2DHistElectron
-python plotstack.py --highmass --hist  AK4BdiscHistElectron
-python plotstack.py --highmass --hist AK8MPt200To300HistElectron
-python plotstack.py --highmass --hist AK8MSDSJ0Pt200To300HistElectron
-python plotstack.py --highmass --hist AK8MSDSJ0Pt200To300HistElectron
-python plotstack.py --highmass --hist AK8MSDSJ1Pt200To300HistElectron
-python plotstack.py --highmass --hist AK8MPt300To400HistElectron
-python plotstack.py --highmass --hist AK8MSDSJ0Pt300To400HistElectron
-python plotstack.py --highmass --hist AK8MSDSJ0Pt300To400HistElectron
-python plotstack.py --highmass --hist AK8MSDSJ1Pt300To400HistElectron
-python plotstack.py --highmass --hist AK8MPt400To500HistElectron
-python plotstack.py --highmass --hist AK8MSDPt400To500HistElectron
-python plotstack.py --highmass --hist AK8MSDSJ0Pt400To500HistElectron
-python plotstack.py --highmass --hist AK8MSDSJ1Pt400To500HistElectron
-python plotstack.py --highmass --hist AK8MPt500To800HistElectron
-python plotstack.py --highmass --hist AK8MSDPt500To800HistElectron
-python plotstack.py --highmass --hist AK8MSDSJ0Pt500To800HistElectron
-python plotstack.py --highmass --hist AK8MSDSJ1Pt500To800HistElectron
-python plotstack.py --highmass --hist WeightHistElectron
-
-python plotstack.py --highmass --hist AK8PtHistMuon
-python plotstack.py --highmass --hist AK8HTHistMuon
-python plotstack.py --highmass --hist AK8SDPtHistMuon
-python plotstack.py --highmass --hist AK8PuppiSDPtHistMuon
-python plotstack.py --highmass --hist AK8PuppiPtHistMuon
-python plotstack.py --highmass --hist AK8PuppiSDPtResponseMuon
-python plotstack.py --highmass --hist AK8SDPtResponseMuon
-python plotstack.py --highmass --hist AK8SDSJ0PtHistMuon
-python plotstack.py --highmass --hist AK8EtaHistMuon
-python plotstack.py --highmass --hist AK8puppitau21HistMuon
-python plotstack.py --highmass --hist AK8puppitau32HistMuon
-python plotstack.py --highmass --hist AK8MHistMuon
-python plotstack.py --highmass --hist AK8MSDHistMuon
-python plotstack.py --highmass --hist AK8SDRhoRatioHistMuon
-python plotstack.py --highmass --hist AK8MSDSJ0HistMuon
-python plotstack.py --highmass --hist LeptonPtHistMuon
-python plotstack.py --highmass --hist LeptonEtaHistMuon
-python plotstack.py --highmass --hist METPtHistMuon
-python plotstack.py --highmass --hist HTLepHistMuon
-python plotstack.py --highmass --hist Iso2DHistMuon
-python plotstack.py --highmass --hist AK4BdiscHistMuon
-python plotstack.py --highmass --hist AK8MPt200To300HistMuon
-python plotstack.py --highmass --hist AK8MSDSJ0Pt200To300HistMuon
-python plotstack.py --highmass --hist AK8MSDSJ0Pt200To300HistMuon
-python plotstack.py --highmass --hist AK8MSDSJ1Pt200To300HistMuon
-python plotstack.py --highmass --hist AK8MPt300To400HistMuon
-python plotstack.py --highmass --hist AK8MSDSJ0Pt300To400HistMuon
-python plotstack.py --highmass --hist AK8MSDSJ0Pt300To400HistMuon
-python plotstack.py --highmass --hist AK8MSDSJ1Pt300To400HistMuon
-python plotstack.py --highmass --hist AK8MPt400To500HistMuon
-python plotstack.py --highmass --hist AK8MSDPt400To500HistMuon
-python plotstack.py --highmass --hist AK8MSDSJ0Pt400To500HistMuon
-python plotstack.py --highmass --hist AK8MSDSJ1Pt400To500HistMuon
-python plotstack.py --highmass --hist AK8MPt500To800HistMuon
-python plotstack.py --highmass --hist AK8MSDPt500To800HistMuon
-python plotstack.py --highmass --hist AK8MSDSJ0Pt500To800HistMuon
-python plotstack.py --highmass --hist AK8MSDSJ1Pt500To800HistMuon
-python plotstack.py --highmass --hist WeightHistMuon
+python plotstack.py --highmass --hist AK8PtHist
+python plotstack.py --highmass --hist AK8HTHist
+python plotstack.py --highmass --hist AK8SDPtHist
+python plotstack.py --highmass --hist AK8PuppiSDPtHist
+python plotstack.py --highmass --hist AK8PuppiPtHist
+python plotstack.py --highmass --hist AK8PuppiSDPtResponse
+python plotstack.py --highmass --hist AK8SDPtResponse
+python plotstack.py --highmass --hist AK8SDSJ0PtHist
+python plotstack.py --highmass --hist AK8EtaHist
+python plotstack.py --highmass --hist AK8puppitau21Hist
+python plotstack.py --highmass --hist AK8puppitau32Hist
+python plotstack.py --highmass --hist AK8MHist
+python plotstack.py --highmass --hist AK8MSDHist
+python plotstack.py --highmass --hist AK8SDRhoRatioHist
+python plotstack.py --highmass --hist AK8MSDSJ0Hist
+python plotstack.py --highmass --hist  LeptonPtHist
+python plotstack.py --highmass --hist  LeptonEtaHist
+python plotstack.py --highmass --hist  METPtHist
+python plotstack.py --highmass --hist  HTLepHist
+python plotstack.py --highmass --hist  Iso2DHist
+python plotstack.py --highmass --hist  AK4BdiscHist
+python plotstack.py --highmass --hist AK8MPt200To300Hist
+python plotstack.py --highmass --hist AK8MSDSJ0Pt200To300Hist
+python plotstack.py --highmass --hist AK8MSDSJ0Pt200To300Hist
+python plotstack.py --highmass --hist AK8MSDSJ1Pt200To300Hist
+python plotstack.py --highmass --hist AK8MPt300To400Hist
+python plotstack.py --highmass --hist AK8MSDSJ0Pt300To400Hist
+python plotstack.py --highmass --hist AK8MSDSJ0Pt300To400Hist
+python plotstack.py --highmass --hist AK8MSDSJ1Pt300To400Hist
+python plotstack.py --highmass --hist AK8MPt400To500Hist
+python plotstack.py --highmass --hist AK8MSDPt400To500Hist
+python plotstack.py --highmass --hist AK8MSDSJ0Pt400To500Hist
+python plotstack.py --highmass --hist AK8MSDSJ1Pt400To500Hist
+python plotstack.py --highmass --hist AK8MPt500To800Hist
+python plotstack.py --highmass --hist AK8MSDPt500To800Hist
+python plotstack.py --highmass --hist AK8MSDSJ0Pt500To800Hist
+python plotstack.py --highmass --hist AK8MSDSJ1Pt500To800Hist
+python plotstack.py --highmass --hist 0AK8MPt200To300HistMuon
+python plotstack.py --highmass --hist 0AK8MSDSJ0Pt200To300HistMuon
+python plotstack.py --highmass --hist 0AK8MSDSJ0Pt200To300HistMuon
+python plotstack.py --highmass --hist 0AK8MSDSJ1Pt200To300HistMuon
+python plotstack.py --highmass --hist 0AK8MPt300To400HistMuon
+python plotstack.py --highmass --hist 0AK8MSDSJ0Pt300To400HistMuon
+python plotstack.py --highmass --hist 0AK8MSDSJ0Pt300To400HistMuon
+python plotstack.py --highmass --hist 0AK8MSDSJ1Pt300To400HistMuon
+python plotstack.py --highmass --hist 0AK8MPt400To500HistMuon
+python plotstack.py --highmass --hist 0AK8MSDPt400To500HistMuon
+python plotstack.py --highmass --hist 0AK8MSDSJ0Pt400To500HistMuon
+python plotstack.py --highmass --hist 0AK8MSDSJ1Pt400To500HistMuon
+python plotstack.py --highmass --hist 0AK8MPt500To800HistMuon
+python plotstack.py --highmass --hist 0AK8MSDPt500To800HistMuon
+python plotstack.py --highmass --hist 0AK8MSDSJ0Pt500To800HistMuon
+python plotstack.py --highmass --hist 0AK8MSDSJ1Pt500To800HistMuon
+python plotstack.py --highmass --hist WeightHist
+python plotstack.py --highmass --hist RunNumberHist
 
 
+python plotstack.py --el --hist AK8PtHist
+python plotstack.py --el --hist AK8HTHist
+python plotstack.py --el --hist AK8SDPtHist
+python plotstack.py --el --hist AK8PuppiSDPtHist
+python plotstack.py --el --hist AK8PuppiPtHist
+python plotstack.py --el --hist AK8PuppiSDPtResponse
+python plotstack.py --el --hist AK8SDPtResponse
+python plotstack.py --el --hist AK8SDSJ0PtHist
+python plotstack.py --el --hist AK8EtaHist
+python plotstack.py --el --hist AK8puppitau21Hist
+python plotstack.py --el --hist AK8puppitau32Hist
+python plotstack.py --el --hist AK8MHist
+python plotstack.py --el --hist AK8MSDHist
+python plotstack.py --el --hist AK8SDRhoRatioHist
+python plotstack.py --el --hist AK8MSDSJ0Hist
+python plotstack.py --el --hist LeptonPtHist
+python plotstack.py --el --hist LeptonEtaHist
+python plotstack.py --el --hist METPtHist
+python plotstack.py --el --hist HTLepHist
+python plotstack.py --el --hist Iso2DHist
+python plotstack.py --el --hist AK4BdiscHist
+python plotstack.py --el --hist AK8MPt200To300Hist
+python plotstack.py --el --hist AK8MSDSJ0Pt200To300Hist
+python plotstack.py --el --hist AK8MSDSJ0Pt200To300Hist
+python plotstack.py --el --hist AK8MSDSJ1Pt200To300Hist
+python plotstack.py --el --hist AK8MPt300To400Hist
+python plotstack.py --el --hist AK8MSDSJ0Pt300To400Hist
+python plotstack.py --el --hist AK8MSDSJ0Pt300To400Hist
+python plotstack.py --el --hist AK8MSDSJ1Pt300To400Hist
+python plotstack.py --el --hist AK8MPt400To500Hist
+python plotstack.py --el --hist AK8MSDPt400To500Hist
+python plotstack.py --el --hist AK8MSDSJ0Pt400To500Hist
+python plotstack.py --el --hist AK8MSDSJ1Pt400To500Hist
+python plotstack.py --el --hist AK8MPt500To800Hist
+python plotstack.py --el --hist AK8MSDPt500To800Hist
+python plotstack.py --el --hist AK8MSDSJ0Pt500To800Hist
+python plotstack.py --el --hist AK8MSDSJ1Pt500To800Hist
+python plotstack.py --el  --hist 0AK8MPt200To300HistMuon
+python plotstack.py --el  --hist 0AK8MSDSJ0Pt200To300HistMuon
+python plotstack.py --el  --hist 0AK8MSDSJ0Pt200To300HistMuon
+python plotstack.py --el  --hist 0AK8MSDSJ1Pt200To300HistMuon
+python plotstack.py --el  --hist 0AK8MPt300To400HistMuon
+python plotstack.py --el  --hist 0AK8MSDSJ0Pt300To400HistMuon
+python plotstack.py --el  --hist 0AK8MSDSJ0Pt300To400HistMuon
+python plotstack.py --el  --hist 0AK8MSDSJ1Pt300To400HistMuon
+python plotstack.py --el  --hist 0AK8MPt400To500HistMuon
+python plotstack.py --el  --hist 0AK8MSDPt400To500HistMuon
+python plotstack.py --el  --hist 0AK8MSDSJ0Pt400To500HistMuon
+python plotstack.py --el  --hist 0AK8MSDSJ1Pt400To500HistMuon
+python plotstack.py --el  --hist 0AK8MPt500To800HistMuon
+python plotstack.py --el  --hist 0AK8MSDPt500To800HistMuon
+python plotstack.py --el  --hist 0AK8MSDSJ0Pt500To800HistMuon
+python plotstack.py --el  --hist 0AK8MSDSJ1Pt500To800HistMuon
+python plotstack.py --el --hist WeightHist
+python plotstack.py --el --hist RunNumberHist
 
 
 
+python plotstack.py --highmass --el --hist AK8PtHist
+python plotstack.py --highmass --el --hist AK8HTHist
+python plotstack.py --highmass --el --hist AK8SDPtHist
+python plotstack.py --highmass --el --hist AK8PuppiSDPtHist
+python plotstack.py --highmass --el --hist AK8PuppiPtHist
+python plotstack.py --highmass --el --hist AK8PuppiSDPtResponse
+python plotstack.py --highmass --el --hist AK8SDPtResponse
+python plotstack.py --highmass --el --hist AK8SDSJ0PtHist
+python plotstack.py --highmass --el --hist AK8EtaHist
+python plotstack.py --highmass --el --hist AK8puppitau21Hist
+python plotstack.py --highmass --el --hist AK8puppitau32Hist
+python plotstack.py --highmass --el --hist AK8MHist
+python plotstack.py --highmass --el --hist AK8MSDHist
+python plotstack.py --highmass --el --hist AK8SDRhoRatioHist
+python plotstack.py --highmass --el --hist AK8MSDSJ0Hist
+python plotstack.py --highmass --el --hist  LeptonPtHist
+python plotstack.py --highmass --el --hist  LeptonEtaHist
+python plotstack.py --highmass --el --hist  METPtHist
+python plotstack.py --highmass --el --hist  HTLepHist
+python plotstack.py --highmass --el --hist  Iso2DHist
+python plotstack.py --highmass --el --hist  AK4BdiscHist
+python plotstack.py --highmass --el --hist AK8MPt200To300Hist
+python plotstack.py --highmass --el --hist AK8MSDSJ0Pt200To300Hist
+python plotstack.py --highmass --el --hist AK8MSDSJ0Pt200To300Hist
+python plotstack.py --highmass --el --hist AK8MSDSJ1Pt200To300Hist
+python plotstack.py --highmass --el --hist AK8MPt300To400Hist
+python plotstack.py --highmass --el --hist AK8MSDSJ0Pt300To400Hist
+python plotstack.py --highmass --el --hist AK8MSDSJ0Pt300To400Hist
+python plotstack.py --highmass --el --hist AK8MSDSJ1Pt300To400Hist
+python plotstack.py --highmass --el --hist AK8MPt400To500Hist
+python plotstack.py --highmass --el --hist AK8MSDPt400To500Hist
+python plotstack.py --highmass --el --hist AK8MSDSJ0Pt400To500Hist
+python plotstack.py --highmass --el --hist AK8MSDSJ1Pt400To500Hist
+python plotstack.py --highmass --el --hist AK8MPt500To800Hist
+python plotstack.py --highmass --el --hist AK8MSDPt500To800Hist
+python plotstack.py --highmass --el --hist AK8MSDSJ0Pt500To800Hist
+python plotstack.py --highmass --el --hist AK8MSDSJ1Pt500To800Hist
+python plotstack.py --highmass --el --hist 0AK8MPt200To300HistMuon
+python plotstack.py --highmass --el --hist 0AK8MSDSJ0Pt200To300HistMuon
+python plotstack.py --highmass --el --hist 0AK8MSDSJ0Pt200To300HistMuon
+python plotstack.py --highmass --el --hist 0AK8MSDSJ1Pt200To300HistMuon
+python plotstack.py --highmass --el --hist 0AK8MPt300To400HistMuon
+python plotstack.py --highmass --el --hist 0AK8MSDSJ0Pt300To400HistMuon
+python plotstack.py --highmass --el --hist 0AK8MSDSJ0Pt300To400HistMuon
+python plotstack.py --highmass --el --hist 0AK8MSDSJ1Pt300To400HistMuon
+python plotstack.py --highmass --el --hist 0AK8MPt400To500HistMuon
+python plotstack.py --highmass --el --hist 0AK8MSDPt400To500HistMuon
+python plotstack.py --highmass --el --hist 0AK8MSDSJ0Pt400To500HistMuon
+python plotstack.py --highmass --el --hist 0AK8MSDSJ1Pt400To500HistMuon
+python plotstack.py --highmass --el --hist 0AK8MPt500To800HistMuon
+python plotstack.py --highmass --el --hist 0AK8MSDPt500To800HistMuon
+python plotstack.py --highmass --el --hist 0AK8MSDSJ0Pt500To800HistMuon
+python plotstack.py --highmass --el --hist 0AK8MSDSJ1Pt500To800HistMuon
+python plotstack.py --highmass --el --hist WeightHist
+python plotstack.py --highmass --el --hist RunNumberHist
+
+
+python plotstack.py --mu  --hist AK8PtHist
+python plotstack.py --mu  --hist AK8HTHist
+python plotstack.py --mu  --hist AK8SDPtHist
+python plotstack.py --mu  --hist AK8PuppiSDPtHist
+python plotstack.py --mu  --hist AK8PuppiPtHist
+python plotstack.py --mu  --hist AK8PuppiSDPtResponse
+python plotstack.py --mu  --hist AK8SDPtResponse
+python plotstack.py --mu  --hist AK8SDSJ0PtHist
+python plotstack.py --mu  --hist AK8EtaHist
+python plotstack.py --mu  --hist AK8puppitau21Hist
+python plotstack.py --mu  --hist AK8puppitau32Hist
+python plotstack.py --mu  --hist AK8MHist
+python plotstack.py --mu  --hist AK8MSDHist
+python plotstack.py --mu  --hist AK8SDRhoRatioHist
+python plotstack.py --mu  --hist AK8MSDSJ0Hist
+python plotstack.py --mu  --hist LeptonPtHist
+python plotstack.py --mu  --hist LeptonEtaHist
+python plotstack.py --mu  --hist METPtHist
+python plotstack.py --mu  --hist HTLepHist
+python plotstack.py --mu  --hist Iso2DHist
+python plotstack.py --mu  --hist AK4BdiscHist
+python plotstack.py --mu  --hist AK8MPt200To300Hist
+python plotstack.py --mu  --hist AK8MSDSJ0Pt200To300Hist
+python plotstack.py --mu  --hist AK8MSDSJ0Pt200To300Hist
+python plotstack.py --mu  --hist AK8MSDSJ1Pt200To300Hist
+python plotstack.py --mu  --hist AK8MPt300To400Hist
+python plotstack.py --mu  --hist AK8MSDSJ0Pt300To400Hist
+python plotstack.py --mu  --hist AK8MSDSJ0Pt300To400Hist
+python plotstack.py --mu  --hist AK8MSDSJ1Pt300To400Hist
+python plotstack.py --mu  --hist AK8MPt400To500Hist
+python plotstack.py --mu  --hist AK8MSDPt400To500Hist
+python plotstack.py --mu  --hist AK8MSDSJ0Pt400To500Hist
+python plotstack.py --mu  --hist AK8MSDSJ1Pt400To500Hist
+python plotstack.py --mu  --hist AK8MPt500To800Hist
+python plotstack.py --mu  --hist AK8MSDPt500To800Hist
+python plotstack.py --mu  --hist AK8MSDSJ0Pt500To800Hist
+python plotstack.py --mu  --hist AK8MSDSJ1Pt500To800Hist
+python plotstack.py --mu  --hist 0AK8MPt200To300HistMuon
+python plotstack.py --mu  --hist 0AK8MSDSJ0Pt200To300HistMuon
+python plotstack.py --mu  --hist 0AK8MSDSJ0Pt200To300HistMuon
+python plotstack.py --mu  --hist 0AK8MSDSJ1Pt200To300HistMuon
+python plotstack.py --mu  --hist 0AK8MPt300To400HistMuon
+python plotstack.py --mu  --hist 0AK8MSDSJ0Pt300To400HistMuon
+python plotstack.py --mu  --hist 0AK8MSDSJ0Pt300To400HistMuon
+python plotstack.py --mu  --hist 0AK8MSDSJ1Pt300To400HistMuon
+python plotstack.py --mu  --hist 0AK8MPt400To500HistMuon
+python plotstack.py --mu  --hist 0AK8MSDPt400To500HistMuon
+python plotstack.py --mu  --hist 0AK8MSDSJ0Pt400To500HistMuon
+python plotstack.py --mu  --hist 0AK8MSDSJ1Pt400To500HistMuon
+python plotstack.py --mu  --hist 0AK8MPt500To800HistMuon
+python plotstack.py --mu  --hist 0AK8MSDPt500To800HistMuon
+python plotstack.py --mu  --hist 0AK8MSDSJ0Pt500To800HistMuon
+python plotstack.py --mu  --hist 0AK8MSDSJ1Pt500To800HistMuon
+python plotstack.py --mu  --hist WeightHist
+python plotstack.py --mu  --hist RunNumberHist
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+python plotstack.py --highmass --mu --hist AK8PtHist
+python plotstack.py --highmass --mu --hist AK8HTHist
+python plotstack.py --highmass --mu --hist AK8SDPtHist
+python plotstack.py --highmass --mu --hist AK8PuppiSDPtHist
+python plotstack.py --highmass --mu --hist AK8PuppiPtHist
+python plotstack.py --highmass --mu --hist AK8PuppiSDPtResponse
+python plotstack.py --highmass --mu --hist AK8SDPtResponse
+python plotstack.py --highmass --mu --hist AK8SDSJ0PtHist
+python plotstack.py --highmass --mu --hist AK8EtaHist
+python plotstack.py --highmass --mu --hist AK8puppitau21Hist
+python plotstack.py --highmass --mu --hist AK8puppitau32Hist
+python plotstack.py --highmass --mu --hist AK8MHist
+python plotstack.py --highmass --mu --hist AK8MSDHist
+python plotstack.py --highmass --mu --hist AK8SDRhoRatioHist
+python plotstack.py --highmass --mu --hist AK8MSDSJ0Hist
+python plotstack.py --highmass --mu --hist LeptonPtHist
+python plotstack.py --highmass --mu --hist LeptonEtaHist
+python plotstack.py --highmass --mu --hist METPtHist
+python plotstack.py --highmass --mu --hist HTLepHist
+python plotstack.py --highmass --mu --hist Iso2DHist
+python plotstack.py --highmass --mu --hist AK4BdiscHist
+python plotstack.py --highmass --mu --hist AK8MPt200To300Hist
+python plotstack.py --highmass --mu --hist AK8MSDSJ0Pt200To300Hist
+python plotstack.py --highmass --mu --hist AK8MSDSJ0Pt200To300Hist
+python plotstack.py --highmass --mu --hist AK8MSDSJ1Pt200To300Hist
+python plotstack.py --highmass --mu --hist AK8MPt300To400Hist
+python plotstack.py --highmass --mu --hist AK8MSDSJ0Pt300To400Hist
+python plotstack.py --highmass --mu --hist AK8MSDSJ0Pt300To400Hist
+python plotstack.py --highmass --mu --hist AK8MSDSJ1Pt300To400Hist
+python plotstack.py --highmass --mu --hist AK8MPt400To500Hist
+python plotstack.py --highmass --mu --hist AK8MSDPt400To500Hist
+python plotstack.py --highmass --mu --hist AK8MSDSJ0Pt400To500Hist
+python plotstack.py --highmass --mu --hist AK8MSDSJ1Pt400To500Hist
+python plotstack.py --highmass --mu --hist AK8MPt500To800Hist
+python plotstack.py --highmass --mu --hist AK8MSDPt500To800Hist
+python plotstack.py --highmass --mu --hist AK8MSDSJ0Pt500To800Hist
+python plotstack.py --highmass --mu --hist AK8MSDSJ1Pt500To800Hist
+python plotstack.py --highmass --mu --hist 0AK8MPt200To300HistMuon
+python plotstack.py --highmass --mu --hist 0AK8MSDSJ0Pt200To300HistMuon
+python plotstack.py --highmass --mu --hist 0AK8MSDSJ0Pt200To300HistMuon
+python plotstack.py --highmass --mu --hist 0AK8MSDSJ1Pt200To300HistMuon
+python plotstack.py --highmass --mu --hist 0AK8MPt300To400HistMuon
+python plotstack.py --highmass --mu --hist 0AK8MSDSJ0Pt300To400HistMuon
+python plotstack.py --highmass --mu --hist 0AK8MSDSJ0Pt300To400HistMuon
+python plotstack.py --highmass --mu --hist 0AK8MSDSJ1Pt300To400HistMuon
+python plotstack.py --highmass --mu --hist 0AK8MPt400To500HistMuon
+python plotstack.py --highmass --mu --hist 0AK8MSDPt400To500HistMuon
+python plotstack.py --highmass --mu --hist 0AK8MSDSJ0Pt400To500HistMuon
+python plotstack.py --highmass --mu --hist 0AK8MSDSJ1Pt400To500HistMuon
+python plotstack.py --highmass --mu --hist 0AK8MPt500To800HistMuon
+python plotstack.py --highmass --mu --hist 0AK8MSDPt500To800HistMuon
+python plotstack.py --highmass --mu --hist 0AK8MSDSJ0Pt500To800HistMuon
+python plotstack.py --highmass --mu --hist 0AK8MSDSJ1Pt500To800HistMuon
+python plotstack.py --highmass --mu --hist WeightHist
+python plotstack.py --highmass --mu --hist RunNumberHist 

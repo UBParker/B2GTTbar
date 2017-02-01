@@ -16,18 +16,15 @@ python RunSemiLepTTbar_HighMass.py --infile root://cmsxrootd.fnal.gov//store/use
 python RunSemiLepTTbar_HighMass.py --infile root://cmsxrootd.fnal.gov//store/user/rappocc/B2GAnaFWFiles16Dec2016/singlemu_run2016E.root --outfile singlemu_run2016E_highmass_histos.root >& singlemu_run2016E_highmass_histos.txt &
 python RunSemiLepTTbar_HighMass.py --infile root://cmseos.fnal.gov//store/user/aparker/B2G2016/V4Trees/b2gtree_mudata_Run2016F-23Sep_all_V4.root --outfile singlemu_run2016F_highmass_histos.root >& singlemu_run2016F_highmass_histos.txt &
 python RunSemiLepTTbar_HighMass.py --infile root://cmseos.fnal.gov//store/user/aparker/B2G2016/V4Trees/b2gtree_mudata_Run2016G-23Sep_all_V4.root --outfile singlemu_run2016G_highmass_histos.root >& singlemu_run2016G_highmass_histos.txt &
-python RunSemiLepTTbar_HighMass.py --infile root://cmsxrootd.fnal.gov//store/user/rappocc/B2GAnaFWFiles16Dec2016/singlemu_run2016H.root --outfile singlemu_run2016H_highmass_histos.root >& singlemu_run2016H_highmass_histos.txt &
-
+python RunSemiLepTTbar_HighMass.py --infile root://cmseos.fnal.gov//store/user/aparker/B2G2016/V4Trees/SingleMuon_Run2016H-Prompt-all.root--outfile singlemu_run2016H_highmass_histos.root >& singlemu_run2016H_highmass_histos.txt &
 
 python RunSemiLepTTbar_HighMass.py --infile root://131.225.207.127//store/user/aparker/B2G2016/V4Trees/b2gtree_eldata_Run2016B-23Sep_all_V4.root  --outfile singleel_run2016B_highmass_histos.root >& singleel_run2016B_highmass_histos.txt &
 python RunSemiLepTTbar_HighMass.py --infile root://131.225.207.127//store/user/aparker/B2G2016/V4Trees/b2gtree_eldata_Run2016C-23Sep_all_V4.root  --outfile singleel_run2016C_highmass_histos.root >& singleel_run2016C_highmass_histos.txt &
 python RunSemiLepTTbar_HighMass.py --infile root://131.225.207.127//store/user/aparker/B2G2016/V4Trees/b2gtree_eldata_Run2016D-23Sep_all_V4.root  --outfile singleel_run2016D_highmass_histos.root >& singleel_run2016D_highmass_histos.txt &
-python RunSemiLepTTbar_HighMass.py --infile root://131.225.207.127//store/user/aparker/B2G2016/V4Trees/b2gtree_eldata_Run2016E-23Sep_all_V4.root  --outfile singleel_run2016E_highmass_histos.root >& singleel_run2016E_highmass_histos.txt &
+python RunSemiLepTTbar_HighMass.py --infile root://131.225.207.127//store/user/aparker/B2G2016/V4Trees/b2gtree_eldata_Run2016E-23Sep_allb2_V4.root  --outfile singleel_run2016E_highmass_histos.root >& singleel_run2016E_highmass_histos.txt &
 python RunSemiLepTTbar_HighMass.py --infile root://131.225.207.127//store/user/aparker/B2G2016/V4Trees/b2gtree_eldata_Run2016F-23Sep_all_V4.root  --outfile singleel_run2016F_highmass_histos.root >& singleel_run2016F_highmass_histos.txt &
 python RunSemiLepTTbar_HighMass.py --infile root://131.225.207.127//store/user/aparker/B2G2016/V4Trees/b2gtree_eldata_Run2016G-23Sep_all_V4.root  --outfile singleel_run2016G_highmass_histos.root >& singleel_run2016G_highmass_histos.txt &
 python RunSemiLepTTbar_HighMass.py --infile root://131.225.207.127//store/user/aparker/B2G2016/V4Trees/b2gtree_eldata_Run2016H-PromptReco_all_V4.root  --outfile singleel_run2016H_highmass_histos.root >& singleel_run2016H_highmass_histos.txt &
-
-
 
 python RunSemiLepTTbar_HighMass.py --infile root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht100_V4.root --ignoreTrig --outfile qcd100_highmass_outfileCommite39827c.root >& qcd100_highmass_outfileCommite39827c_out.log &
 python RunSemiLepTTbar_HighMass.py --infile root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht200_V4.root --ignoreTrig --outfile qcd200_highmass_outfileCommite39827c.root >& qcd200_highmass_outfileCommite39827c_out.log &

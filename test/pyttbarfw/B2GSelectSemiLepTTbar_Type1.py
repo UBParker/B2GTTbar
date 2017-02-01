@@ -62,6 +62,7 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.SDptPuppipt = None
         self.SDptGenpt = None
         self.SDPuppiptGenpt = None
+        self.SDPuppiptSDCHSpt = None 
         self.SDPuppiMasswithPuppiCorrvsSDPuppiMass = None
                     
         self.ak8JetP4 = None
@@ -98,6 +99,9 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.ak8PuppiSD_m = None         
         self.ak8PuppiSD_m_Pcorr = None    
         self.ak8PuppiSD_m_PcorrSmear = None 
+
+        self.akCHSSD_m = None         # JetSDmassCorrL23
+        self.akSDRaw_m = None         # Jet0SDmassRaw
 
         self.ak8PuppiSDJetP4_Subjet0 = None
         self.ak8PuppiSDJetP4_Subjet0Raw = None     
@@ -188,6 +192,7 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.SDptPuppipt = None
         self.SDptGenpt = None
         self.SDPuppiptGenpt = None
+        self.SDPuppiptSDCHSpt = None
         self.SDPuppiMasswithPuppiCorrvsSDPuppiMass = None
                     
         self.ak8JetP4 = None
@@ -223,6 +228,9 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.ak8PuppiSD_m = None         
         self.ak8PuppiSD_m_Pcorr = None    
         self.ak8PuppiSD_m_PcorrSmear = None 
+        
+        self.akCHSSD_m = None # JetSDmassCorrL23
+        self.akSDRaw_m = None # Jet0SDmassRaw
 
         self.ak8PuppiSDJetP4_Subjet0 = None
         self.ak8PuppiSDJetP4_Subjet0Raw = None   
@@ -242,7 +250,11 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         ### Define the AK8 4-vectors
         
         ### AK8 jets
-        
+
+        self.akCHSSD_m = self.tree.JetSDmassCorrL23[0]
+        self.akSDRaw_m = self.tree.Jet0SDmassRaw[0]
+
+
         self.ak8JetP4 = ROOT.TLorentzVector()
         self.ak8JetP4.SetPtEtaPhiM( self.tree.JetPt[0],
                                   self.tree.JetEta[0],
@@ -326,7 +338,9 @@ class B2GSelectSemiLepTTbar_Type1( ) :
                 self.SDRhoRatio = pow( self.ak8PuppiSDJetP4.M() / (self.ak8PuppiSDJetP4.Perp()*0.8) , 2)
       
             self.SDPuppiptGenpt = float(self.ak8PuppiSDJetP4.Perp())  / float(self.ak8JetP4.Perp() ) 
-    
+ 
+            self.SDPuppimassSDCHSmass = float(self.ak8PuppiSDJetP4.M())  / float(self.akCHSSD_m ) 
+            self.ak8PuppiSD_m  = float(self.ak8PuppiSDJetP4.M())
             self.ak8PuppiSD_m_Pcorr = self.CorrPUPPIMass( 
                                                    self.ak8PuppiSDJetP4Raw.Perp(),
                                                    self.ak8PuppiSDJetP4Raw.Eta(),
@@ -426,10 +440,10 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.passedCount[2] += 1
         if self.verbose : print "Stage 12 :AK4 bdisc {0:2.2f}  > ( {1:2.2f} ) ".format(  self.ak4JetBdisc , self.bdiscmin )
         
-        if not ( self.minAK8Mass < self.ak8SD_m < self.maxAK8Mass ) : return self.passed
+        if not ( self.minAK8Mass < self.ak8PuppiSD_m_Pcorr < self.maxAK8Mass ) : return self.passed
         self.passed[3] = True
         self.passedCount[3] += 1
-        if self.verbose : print "Stage 13: AK8 SD mass  ({0:2.2f}) < {1:2.2f} GeV < ({2:2.2f})  [For comparison SD Puppi mass after puppi corr is  {2:2.2f} ]".format(  self.minAK8Mass , self.ak8SDJetP4.M() , self.maxAK8Mass, self.ak8PuppiSD_m)
+        if self.verbose : print "Stage 13: AK8 SD Puppi mass after Theas corrections  ({0:2.2f}) < {1:2.2f} GeV < ({2:2.2f})  [For comparison SD Puppi mass after puppi corr is  {2:2.2f} ]".format(  self.minAK8Mass , self.ak8SDJetP4.M() , self.maxAK8Mass, self.ak8PuppiSD_m)
 
 
 

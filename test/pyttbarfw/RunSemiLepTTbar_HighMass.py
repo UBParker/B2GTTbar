@@ -184,14 +184,19 @@ class RunSemiLepTTbar_HighMass() :
         self.AK8PuppiSDPtResponse = []
         self.AK8SDPtResponse = []
         self.AK8SDPuppiptGenptResponse = []
+        self.AK8SDPuppiptSDCHSptResponse = []
         self.AK8SDPuppiMasswithPuppiCorrvsSDPuppiMassResponse = []
           
         self.AK8puppitau21Hist = []
         self.AK8puppitau32Hist = []
 
         self.AK8EtaHist = []
-        self.AK8MHist = []
-        self.AK8MSDHist = []
+        
+        self.AK8MHist = []            ### ungroomed uncorrected Fat Jet mass
+        self.AK8MSDRawHist = []                        ### Soft Drop jet mass without CHS or PUPPI
+        self.AK8MSDPUPPIHist = []
+        self.AK8MSDCHSHist = []
+
         self.AK8SDRhoRatioHist = []
 
         self.AK8MSDSJ0Hist = []
@@ -222,6 +227,7 @@ class RunSemiLepTTbar_HighMass() :
             self.AK8PuppiSDPtHist.append([])
             self.AK8PuppiPtHist.append( [] )
             self.AK8PuppiSDPtResponse.append( [] )
+            self.AK8SDPuppimassSDCHSmassResponse.append( [] )
             self.AK8SDPtResponse.append([])
             self.AK8SDPuppiptGenptResponse.append([])
             self.AK8SDPuppiMasswithPuppiCorrvsSDPuppiMassResponse.append([])
@@ -232,6 +238,9 @@ class RunSemiLepTTbar_HighMass() :
             
 
             self.AK8MHist.append( [] )
+            self.AK8MSDRawHist.append( [] )                      
+            self.AK8MSDPUPPIHist.append( [] )
+            self.AK8MSDCHSHist.append( [] )
             self.AK8MSDHist.append( [] )
             self.AK8SDRhoRatioHist.append( [] )
             self.AK8MSDSJ0Hist.append( [] )
@@ -261,14 +270,19 @@ class RunSemiLepTTbar_HighMass() :
                 self.RunNumberHist[ilep].append( ROOT.TH1F("RunNumberHist" + self.lepNames[ilep] + str(ival) , "Run Number for lepton "+self.lepNames[ilep] + str(ival), 286591, 0, 286591) )
                 self.WeightHist[ilep].append( ROOT.TH1F("WeightHist" +  self.lepNames[ilep] + str(ival), "Jet p_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 1000) )
                 self.AK8PtHist[ilep].append( ROOT.TH1F("AK8PtHist" +  self.lepNames[ilep] + str(ival), "Jet p_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 1000) )
+                self.AK8MSDRawHist[ilep].append( ROOT.TH1F("AK8MSDRawHist" +  self.lepNames[ilep] + str(ival), "AK8 Soft Drop Jet p_{T} RAW, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 1000) )
+                self.AK8MSDPUPPIHist[ilep].append( ROOT.TH1F("AK8MSDPUPPIHist" +  self.lepNames[ilep] + str(ival), "AK8 Soft Drop Jet p_{T} PUPPI, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 1000) )
+                self.AK8MSDCHSHist[ilep].append( ROOT.TH1F("AK8MSDCHSHist" +  self.lepNames[ilep] + str(ival), "AK8 Soft Drop Jet p_{T} CHS, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 1000) )
                 self.AK8HTHist[ilep].append( ROOT.TH1F("AK8HTHist" +  self.lepNames[ilep] + str(ival), "Jet H_{T}, Stage " + self.lepNames[ilep] + str(ival), 4000, 0, 4000) )
                 self.AK8SDPtHist[ilep].append( ROOT.TH1F("AK8SDPtHist" +  self.lepNames[ilep] + str(ival), "Jet SD p_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 1000) )
                 self.AK8PuppiSDPtHist[ilep].append( ROOT.TH1F("AK8PuppiSDPtHist" +  self.lepNames[ilep] + str(ival), "Jet Puppi SD p_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 1000) )
                 self.AK8PuppiPtHist[ilep].append( ROOT.TH1F("AK8PuppiPtHist" +  self.lepNames[ilep] + str(ival), "Jet p_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 1000) )
 
+                ### TO-DO: improve description of labels of below jet pt response histos
                 self.AK8PuppiSDPtResponse[ilep].append( ROOT.TH1F("AK8PuppiSDPtResponse" +  self.lepNames[ilep] + str(ival), "Jet p_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000,-10, 1000) )
                 self.AK8SDPtResponse[ilep].append( ROOT.TH1F("AK8SDPtResponse" +  self.lepNames[ilep] + str(ival), "Jet p_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000, -10, 1000) )
                 self.AK8SDPuppiptGenptResponse[ilep].append( ROOT.TH1F("AK8SDPuppiptGenptResponse" +  self.lepNames[ilep] + str(ival), "Jet p_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000, -10, 1000)) 
+                self.AK8SDPuppimassSDCHSmassResponse[ilep].append( ROOT.TH1F("AK8SDPuppimassSDCHSmassResponse" +  self.lepNames[ilep] + str(ival), "Jet p_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000, -10, 1000)) 
                 self.AK8SDPuppiMasswithPuppiCorrvsSDPuppiMassResponse[ilep].append( ROOT.TH1F("AK8SDPuppiMasswithPuppiCorrvsSDPuppiMassResponse" +  self.lepNames[ilep] + str(ival), "Jet p_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000, -10, 1000))
 
                 self.AK8SDSJ0PtHist[ilep].append( ROOT.TH1F("AK8SDSJ0PtHist" +  self.lepNames[ilep] + str(ival), "SD subjet 0 P_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 1000) )
@@ -374,11 +388,15 @@ class RunSemiLepTTbar_HighMass() :
             if b.ak8SDJetP4 != None and b.SDptGenpt != None :
                 self.AK8SDPtResponse[ilep][index].Fill(  b.ak8JetP4.Perp() * b.PtSmear, b.SDptGenpt  )    
                 self.AK8SDPuppiptGenptResponse[ilep][index].Fill(  b.ak8JetP4.Perp() * b.PtSmear, b.SDPuppiptGenpt  )
+                self.AK8SDPuppimassSDCHSmassResponse[ilep][index].Fill(  b.ak8JetP4.M(), b.SDPuppimassSDCHSmass  )
                 if b.SDPuppiMasswithPuppiCorrvsSDPuppiMass > 0. and  b.ak8PuppiSD_m_Pcorr > 0.  :
                     self.AK8SDPuppiMasswithPuppiCorrvsSDPuppiMassResponse[ilep][index].Fill( b.ak8PuppiSD_m_Pcorr , b.SDPuppiMasswithPuppiCorrvsSDPuppiMass )#, b.ak8PuppiSD_m_Pcorr ) #* b.PtSmear )
         if b.ak8SDJetP4 != None :
             self.AK8SDPtHist[ilep][index].Fill( b.ak8SDJetP4.Perp() * b.PtSmear  , self.theWeight )
             self.AK8MSDHist[ilep][index].Fill( b.ak8PuppiSD_m_Pcorr  , self.theWeight )
+            self.AK8MSDRawHist[ilep][index].Fill( b.akSDRaw_m  , self.theWeight )
+            self.AK8MSDPUPPIHist[ilep][index].Fill( b.ak8PuppiSD_m , self.theWeight )
+            self.AK8MSDCHSHist[ilep][index].Fill( b.akCHSSD_m  , self.theWeight )
 
         if b.ak8PuppiJetP4 != None :
             self.AK8PuppiPtHist[ilep][index].Fill( b.ak8PuppiJetP4.Perp() * b.PuppiPtSmear  , self.theWeight )

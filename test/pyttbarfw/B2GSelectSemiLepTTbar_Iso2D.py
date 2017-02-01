@@ -158,8 +158,10 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         )        
         self.BtagWeight = 1.0
 
-        ### Flag to distinguish data from MC
+        ### Flags to distinguish different input files 
         self.itIsData = None
+        self.itIsTTbar = None
+
         theFileIs = self.infile
         if theFileIs.find("un2016")== -1 : 
             self.itIsData = False
@@ -169,6 +171,13 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         else : 
             self.itIsData = True                     
             if self.verbose : print "DATA : weights = 1" 
+
+        if theFileIs.find("ttbar")== -1 :  
+            if self.verbose :print "other MC : Event triggers were NOT applied so trigger efficiency will be !"
+
+        else : 
+            self.itIsTTbar = True
+            if self.verbose : print "ttbar MC : Event triggers were applied so trigger efficiency will NOT be !" 
 
     """
         This is the "select" function that does the work for the event selection. If you have any complicated
@@ -186,6 +195,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         ### Get Run Number of data event
         self.RunNumber =  self.tree.SemiLeptRunNum[0]
         if self.verbose : print"run number in Iso2D is self.runNum {} from tree value is  {}".format(self.RunNumber, self.tree.SemiLeptRunNum[0])
+
         ### Define the 4 vectors of the leptonic top system
 
         self.leptonP4 = ROOT.TLorentzVector()
@@ -210,9 +220,6 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
                                   self.tree.AK4_dRminLep_Eta[0],
                                   self.tree.AK4_dRminLep_Phi[0],
                                   self.tree.AK4_dRminLep_Mass[0] )
-
-
-
                                                                 
         self.EventWeight = 1.
         self.PUWeight = 1.
@@ -230,18 +237,21 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
             self.EventWeight = self.tree.SemiLeptEventWeight[0]
             self.PUWeight = self.tree.SemiLeptPUweight[0]              
             
-        if self.tree.LeptonIsMu[0] == 1 and not self.itIsData and self.leptonP4 != None  :
-            self.TriggEffIs = self.MuonTriggEff( self.leptonP4.Perp() , abs(self.leptonP4.Eta())   , self.tree.SemiLeptRunNum[0] )
+        if self.tree.LeptonIsMu[0] == 1 and not self.itIsData and self.leptonP4 != None  : # self.RunNumber
+            if self.itIsTTbar :
+                self.TriggEffIs = 1.0
+            else:   
+                self.TriggEffIs = self.MuonTriggEff( self.leptonP4.Perp() , abs(self.leptonP4.Eta())   , self.tree.SemiLeptRunNum[0] )
             if self.verbose : "Muon trigger eff is {0:2.2f} for pt {1:2.2f} and abs(eta) {2:2.2f}".format(self.TriggEffIs,self.leptonP4.Perp() , abs(self.leptonP4.Eta())  )
 
             self.CutIDScaleFLooseIs = self.MuonCutIDScaleFLoose( self.leptonP4.Perp() , abs(self.leptonP4.Eta())  )
             if self.verbose : "Muon Cut ID LOOSE  eff is {0:2.2f} for pt {1:2.2f} and abs(eta) {2:2.2f}".format(self.CutIDScaleFLooseIs ,self.leptonP4.Perp() , abs(self.leptonP4.Eta())  )
 
             self.CutIDScaleFIs = self.MuonCutIDScaleFTight( self.leptonP4.Perp() , abs(self.leptonP4.Eta())  )
-            if self.verbose : "Muon Cut ID MEDIUM eff is {0:2.2f} for pt {1:2.2f} and abs(eta) {2:2.2f}".format(self.CutIDScaleFIs,self.leptonP4.Perp() , abs(self.leptonP4.Eta())  )
+            if self.verbose : "Muon Cut ID Tight eff is {0:2.2f} for pt {1:2.2f} and abs(eta) {2:2.2f}".format(self.CutIDScaleFIs,self.leptonP4.Perp() , abs(self.leptonP4.Eta())  )
 
-            self.MuonHIPScaleFIs = self.MuonHIPScaleF( self.leptonP4.Eta() )
-            if self.verbose : "Muon HIP SF is {0:2.2f} for eta {1:2.2f}".format(self.MuonHIPScaleFIs, self.leptonP4.Eta()  )
+            #self.MuonHIPScaleFIs = self.MuonHIPScaleF( self.leptonP4.Eta() )
+            #if self.verbose : "Muon HIP SF is {0:2.2f} for eta {1:2.2f}".format(self.MuonHIPScaleFIs, self.leptonP4.Eta()  )
 
         if self.tree.LeptonIsMu[0] == 0 and not self.itIsData and self.leptonP4 != None  :
             print"WARNING: Electron cut based ID scale factors and trigger efficiencies not applied bc the new versions for Moriond are not available yet"    
@@ -273,14 +283,6 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
             print '----------------------------------- WARNING --------------------------------------'
             print  ' error resolved'
         '''
-        self.passMuon_Pt = self.tree.LeptonIsMu[0] == 1 and self.leptonP4.Perp() > self.muonPtCut
-        self.passElectron_Pt = self.tree.LeptonIsMu[0] == 0 and self.leptonP4.Perp() > self.electronPtCut
-                                                                                                                                                                                                      
-        self.passMuon_Eta = self.tree.LeptonIsMu[0] == 1 and abs(self.leptonP4.Eta()) < self.muonEtaCut
-        self.passElectron_Eta = self.tree.LeptonIsMu[0] == 0  and abs(self.leptonP4.Eta()) < self.electronEtaCut
-
-        self.passMuon_Tight = self.tree.LeptonIsMu[0] > 0. and self.tree.MuTight[0] > 0.
-        self.passElectron_Tight_noIso = self.tree.LeptonIsMu[0] < 1.  and self.tree.Electron_noiso_passTight[0] > 0.        
 
 
         self.passed = [False] * self.nstages
