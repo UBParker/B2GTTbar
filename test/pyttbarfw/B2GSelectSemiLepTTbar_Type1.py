@@ -252,7 +252,7 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         ### AK8 jets
 
         self.akCHSSD_m = self.tree.JetSDmassCorrL23[0]
-        self.akSDRaw_m = self.tree.Jet0SDmassRaw[0]
+        self.akSDRaw_m = self.tree.JetSDmassRaw[0]
 
 
         self.ak8JetP4 = ROOT.TLorentzVector()
@@ -338,8 +338,10 @@ class B2GSelectSemiLepTTbar_Type1( ) :
                 self.SDRhoRatio = pow( self.ak8PuppiSDJetP4.M() / (self.ak8PuppiSDJetP4.Perp()*0.8) , 2)
       
             self.SDPuppiptGenpt = float(self.ak8PuppiSDJetP4.Perp())  / float(self.ak8JetP4.Perp() ) 
- 
-            self.SDPuppimassSDCHSmass = float(self.ak8PuppiSDJetP4.M())  / float(self.akCHSSD_m ) 
+            if float(self.akCHSSD_m) > 0.1 :
+                self.SDPuppimassSDCHSmass = float(self.ak8PuppiSDJetP4.M())  / float(self.akCHSSD_m ) 
+            else:
+                 self.SDPuppimassSDCHSmass = 0.0
             self.ak8PuppiSD_m  = float(self.ak8PuppiSDJetP4.M())
             self.ak8PuppiSD_m_Pcorr = self.CorrPUPPIMass( 
                                                    self.ak8PuppiSDJetP4Raw.Perp(),

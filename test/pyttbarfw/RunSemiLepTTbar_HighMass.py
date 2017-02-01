@@ -185,6 +185,7 @@ class RunSemiLepTTbar_HighMass() :
         self.AK8SDPtResponse = []
         self.AK8SDPuppiptGenptResponse = []
         self.AK8SDPuppiptSDCHSptResponse = []
+        self.AK8SDPuppimassSDCHSmassResponse = []
         self.AK8SDPuppiMasswithPuppiCorrvsSDPuppiMassResponse = []
           
         self.AK8puppitau21Hist = []
@@ -193,6 +194,7 @@ class RunSemiLepTTbar_HighMass() :
         self.AK8EtaHist = []
         
         self.AK8MHist = []            ### ungroomed uncorrected Fat Jet mass
+        self.AK8MSDHist = []
         self.AK8MSDRawHist = []                        ### Soft Drop jet mass without CHS or PUPPI
         self.AK8MSDPUPPIHist = []
         self.AK8MSDCHSHist = []
@@ -470,7 +472,7 @@ class RunSemiLepTTbar_HighMass() :
                     
                         self.ak8SDPuppiMass0 =  b.ak8PuppiSD_m_Pcorr
                         self.ak8PuppiMass0 =  b.ak8Puppi_m_Pcorr
-                        print"ak8 puppi mass0 from b.ak8Puppi_m_Pcorr is {0:2.2f}".format(b.ak8Puppi_m_Pcorr)
+                        #print"ak8 puppi mass0 from b.ak8Puppi_m_Pcorr is {0:2.2f}".format(b.ak8Puppi_m_Pcorr)
                         self.ak8SDsj0_m0    =b.ak8SDsj0_m
                         self.ak8SDsj1_m0    =b.ak8SDsj1_m
                         self.theMassHist0 = self.AK8MPtBinnedHistList0[iptbin]
