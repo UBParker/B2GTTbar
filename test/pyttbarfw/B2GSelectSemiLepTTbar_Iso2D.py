@@ -108,13 +108,59 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
 
 
         ### Muon trigger efficiency corrections
-  
+        self.printtriggerWarning = True
         self.TriggEffIs = 1.0  
-        self.finCor1 = ROOT.TFile.Open( "./SingleMuonTrigger_Z_RunBCD_prompt80X_7p65.root","READ")
-        self.PtetaTriggEff_Run273158_to_274093      = self.finCor1.Get("Mu45_eta2p1_PtEtaBins_Run273158_to_274093/efficienciesDATA/pt_abseta_DATA")
-        self.PtetaTriggEff_Run274094_to_276097      = self.finCor1.Get("Mu45_eta2p1_PtEtaBins_Run274094_to_276097/efficienciesDATA/pt_abseta_DATA")
+        
+        self.finCor1 = ROOT.TFile.Open( "./muon_trg_summer16.root","READ")
+        
+        ### SFs to apply to data and/or MC after requiring event passes mu50 or trkmu50   
+            
+        if self.printtriggerWarning :
+            print '----------------------------------- WARNING --------------------------------------'
+            print  ' The MC samples used here are old, must update to Moriond2017 samples to be accurate.'
+            print  ' Trigger SFs and efficiencies are not accurate for this data/MC as it was processed requiring trigger:'
+            print  ' Muons: HLT_Mu50 .'
+            print  ' Electrons: Ele45_CaloIdVT_GsfTrkIdT_PFJet200_PFJet50 OR Ele50_CaloIdVT_GsfTrkIdT_PFJet140 OR Ele50_CaloIdVT_GsfTrkIdT_PFJet165'
+            print  ' Update of triggers will occur after V5 ttrees have been produced'
+            print '-----------------------------------------------------------------------------------'
+
+        ### trigger SFs for all of the data
+        self.PtetaTriggSFdata_Period1      = self.finCor1.Get("h_eff_trg_mu50tkmu50_dt_1") #Period 1: (0.5/fb) run B including startup problems (up to run 274094)
+        self.PtetaTriggSFdata_Period2      = self.finCor1.Get("h_eff_trg_mu50tkmu50_dt_2") #Period 2: (17/fb) run BCDEF until L1 EMTF fixed
+        self.PtetaTriggSFdata_Period3      = self.finCor1.Get("h_eff_trg_mu50tkmu50_dt_3") #Period 3: (3/fb) run F post L1 EMFT fix (from run 278167)
+        self.PtetaTriggSFdata_Period4      = self.finCor1.Get("h_eff_trg_mu50tkmu50_dt_4") #Period 4: (16/fb) run GH (post HIPs fix) 
+
+        ### SFs for the ttbar mc since the trigger was applied to it
+        self.PtetaTriggSFmc_Period1      = self.finCor1.Get("h_eff_trg_mu50tkmu50_mc_1")
+        self.PtetaTriggSFmc_Period2      = self.finCor1.Get("h_eff_trg_mu50tkmu50_mc_2")
+        self.PtetaTriggSFmc_Period3      = self.finCor1.Get("h_eff_trg_mu50tkmu50_mc_3")
+        self.PtetaTriggSFmc_Period4      = self.finCor1.Get("h_eff_trg_mu50tkmu50_mc_4")
+
+        ### efficiencies for the rest of the MC since the trigger was not applied
+        self.PtetaTriggEffmc_Period1      = self.finCor1.Get("h_eff_trg_mu50_mc_1")
+        self.PtetaTriggEffmc_Period2      = self.finCor1.Get("h_eff_trg_mu50_mc_2")
+        self.PtetaTriggEffmc_Period3      = self.finCor1.Get("h_eff_trg_mu50_mc_3")
+        self.PtetaTriggEffmc_Period4      = self.finCor1.Get("h_eff_trg_mu50_mc_4")
+
+
+        
+
+
+
+        '''
+         create mode 100644 test/pyttbarfw/EfficienciesAndSF_BCDEF.root
+        create mode 100644 test/pyttbarfw/EfficienciesAndSF_GH.root
+        create mode 100644 test/pyttbarfw/EfficienciesAndSF_Period3.root
+        create mode 100644 test/pyttbarfw/EfficienciesAndSF_Period4.root
+        create mode 100644 test/pyttbarfw/egammaEff_reconstructionSF.root
+        create mode 100644 test/pyttbarfw/egammaEffi_MedCutBasedID.root
+        create mode 100644 test/pyttbarfw/muon_idiso_summer16.root
+        #create mode 100644 test/pyttbarfw/muon_trg_summer16.root
+
+        '''
+
         ### Muon cut based ID corrections
-  
+
         self.CutIDScaleFIs = 1.0  
         self.CutIDScaleFLooseIs = 1.0  
         self.finCor2 = ROOT.TFile.Open( "./MuonID_Z_RunBCD_prompt80X_7p65.root","READ")
@@ -411,20 +457,111 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
 
     def MuonTriggEff(self, muonpt, muoneta, runNum) : #{ROOT file from
         #https://twiki.cern.ch/twiki/bin/view/CMS/MuonWorkInProgressAndPagResults
-        ### TO-DO: Implement this for type 2 selection
         TriggEff = 1.
         runNumIs = None
-        if  muonpt >= 500. and abs(muoneta) > 1.2 :
+        binx = None
+        biny = None
+        Triggeff = None
+        if  muonpt >= 500. and abs(muoneta) > 1.2 :  ### Throwing out highpt(500GeV) or greater muons with  abs( eta ) > 1.2
             TriggEff = 0.0
         else :
-            ### Note: This needs to be updated as SFs for new data become available...
-            ### To-DO: decide which percentage to weight by each run histo
-            binx = self.PtetaTriggEff_Run274094_to_276097.GetXaxis().FindBin( muonpt  )
-            biny = self.PtetaTriggEff_Run274094_to_276097.GetYaxis().FindBin( muoneta )
-            TriggEff = self.PtetaTriggEff_Run274094_to_276097.GetBinContent(binx, biny )
-            if self.verbose : print "get bin: x (using pt) {}, y (using eta) {}, CUt ID Eff is {}".format(binx, biny, TriggEff )
-
+            if runNum <= 274094. : ### Run Period 1
+                if self.itIsData :
+                    binx = self.PtetaTriggSFdata_Period1.GetXaxis().FindBin( muonpt  )
+                    biny = self.PtetaTriggSFdata_Period1.GetYaxis().FindBin( muoneta )
+                    TriggEff = self.PtetaTriggSFdata_Period1.GetBinContent(binx, biny )
+                elif self.itIsTTbar :
+                    binx = self.PtetaTriggSFmc_Period1.GetXaxis().FindBin( muonpt  )
+                    biny = self.PtetaTriggSFmc_Period1.GetYaxis().FindBin( muoneta )
+                    TriggEff = self.PtetaTriggSFmc_Period1.GetBinContent(binx, biny )
+                else :
+                    binx = self.PtetaTriggEffmc_Period1.GetXaxis().FindBin( muonpt  )
+                    biny = self.PtetaTriggEffmc_Period1.GetYaxis().FindBin( muoneta )
+                    TriggEff = self.PtetaTriggEffmc_Period1.GetBinContent(binx, biny )
+            if 274094. < runNum < 278167. : ### Run Period 2
+                if self.itIsData :
+                    binx = self.PtetaTriggSFdata_Period2.GetXaxis().FindBin( muonpt  )
+                    biny = self.PtetaTriggSFdata_Period2.GetYaxis().FindBin( muoneta )
+                    TriggEff = self.PtetaTriggSFdata_Period2.GetBinContent(binx, biny )
+                elif self.itIsTTbar :
+                    binx = self.PtetaTriggSFmc_Period2.GetXaxis().FindBin( muonpt  )
+                    biny = self.PtetaTriggSFmc_Period2.GetYaxis().FindBin( muoneta )
+                    TriggEff = self.PtetaTriggSFmc_Period2.GetBinContent(binx, biny )
+                else :
+                    binx = self.PtetaTriggEffmc_Period2.GetXaxis().FindBin( muonpt  )
+                    biny = self.PtetaTriggEffmc_Period2.GetYaxis().FindBin( muoneta )
+                    TriggEff = self.PtetaTriggEffmc_Period2.GetBinContent(binx, biny )
+            if  278167. <= runNum < 278820.: ### Run Period 3
+                if self.itIsData :
+                    binx = self.PtetaTriggSFdata_Period3.GetXaxis().FindBin( muonpt  )
+                    biny = self.PtetaTriggSFdata_Period3.GetYaxis().FindBin( muoneta )
+                    TriggEff = self.PtetaTriggSFdata_Period3.GetBinContent(binx, biny )
+                elif self.itIsTTbar :
+                    binx = self.PtetaTriggSFmc_Period3.GetXaxis().FindBin( muonpt  )
+                    biny = self.PtetaTriggSFmc_Period3.GetYaxis().FindBin( muoneta )
+                    TriggEff = self.PtetaTriggSFmc_Period3.GetBinContent(binx, biny )
+                else :
+                    binx = self.PtetaTriggEffmc_Period3.GetXaxis().FindBin( muonpt  )
+                    biny = self.PtetaTriggEffmc_Period3.GetYaxis().FindBin( muoneta )
+                    TriggEff = self.PtetaTriggEffmc_Period3.GetBinContent(binx, biny )      
+            if  278820.<= runNum : ### Run Period 4
+                if self.itIsData :
+                    binx = self.PtetaTriggSFdata_Period4.GetXaxis().FindBin( muonpt  )
+                    biny = self.PtetaTriggSFdata_Period4.GetYaxis().FindBin( muoneta )
+                    TriggEff = self.PtetaTriggSFdata_Period4.GetBinContent(binx, biny )
+                elif self.itIsTTbar :
+                    binx = self.PtetaTriggSFmc_Period4.GetXaxis().FindBin( muonpt  )
+                    biny = self.PtetaTriggSFmc_Period4.GetYaxis().FindBin( muoneta )
+                    TriggEff = self.PtetaTriggSFmc_Period4.GetBinContent(binx, biny )
+                else :
+                    binx = self.PtetaTriggEffmc_Period4.GetXaxis().FindBin( muonpt  )
+                    biny = self.PtetaTriggEffmc_Period4.GetYaxis().FindBin( muoneta )
+                    TriggEff = self.PtetaTriggEffmc_Period4.GetBinContent(binx, biny )  
+        if self.verbose : print "Muon trigger Eff/SFis {} : using pt) {}, and eta {}".format( TriggEff, binx, biny )
         return float(TriggEff)      
+  
+  
+    '''
+            
+        self.finCor1 = ROOT.TFile.Open( "./muon_trg_summer16.root","READ")
+        
+        ### SFs to apply to data after requiring event passes mu50 or trkmu50   
+        if self.printtriggerWarning :
+        ### WARNING: I only applied mu50 NOT OR with trk mu 50, will do this when we make new ttrees
+            
+        if self.printtriggerWarning :
+            print '----------------------------------- WARNING --------------------------------------'
+            print  ' The MC samples used here are old, must update to Moriond2017 samples to be accurate.'
+            print  ' Trigger SFs and efficiencies are not accurate for this data/MC as it was processed requiring trigger:'
+            print  ' Muons: HLT_Mu50 .'
+            print  ' Electrons: Ele45_CaloIdVT_GsfTrkIdT_PFJet200_PFJet50 OR Ele50_CaloIdVT_GsfTrkIdT_PFJet140 OR Ele50_CaloIdVT_GsfTrkIdT_PFJet165'
+            print  ' Update of triggers will occur after V5 ttrees have been produced'
+            print '-----------------------------------------------------------------------------------'
+
+        ### trigger SFs for all of the data
+        self.PtetaTriggSFdata_Period1      = self.finCor1.Get("h_eff_trg_mu50tkmu50_dt_1") #Period 1: (0.5/fb) run B including startup problems (up to run 274094)
+        self.PtetaTriggSFdata_Period2      = self.finCor1.Get("h_eff_trg_mu50tkmu50_dt_2") #Period 2: (17/fb) run BCDEF until L1 EMTF fixed
+        self.PtetaTriggSFdata_Period3      = self.finCor1.Get("h_eff_trg_mu50tkmu50_dt_3") #Period 3: (3/fb) run F post L1 EMFT fix (from run 278167)
+        self.PtetaTriggSFdata_Period4      = self.finCor1.Get("h_eff_trg_mu50tkmu50_dt_4") #Period 4: (16/fb) run GH (post HIPs fix) 
+
+
+        ### SFs for the ttbar mc since the trigger was applied to it
+        self.PtetaTriggSFmc_Period1      = self.finCor1.Get("h_eff_trg_mu50tkmu50_mc_1")
+        self.PtetaTriggSFmc_Period2      = self.finCor1.Get("h_eff_trg_mu50tkmu50_mc_2")
+        self.PtetaTriggSFmc_Period3      = self.finCor1.Get("h_eff_trg_mu50tkmu50_mc_3")
+        self.PtetaTriggSFmc_Period4      = self.finCor1.Get("h_eff_trg_mu50tkmu50_mc_4")
+
+        ### efficiencies for the rest of the MC since the trigger was not applied
+        self.PtetaTriggEffmc_Period1      = self.finCor1.Get("h_eff_trg_mu50_mc_1")
+        self.PtetaTriggEffmc_Period2      = self.finCor1.Get("h_eff_trg_mu50_mc_2")
+        self.PtetaTriggEffmc_Period3      = self.finCor1.Get("h_eff_trg_mu50_mc_3")
+        self.PtetaTriggEffmc_Period4      = self.finCor1.Get("h_eff_trg_mu50_mc_4")
+
+    '''
+  
+  
+  
+  
   
 
     def MuonCutIDScaleFTight(self, muonpt, muoneta) : #{ROOT file from
