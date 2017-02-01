@@ -9,6 +9,7 @@
 ##         \/            \/        /_____/                   \/                    \/ 
 import sys
 import math
+import json
 import array as array
 from optparse import OptionParser
 from utils.APlot import APlot
@@ -46,6 +47,7 @@ parser.add_option('--fixFit', action='store_true',
 argv = []
 
 import ROOT
+ROOT.gStyle.SetOptStat(000000)
 
        
         
@@ -53,8 +55,27 @@ xs_ttbar = 831.
 nev_ttbar = 92925926.
 
 lumi = 36220. # pb-1
-
-
+expectedRunsHist = None
+expectedRunsList = None
+if (options.hist.find("RunNumberHist")!= -1)  : 
+    
+    ### Plot lumis that should be present. json production described here https://docs.google.com/document/d/1aTeTVIi9eb-aup37dbUL8cWDPCJrn_sRYrZcjFhd4tI/edit?usp=sharing
+    if options.el : expectedRuns = json.loads(open('./CertandsingleEl.json').read())
+    elif options.mu : expectedRuns = json.loads(open('./CertandSingleMu.json').read()) 
+    elif not (options.mu or options.el) : expectedRuns = None #    json.loads(open('./singleMuEl2016B-H.json').read())
+    expectedRunsList = []
+    expectedRunsHist = ROOT.TH1F("expectedRunsHist" , "Run Number for lepton ", 286591, 0, 286591)
+    runNumber = None
+    for run in expectedRuns :
+       runNumber = float(run)
+       if runNumber != None :
+           print("Run number is : {}".format(runNumber))
+           expectedRunsList.append(runNumber)
+           expectedRunsHist.Fill(runNumber)
+           expectedRunsHist.SetMarkerStyle(30)
+           expectedRunsHist.SetMarkerColor(6)
+           expectedRunsHist.Rebin(10)
+           
 xs_wjets = [
     1345.,     #100To200  
     359.7,     #200To400  
@@ -113,24 +134,29 @@ nev_singletop = [
 
 
     
-ROOT.gStyle.SetOptStat(000000)
-
 instring = ''
-endstring1 = 'Commit8651dac'
-endstringIS = 'Commit8651dac' # plotstack_Commite39827c
-endstring2 = 'Commit8651dac' # plotstack_Commite39827c
-endstring = 'Commit8651dac'
+endstring1 = ''
+endstring2 = 'Commit0529f0f' #'Commit8651dac' # plotstack_Commite39827c
+endstrings = endstring2
+
+#   ____  _    _ _______ _____  _    _ _______   _____   ____   ____ _______ 
+#  / __ \| |  | |__   __|  __ \| |  | |__   __| |  __ \ / __ \ / __ \__   __|
+# | |  | | |  | |  | |  | |__) | |  | |  | |    | |__) | |  | | |  | | | |   
+# | |  | | |  | |  | |  |  ___/| |  | |  | |    |  _  /| |  | | |  | | | |   
+# | |__| | |__| |  | |  | |    | |__| |  | |    | | \ \| |__| | |__| | | |   
+#  \____/ \____/   |_|  |_|     \____/   |_|    |_|  \_\\____/ \____/  |_|   
 
 
-theOutfile = ROOT.TFile( 'plotstack_outfile_'+ str(options.hist)+'_' +str(endstring)+ '.root' , "RECREATE") 
+theOutfile = ROOT.TFile( "./plotstack_"+ str(endstring2)+ '/plotstack_outfile_'+ str(options.hist)+'_' +str(endstrings)+ '.root' , "RECREATE") 
 
 theOutfile.cd()
+ 
  
 
 if options.highmass :
     instring = '_highmass'
-else: endstring = ''
-ttbarfile = ROOT.TFile('ttbar' + instring + '_outfile'+ endstring1 +'.root')
+else: endstrings = ''
+ttbarfile = ROOT.TFile('ttbar' + instring + '_outfile'+ endstrings +'.root')
 
 if  options.el :  datafile = ROOT.TFile('singleel' + instring + '_outfile'+ endstring1 +'.root')
 if options.mu :  datafile = ROOT.TFile('singlemu' + instring + '_outfile'+ endstring1 +'.root')
@@ -138,36 +164,37 @@ if not (options.el or options.mu):
     datafile = ROOT.TFile('singleel' + instring + '_outfile'+ endstring1 +'.root')
     datafile1 = ROOT.TFile('singlemu' + instring + '_outfile'+ endstring1 +'.root')
 
+
 wjetsfiles = [
-    ROOT.TFile('wjets100to200' + instring + '_outfile'+ endstring +'.root'),
-    ROOT.TFile('wjets200to400' + instring + '_outfile'+ endstring +'.root'),
-    ROOT.TFile('wjets400to600' + instring + '_outfile'+ endstring +'.root'),
-    ROOT.TFile('wjets600to800' + instring + '_outfile'+ endstring +'.root'),
-    ROOT.TFile('wjets800to1200' + instring + '_outfile'+ endstring +'.root'),
-    ROOT.TFile('wjets1200to2500' + instring + '_outfile'+ endstring +'.root'),
-    ROOT.TFile('wjets2500toinf' + instring + '_outfile'+ endstring +'.root'),
+    ROOT.TFile('wjets100to200' + instring + '_outfile'+ endstrings +'.root'),
+    ROOT.TFile('wjets200to400' + instring + '_outfile'+ endstrings +'.root'),
+    ROOT.TFile('wjets400to600' + instring + '_outfile'+ endstrings +'.root'),
+    ROOT.TFile('wjets600to800' + instring + '_outfile'+ endstrings +'.root'),
+    ROOT.TFile('wjets800to1200' + instring + '_outfile'+ endstrings +'.root'),
+    ROOT.TFile('wjets1200to2500' + instring + '_outfile'+ endstrings +'.root'),
+    ROOT.TFile('wjets2500toinf' + instring + '_outfile'+ endstrings +'.root'),
     ]
 
 wjets_colors = [ 
     ROOT.kWhite,ROOT.kRed - 9, ROOT.kRed - 7, ROOT.kRed - 4, ROOT.kRed, ROOT.kRed +1, ROOT.kRed +2   ]
 
 qcdfiles = [
-    ROOT.TFile('qcd100' + instring + '_outfile'+ endstring +'.root'),
-    ROOT.TFile('qcd200' + instring + '_outfile'+ endstring +'.root'),
-    ROOT.TFile('qcd300' + instring + '_outfile'+ endstring +'.root'),
-    ROOT.TFile('qcd500' + instring + '_outfile'+ endstring +'.root'),
-    ROOT.TFile('qcd700' + instring + '_outfile'+ endstring +'.root'),
-    ROOT.TFile('qcd1000' + instring + '_outfile'+ endstring +'.root'),
-    ROOT.TFile('qcd1500' + instring + '_outfile'+ endstring +'.root'),
-    ROOT.TFile('qcd2000' + instring + '_outfile'+ endstring +'.root'),
+    ROOT.TFile('qcd100' + instring + '_outfile'+ endstrings +'.root'),
+    ROOT.TFile('qcd200' + instring + '_outfile'+ endstrings +'.root'),
+    ROOT.TFile('qcd300' + instring + '_outfile'+ endstrings +'.root'),
+    ROOT.TFile('qcd500' + instring + '_outfile'+ endstrings +'.root'),
+    ROOT.TFile('qcd700' + instring + '_outfile'+ endstrings +'.root'),
+    ROOT.TFile('qcd1000' + instring + '_outfile'+ endstrings +'.root'),
+    ROOT.TFile('qcd1500' + instring + '_outfile'+ endstrings +'.root'),
+    ROOT.TFile('qcd2000' + instring + '_outfile'+ endstrings +'.root'),
     ]
 
 singletopfiles = [
-    ROOT.TFile('singletop_tchanneltop' + instring + '_outfile'+ endstring +'.root'),
-    ROOT.TFile('singletop_tchannel' + instring + '_outfile'+ endstring +'.root'),
-    ROOT.TFile('singletop_tW' + instring + '_outfile'+ endstring +'.root'),
-    ROOT.TFile('singletop_tWantitop' + instring + '_outfile'+ endstring +'.root'),
-    ROOT.TFile('singletop_schannel' + instring + '_outfile'+ endstring +'.root'),
+    ROOT.TFile('singletop_tchanneltop' + instring + '_outfile'+ endstrings +'.root'),
+    ROOT.TFile('singletop_tchannel' + instring + '_outfile'+ endstrings +'.root'),
+    ROOT.TFile('singletop_tW' + instring + '_outfile'+ endstrings +'.root'),
+    ROOT.TFile('singletop_tWantitop' + instring + '_outfile'+ endstrings +'.root'),
+    ROOT.TFile('singletop_schannel' + instring + '_outfile'+ endstrings +'.root'),
     ]
     
 objs = []
@@ -188,8 +215,12 @@ histName0 = options.hist
 rangenum = 14
 if options.highmass: rangenum = 18 #14
 
+### Runs in stage 0 data selection
+actualRunsList = [] 
+  
 for istage in range(rangenum) : 
 
+    
     histName = None
     histName1 = None
     
@@ -234,6 +265,13 @@ for istage in range(rangenum) :
     #hdata.GetYaxis().SetTitle("Events")
     hdata.GetXaxis().SetTitle("")#Histogram name {}".format(options.hist + str(istage)))
    
+    if options.hist == "RunNumberHist" and istage == 0:
+        nbinsis = hdata.GetNbinsX()
+        for i in range(nbinsis):
+            binn = hdata.GetBinContent(i) 
+            if binn > 0.:
+                runnum = hdata.GetBinLowEdge(i)
+                actualRunsList.append(runnum)
 
     hwjets_list = []
     hwjets = None
@@ -278,12 +316,8 @@ for istage in range(rangenum) :
             hqcd.Add( htemp )
         hqcd_stack.Add( htemp )
     #hqcd_stack.Draw("hist")
-
-
     hqcd.SetFillColor( ROOT.kYellow )
     
-
-
     hsingletop_list = []
     hsingletop = None
     hsingletop_stack = ROOT.THStack("hsingletop_stack", "hsingletop_stack")
@@ -306,13 +340,14 @@ for istage in range(rangenum) :
 
 
     hsingletop.SetFillColor( ROOT.kMagenta )
-    
-    
+               
+           
     hqcd.Rebin(10)
     hsingletop.Rebin(10)
     hwjets.Rebin(10)
     httbar.Rebin(10)
-    hdata.Rebin(10)
+    if options.hist != "RunNumberHist" :
+        hdata.Rebin(10)
     hdata2 = hdata.Clone('hdata2')
     
     hstack = ROOT.THStack("bkgs", "")
@@ -332,15 +367,61 @@ for istage in range(rangenum) :
         cutTag = CutsPerStage_Type1[str(istage)][1]    
     else: cutTag =  CutsPerStage_Type2[str(istage)][1]
     
-    zplot = APlot(istage , y_max_scale, hdata, hdata2, hmc,hmc2 , hstack, httbar, hwjets, hsingletop, hqcd, str(histName0), lumi/1000., lepTag, cutTag, options.fixFit)
-    #def __init__(self, isstage = None , y_max = None, histofAlldata = None, histofAlldata2 = None, histofAllMC = None, histofAllMC2 = None, mcStack = None, httbar = None, hwjets = None, hST = None, hQCD = None, histoName = None, lumi = None) :
+    zplot = APlot(istage , y_max_scale, hdata, hdata2, hmc,hmc2 , hstack, httbar, hwjets, hsingletop, hqcd, str(histName0), lumi/1000., lepTag, cutTag, options.fixFit, expectedRunsHist)
         
     theCanvas = zplot.GetPlotCanvas()
     
-    theCanvas.Print("./0plotstack_"+ str(endstring2)+ "/" + histName0 + lep + str(istage)  + instring + endstring+".pdf", "pdf")
-    theCanvas.Print("./0plotstack_"+ str(endstring2)+ "/" + histName0 + lep + str(istage)  + instring + endstring+".png", "png")
+    theCanvas.Print("./plotstack_"+ str(endstring2)+ "/" + histName0 + lep + str(istage)  + instring + endstrings+".pdf", "pdf")
+    theCanvas.Print("./plotstack_"+ str(endstring2)+ "/" + histName0 + lep + str(istage)  + instring + endstrings+".png", "png")
 
     theOutfile.cd()
                     
-    objs.append( [hdata, httbar, hwjets, theCanvas, hstack] )
+    objs.append( [hdata, httbar, hwjets, theCanvas, hstack, expectedRunsList, actualRunsList ] )
 
+    theOutfile.Close()
+    
+missingRunsList = []
+
+if expectedRunsList != None :
+    for i in expectedRunsList :
+        if i not in actualRunsList : 
+            missingRunsList.append(i)
+            print("PROBLEM!!!: Run {} is in the expected list but not in stage 0 RunNumberHist".format(i))
+            
+
+    print("Sanity check: Actual runs {}".format(actualRunsList))
+
+    print("    ")
+    print("    ")
+
+    print("Expected runs {}".format(expectedRunsList))
+
+    print("    ")
+    print("    ")
+
+    print("MISSING runs {}".format(missingRunsList))
+
+    print("    ")
+    print("    ")
+
+
+    print( "Philosophy is written in this grand book")  
+    print("      *     the universe   *        .       .")
+    print(" which stands continually open to our gaze.  ")
+    print("       *         *           .       ^   ") #-0-
+    print("          .                .  *       - )-  ")
+    print("The book wont be understood until one learns")
+    print("       .      *       *       .       *     ")
+    print("    to comprehend |                         ")
+    print(" *          .    -O- the language    ")
+    print(".                 |               *    -0- ")
+    print("       *  o     .    '       *      .        o")
+    print("      in which it is composed.    |     .  *")
+    print("   *             *              -O-          .")
+    print("         .             *         |     ,")
+    print("                .           o")
+    print("        .---.               ---Galileo Galilei  ")
+    print("  =   _/__~0_\_     .  *            o       '")
+    print(" = = (_________)             .")
+    print("                 .                        *")
+    print("       *               - ) -       *")

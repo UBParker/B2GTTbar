@@ -5,7 +5,7 @@ import tdrstyle
 
 class APlot () :
     
-    def __init__(self, isstage = None , y_max = None, histofAlldata = None, histofAlldata2 = None, histofAllMC = None, histofAllMC2 = None, mcStack = None, httbar = None, hwjets = None, hST = None, hQCD = None, histoName = None, lumi = None, tagg = None, cuttag = None, fixFit = None) :
+    def __init__(self, isstage = None , y_max = None, histofAlldata = None, histofAlldata2 = None, histofAllMC = None, histofAllMC2 = None, mcStack = None, httbar = None, hwjets = None, hST = None, hQCD = None, histoName = None, lumi = None, tagg = None, cuttag = None, fixFit = None, expectedRuns = None) :
         self.isstage = isstage
         self.y_max = y_max
         self.histofAlldata = histofAlldata
@@ -24,7 +24,7 @@ class APlot () :
         self.tagg = tagg
         self.cuttag = cuttag
         self.fixFit = fixFit
-        
+        self.expectedRuns = expectedRuns
         
         ROOT.gStyle.SetOptStat(000000)
         self.c1 = ROOT.TCanvas("c" + str(self.isstage), "c" + str(self.isstage),1,1,745,701)
@@ -76,6 +76,8 @@ class APlot () :
         self.histofAlldata.SetLineWidth(2)
         self.histofAlldata.SetMarkerStyle(20)
         self.histofAlldata.SetMarkerSize(0.8)
+        self.histofAlldata.SetMarkerColor(1)
+
 
         self.histofAlldata.GetXaxis().SetNdivisions(506)
         self.histofAlldata.GetXaxis().SetLabelFont(42)
@@ -94,19 +96,24 @@ class APlot () :
         self.histofAlldata.GetYaxis().SetTitleOffset(0.9)
         self.histofAlldata.GetYaxis().SetTitleFont(42)
         #self.histofAlldata.SetXTitle(HistoTitle +" , Stage "+str(self.isstage))
+        self.histofAlldata.SetTitle("")
 
         self.fitter_mc = None
         self.fitter_data = None
 
         self.histofAlldata.Draw("e x0")
-
-        #if options.drawOnlyQCD :
-        #   hQCD_stack.Draw("hist same")
-        #else :
-        self.histofAllMC.GetXaxis().SetRangeUser( rangeMin, rangeMax )          
         
-        self.mcStack.Draw("hist same")
+        if self.expectedRuns != None :
+            self.expectedRuns.SetMarkerStyle(20)
+            self.expectedRuns.SetMarkerSize(0.8)
+            self.expectedRuns.SetMarkerColor(6)
+            self.expectedRuns.GetXaxis().SetRangeUser( rangeMin, rangeMax )
+            self.expectedRuns.Draw("same")
+        else:    
+            self.histofAllMC.GetXaxis().SetRangeUser( rangeMin, rangeMax )          
         
+            self.mcStack.Draw("hist same")
+            self.histofAlldata.Draw("e same x0")
         self.minn = 0.
         self.maxx = 0.     
         rangenum = 17
@@ -118,7 +125,7 @@ class APlot () :
         if  rangenum  -4 <self.isstage < rangenum  -1 :
             print("rangenum is {}".format(self.isstage))
             
-            if (self.histoName.find("AK8MPt")== -1 ) and (self.histoName.find("AK8MSD")== -1 ) : 
+            if (self.histoName.find("AK8MPt")== -1 ) and (self.histoName.find("AK8MSD")== -1 ) and self.expectedRuns == None: 
                 self.histofAlldata.Draw("e same x0")
             else : 
                 ### Fit these histos to a Gaussian and save mean and std dev for later use
@@ -174,6 +181,8 @@ class APlot () :
             self.fitter_mc.SetLineStyle(4) 
             self.fitter_mc.GetXaxis().SetRangeUser( rangeMin, rangeMax )          
             self.fitter_data.GetXaxis().SetRangeUser( rangeMin, rangeMax )          
+            self.fitter_data.SetTitle("")
+            self.fitter_mc.SetTitle("")
 
             if self.fixFit :
                 self.histofAlldata.Fit(self.fitter_data,'B' )
@@ -224,6 +233,7 @@ class APlot () :
                 self.fitDiffs[2][3] = self.fitValues[1][2] + self.fitValues[1][3]
                             
             self.fitter_data.Draw("same")
+            self.mcStack.SetTitle("")
             self.mcStack.Draw("hist same")
             self.histofAlldata.Draw("e same x0")
             self.fitter_mc.Draw("same")
@@ -444,17 +454,23 @@ class APlot () :
         self.leg.SetFillColor(0)
         self.leg.SetBorderSize(0)
         self.leg.SetTextSize(0.036)
-        self.leg.AddEntry( self.httbar, 't#bar{t} (80X Powheg + Pythia 8 )', 'f')
-        #if options.allMC :
-        self.leg.AddEntry( self.hST, 'Single Top', 'f')
-        self.leg.AddEntry( self.hwjets, 'W+jets', 'f')
-        self.leg.AddEntry( self.hQCD, 'QCD', 'f')
-        self.leg.AddEntry( self.histofAlldata, str(self.tagg), 'p')
-        self.leg.AddEntry( self.fitter_mc  , 'MC Fit', 'l')
-        self.leg.AddEntry( self.fitter_data  , 'Data Fit', 'l')
 
+        if self.expectedRuns != None :
+            self.leg.AddEntry( self.histofAlldata, str(self.tagg), 'p')
+            self.leg.AddEntry( self.expectedRuns  , 'Expected Data', 'p')
+        else :
+            self.leg.AddEntry( self.httbar, 't#bar{t} (80X Powheg + Pythia 8 )', 'f')
+            #if options.allMC :
+            self.leg.AddEntry( self.hST, 'Single Top', 'f')
+            self.leg.AddEntry( self.hwjets, 'W+jets', 'f')
+            self.leg.AddEntry( self.hQCD, 'QCD', 'f')
+            self.leg.AddEntry( self.histofAlldata, str(self.tagg), 'p')
+            self.leg.AddEntry( self.fitter_mc  , 'MC Fit', 'l')
+            self.leg.AddEntry( self.fitter_data  , 'Data Fit', 'l')         
+                
         self.leg.Draw()
         self.pad1.Modified()
+        self.c1.Update()        
         self.c1.cd()
         
         print("Making pad2")
@@ -491,8 +507,11 @@ class APlot () :
         #else :
         hmcBinWidth = self.histofAllMC2.GetBinWidth(0)
         hmcnBins =  self.histofAllMC2.GetSize()
-        print("histofAllMC has {} bins of size {}".format(hmcnBins, hmcBinWidth))     
-        self.hRatio.Divide(self.histofAllMC2)
+        print("histofAllMC has {} bins of size {}".format(hmcnBins, hmcBinWidth))    
+        if self.expectedRuns != None :     
+            self.hRatio.Divide(self.expectedRuns)
+        else :     
+            self.hRatio.Divide(self.histofAllMC2)            
         self.hRatio.Sumw2()
         self.hRatio.SetStats(0)
         
