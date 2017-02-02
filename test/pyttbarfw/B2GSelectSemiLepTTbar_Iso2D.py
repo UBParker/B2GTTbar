@@ -136,32 +136,39 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         self.PtetaTriggSFmc_Period3      = self.finCor1.Get("h_eff_trg_mu50tkmu50_mc_3")
         self.PtetaTriggSFmc_Period4      = self.finCor1.Get("h_eff_trg_mu50tkmu50_mc_4")
 
-        ### efficiencies for the rest of the MC since the trigger was not applied
+        ### efficiencies for the rest of the MC since the trigger was not applied                   ### Check this, could be wrong. should be differernt from ttbar MC
         self.PtetaTriggEffmc_Period1      = self.finCor1.Get("h_eff_trg_mu50tkmu50_mc_3")
         self.PtetaTriggEffmc_Period2      = self.finCor1.Get("h_eff_trg_mu50tkmu50_mc_3")
         self.PtetaTriggEffmc_Period3      = self.finCor1.Get("h_eff_trg_mu50tkmu50_mc_3")
-        self.PtetaTriggEffmc_Period4      = self.finCor1.Get("h_eff_trg_mu50tkmu50_mc_3")
+        self.PtetaTriggEffmc_Period4      = self.finCor1.Get("h_eff_trg_mu50tkmu50_mc_4")
 
+        ### HighPt Muon
+        
+        
+        ### Fix this: This is for muons pt > 120 GeV )(See Hegne's email for further information)
+        self.finCor2 = ROOT.TFile.Open( "./muon_trg_summer16.root","READ")
 
-        '''
-         create mode 100644 test/pyttbarfw/EfficienciesAndSF_BCDEF.root
-        create mode 100644 test/pyttbarfw/EfficienciesAndSF_GH.root
-        create mode 100644 test/pyttbarfw/EfficienciesAndSF_Period3.root
-        create mode 100644 test/pyttbarfw/EfficienciesAndSF_Period4.root
-        create mode 100644 test/pyttbarfw/egammaEff_reconstructionSF.root
-        create mode 100644 test/pyttbarfw/egammaEffi_MedCutBasedID.root
-        create mode 100644 test/pyttbarfw/muon_idiso_summer16.root
-        #create mode 100644 test/pyttbarfw/muon_trg_summer16.root
-
-        '''
-
+        
+        self.HighPteffIs = 1.0
+        self.effPeriod1_data = self.finCor2.Get("h_mu_hpt_data_1")
+        self.effPeriod2_data = self.finCor2.Get("h_mu_hpt_data_2")
+        self.effPeriod1_mc = self.finCor2.Get("h_mu_hpt_mc_1")
+        self.effPeriod2_mc = self.finCor2.Get("h_mu_hpt_mc_2")
+        
         ### Muon cut based ID corrections
 
         self.CutIDScaleFIs = 1.0  
         self.CutIDScaleFLooseIs = 1.0  
-        self.finCor2 = ROOT.TFile.Open( "./MuonID_Z_RunBCD_prompt80X_7p65.root","READ")
-        self.PtetaCutIDScaleFTight      = self.finCor2.Get("MC_NUM_TightIDandIPCut_DEN_genTracks_PAR_pt_spliteta_bin1/pt_abseta_ratio")
-        self.PtetaCutIDScaleFLoose      = self.finCor2.Get("MC_NUM_LooseID_DEN_genTracks_PAR_pt_spliteta_bin1/pt_abseta_ratio")
+        self.finCor3 = ROOT.TFile.Open( "./EfficienciesAndSF_BCDEF.root","READ")
+        self.finCor4 = ROOT.TFile.Open( "./EfficienciesAndSF_GH.root","READ")
+        
+        self.PtetaCutIDScaleFTightBtoF      = self.finCor3.Get("MC_NUM_TightID_DEN_genTracks_PAR_pt_eta/pt_abseta_ratio")
+        self.PtetaCutIDScaleFTightGH      = self.finCor4.Get("MC_NUM_TightID_DEN_genTracks_PAR_pt_eta/pt_abseta_ratio")
+        ### to-do: finish adding histos here
+        self.PtetaCutIDScaleFLoose      = self.finCor2.Get("MC_NUM_LooseID_DEN_genTracks_PAR_pt_eta/pt_abseta_ratio")
+        
+        
+        
         ### Muon HIP SF
   
         self.MuonHIPScaleFIs = 1.0  
@@ -311,6 +318,10 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
 
             self.MuonHIPScaleFIs = self.MuonHIPScaleF( self.leptonP4.Eta() )
             if self.verbose : "Muon HIP SF is {0:2.2f} for eta {1:2.2f}".format(self.MuonHIPScaleFIs, self.leptonP4.Eta()  )
+  
+  create mode 100644 test/pyttbarfw/egammaEff_reconstructionSF.root
+        create mode 100644 test/pyttbarfw/egammaEffi_MedCutBasedID.root
+  
             '''
             
         if  self.itIsData :        self.BtagWeight = 1.0
