@@ -125,26 +125,22 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
             print '-----------------------------------------------------------------------------------'
 
         ### trigger SFs for all of the data
-        self.PtetaTriggSFdata_Period1      = self.finCor1.Get("h_eff_trg_mu50tkmu50_dt_1") #Period 1: (0.5/fb) run B including startup problems (up to run 274094)
-        self.PtetaTriggSFdata_Period2      = self.finCor1.Get("h_eff_trg_mu50tkmu50_dt_2") #Period 2: (17/fb) run BCDEF until L1 EMTF fixed
+        self.PtetaTriggSFdata_Period1      = self.finCor1.Get("h_eff_trg_mu50tkmu50_dt_3") #Period 1: (0.5/fb) run B including startup problems (up to run 274094)
+        self.PtetaTriggSFdata_Period2      = self.finCor1.Get("h_eff_trg_mu50tkmu50_dt_3") #Period 2: (17/fb) run BCDEF until L1 EMTF fixed
         self.PtetaTriggSFdata_Period3      = self.finCor1.Get("h_eff_trg_mu50tkmu50_dt_3") #Period 3: (3/fb) run F post L1 EMFT fix (from run 278167)
         self.PtetaTriggSFdata_Period4      = self.finCor1.Get("h_eff_trg_mu50tkmu50_dt_4") #Period 4: (16/fb) run GH (post HIPs fix) 
 
         ### SFs for the ttbar mc since the trigger was applied to it
-        self.PtetaTriggSFmc_Period1      = self.finCor1.Get("h_eff_trg_mu50tkmu50_mc_1")
-        self.PtetaTriggSFmc_Period2      = self.finCor1.Get("h_eff_trg_mu50tkmu50_mc_2")
+        self.PtetaTriggSFmc_Period1      = self.finCor1.Get("h_eff_trg_mu50tkmu50_mc_3")
+        self.PtetaTriggSFmc_Period2      = self.finCor1.Get("h_eff_trg_mu50tkmu50_mc_3")
         self.PtetaTriggSFmc_Period3      = self.finCor1.Get("h_eff_trg_mu50tkmu50_mc_3")
         self.PtetaTriggSFmc_Period4      = self.finCor1.Get("h_eff_trg_mu50tkmu50_mc_4")
 
         ### efficiencies for the rest of the MC since the trigger was not applied
-        self.PtetaTriggEffmc_Period1      = self.finCor1.Get("h_eff_trg_mu50_mc_1")
-        self.PtetaTriggEffmc_Period2      = self.finCor1.Get("h_eff_trg_mu50_mc_2")
-        self.PtetaTriggEffmc_Period3      = self.finCor1.Get("h_eff_trg_mu50_mc_3")
-        self.PtetaTriggEffmc_Period4      = self.finCor1.Get("h_eff_trg_mu50_mc_4")
-
-
-        
-
+        self.PtetaTriggEffmc_Period1      = self.finCor1.Get("h_eff_trg_mu50tkmu50_mc_3")
+        self.PtetaTriggEffmc_Period2      = self.finCor1.Get("h_eff_trg_mu50tkmu50_mc_3")
+        self.PtetaTriggEffmc_Period3      = self.finCor1.Get("h_eff_trg_mu50tkmu50_mc_3")
+        self.PtetaTriggEffmc_Period4      = self.finCor1.Get("h_eff_trg_mu50tkmu50_mc_3")
 
 
         '''
@@ -218,7 +214,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
             self.itIsData = True                     
             if self.verbose : print "DATA : weights = 1" 
 
-        if theFileIs.find("ttbar")== -1 :  
+        if (theFileIs.find("ttbar")== -1 and theFileIs.find("un2016")== -1 ):  
             if self.verbose :print "other MC : Event triggers were NOT applied so trigger efficiency will be !"
 
         else : 
@@ -274,7 +270,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         self.CutIDScaleFIs = 1.
         self.MuonHIPScaleFIs = 1.
         self.BtagWeight = 1.
-        
+        self.ElHEEPeffIs = 1.
         ### MC generator weights and PU  weights
         if self.itIsData :
             self.EventWeight = 1.0
@@ -283,24 +279,26 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
             self.EventWeight = self.tree.SemiLeptEventWeight[0]
             self.PUWeight = self.tree.SemiLeptPUweight[0]              
             
-        if self.tree.LeptonIsMu[0] == 1 and not self.itIsData and self.leptonP4 != None  : # self.RunNumber
-            if self.itIsTTbar :
-                self.TriggEffIs = 1.0
-            else:   
-                self.TriggEffIs = self.MuonTriggEff( self.leptonP4.Perp() , abs(self.leptonP4.Eta())   , self.tree.SemiLeptRunNum[0] )
+        if self.tree.LeptonIsMu[0] == 1 and self.leptonP4 != None  : # self.RunNumber
+            self.TriggEffIs = self.MuonTriggEff( self.leptonP4.Perp() , abs(self.leptonP4.Eta())   , self.tree.SemiLeptRunNum[0] )
             if self.verbose : "Muon trigger eff is {0:2.2f} for pt {1:2.2f} and abs(eta) {2:2.2f}".format(self.TriggEffIs,self.leptonP4.Perp() , abs(self.leptonP4.Eta())  )
 
-            self.CutIDScaleFLooseIs = self.MuonCutIDScaleFLoose( self.leptonP4.Perp() , abs(self.leptonP4.Eta())  )
-            if self.verbose : "Muon Cut ID LOOSE  eff is {0:2.2f} for pt {1:2.2f} and abs(eta) {2:2.2f}".format(self.CutIDScaleFLooseIs ,self.leptonP4.Perp() , abs(self.leptonP4.Eta())  )
+            if not self.itIsData :
+                self.CutIDScaleFLooseIs = self.MuonCutIDScaleFLoose( self.leptonP4.Perp() , abs(self.leptonP4.Eta())  )
+                if self.verbose : "Muon Cut ID LOOSE  eff is {0:2.2f} for pt {1:2.2f} and abs(eta) {2:2.2f}".format(self.CutIDScaleFLooseIs ,self.leptonP4.Perp() , abs(self.leptonP4.Eta())  )
 
-            self.CutIDScaleFIs = self.MuonCutIDScaleFTight( self.leptonP4.Perp() , abs(self.leptonP4.Eta())  )
-            if self.verbose : "Muon Cut ID Tight eff is {0:2.2f} for pt {1:2.2f} and abs(eta) {2:2.2f}".format(self.CutIDScaleFIs,self.leptonP4.Perp() , abs(self.leptonP4.Eta())  )
+                self.CutIDScaleFIs = self.MuonCutIDScaleFTight( self.leptonP4.Perp() , abs(self.leptonP4.Eta())  )
+                if self.verbose : "Muon Cut ID Tight eff is {0:2.2f} for pt {1:2.2f} and abs(eta) {2:2.2f}".format(self.CutIDScaleFIs,self.leptonP4.Perp() , abs(self.leptonP4.Eta())  )
 
-            #self.MuonHIPScaleFIs = self.MuonHIPScaleF( self.leptonP4.Eta() )
-            #if self.verbose : "Muon HIP SF is {0:2.2f} for eta {1:2.2f}".format(self.MuonHIPScaleFIs, self.leptonP4.Eta()  )
+                #self.MuonHIPScaleFIs = self.MuonHIPScaleF( self.leptonP4.Eta() )
+                #if self.verbose : "Muon HIP SF is {0:2.2f} for eta {1:2.2f}".format(self.MuonHIPScaleFIs, self.leptonP4.Eta()  )
 
         if self.tree.LeptonIsMu[0] == 0 and not self.itIsData and self.leptonP4 != None  :
             print"WARNING: Electron cut based ID scale factors and trigger efficiencies not applied bc the new versions for Moriond are not available yet"    
+            
+            self.ElHEEPeffIs =  self.ElectronHEEPEff(self.leptonP4.Eta()) 
+            if self.verbose : "Electron HEEP SF is {0:2.2f} for eta {1:2.2f}".format(self.ElHEEPeffIs, self.leptonP4.Eta()  )
+
             '''
             self.TriggEffIs = self.MuonTriggEff( self.leptonP4.Perp() , abs(self.leptonP4.Eta())   , self.tree.SemiLeptRunNum[0] )
             if self.verbose : "Muon trigger eff is {0:2.2f} for pt {1:2.2f} and abs(eta) {2:2.2f}".format(self.TriggEffIs,self.leptonP4.Perp() , abs(self.leptonP4.Eta())  )
@@ -465,57 +463,57 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         if  muonpt >= 500. and abs(muoneta) > 1.2 :  ### Throwing out highpt(500GeV) or greater muons with  abs( eta ) > 1.2
             TriggEff = 0.0
         else :
-            if runNum <= 274094. : ### Run Period 1
+            if 0. < runNum <= 274094. : ### Run Period 1
                 if self.itIsData :
-                    binx = self.PtetaTriggSFdata_Period1.GetXaxis().FindBin( muonpt  )
-                    biny = self.PtetaTriggSFdata_Period1.GetYaxis().FindBin( muoneta )
+                    binx = self.PtetaTriggSFdata_Period1.GetXaxis().FindBin( muoneta )
+                    biny = self.PtetaTriggSFdata_Period1.GetYaxis().FindBin( muonpt )
                     TriggEff = self.PtetaTriggSFdata_Period1.GetBinContent(binx, biny )
                 elif self.itIsTTbar :
-                    binx = self.PtetaTriggSFmc_Period1.GetXaxis().FindBin( muonpt  )
-                    biny = self.PtetaTriggSFmc_Period1.GetYaxis().FindBin( muoneta )
+                    binx = self.PtetaTriggSFmc_Period1.GetXaxis().FindBin( muoneta )
+                    biny = self.PtetaTriggSFmc_Period1.GetYaxis().FindBin( muonpt )
                     TriggEff = self.PtetaTriggSFmc_Period1.GetBinContent(binx, biny )
                 else :
-                    binx = self.PtetaTriggEffmc_Period1.GetXaxis().FindBin( muonpt  )
-                    biny = self.PtetaTriggEffmc_Period1.GetYaxis().FindBin( muoneta )
+                    binx = self.PtetaTriggEffmc_Period1.GetXaxis().FindBin( muoneta  )
+                    biny = self.PtetaTriggEffmc_Period1.GetYaxis().FindBin( muonpt )
                     TriggEff = self.PtetaTriggEffmc_Period1.GetBinContent(binx, biny )
             if 274094. < runNum < 278167. : ### Run Period 2
                 if self.itIsData :
-                    binx = self.PtetaTriggSFdata_Period2.GetXaxis().FindBin( muonpt  )
-                    biny = self.PtetaTriggSFdata_Period2.GetYaxis().FindBin( muoneta )
+                    binx = self.PtetaTriggSFdata_Period2.GetXaxis().FindBin( muoneta  )
+                    biny = self.PtetaTriggSFdata_Period2.GetYaxis().FindBin( muonpt )
                     TriggEff = self.PtetaTriggSFdata_Period2.GetBinContent(binx, biny )
                 elif self.itIsTTbar :
-                    binx = self.PtetaTriggSFmc_Period2.GetXaxis().FindBin( muonpt  )
-                    biny = self.PtetaTriggSFmc_Period2.GetYaxis().FindBin( muoneta )
+                    binx = self.PtetaTriggSFmc_Period2.GetXaxis().FindBin( muoneta  )
+                    biny = self.PtetaTriggSFmc_Period2.GetYaxis().FindBin( muonpt )
                     TriggEff = self.PtetaTriggSFmc_Period2.GetBinContent(binx, biny )
                 else :
-                    binx = self.PtetaTriggEffmc_Period2.GetXaxis().FindBin( muonpt  )
-                    biny = self.PtetaTriggEffmc_Period2.GetYaxis().FindBin( muoneta )
+                    binx = self.PtetaTriggEffmc_Period2.GetXaxis().FindBin( muoneta )
+                    biny = self.PtetaTriggEffmc_Period2.GetYaxis().FindBin( muonpt )
                     TriggEff = self.PtetaTriggEffmc_Period2.GetBinContent(binx, biny )
             if  278167. <= runNum < 278820.: ### Run Period 3
                 if self.itIsData :
-                    binx = self.PtetaTriggSFdata_Period3.GetXaxis().FindBin( muonpt  )
-                    biny = self.PtetaTriggSFdata_Period3.GetYaxis().FindBin( muoneta )
+                    binx = self.PtetaTriggSFdata_Period3.GetXaxis().FindBin( muoneta  )
+                    biny = self.PtetaTriggSFdata_Period3.GetYaxis().FindBin( muonpt )
                     TriggEff = self.PtetaTriggSFdata_Period3.GetBinContent(binx, biny )
                 elif self.itIsTTbar :
-                    binx = self.PtetaTriggSFmc_Period3.GetXaxis().FindBin( muonpt  )
-                    biny = self.PtetaTriggSFmc_Period3.GetYaxis().FindBin( muoneta )
+                    binx = self.PtetaTriggSFmc_Period3.GetXaxis().FindBin( muoneta  )
+                    biny = self.PtetaTriggSFmc_Period3.GetYaxis().FindBin( muonpt )
                     TriggEff = self.PtetaTriggSFmc_Period3.GetBinContent(binx, biny )
                 else :
-                    binx = self.PtetaTriggEffmc_Period3.GetXaxis().FindBin( muonpt  )
-                    biny = self.PtetaTriggEffmc_Period3.GetYaxis().FindBin( muoneta )
+                    binx = self.PtetaTriggEffmc_Period3.GetXaxis().FindBin( muoneta  )
+                    biny = self.PtetaTriggEffmc_Period3.GetYaxis().FindBin( muonpt )
                     TriggEff = self.PtetaTriggEffmc_Period3.GetBinContent(binx, biny )      
             if  278820.<= runNum : ### Run Period 4
                 if self.itIsData :
-                    binx = self.PtetaTriggSFdata_Period4.GetXaxis().FindBin( muonpt  )
-                    biny = self.PtetaTriggSFdata_Period4.GetYaxis().FindBin( muoneta )
+                    binx = self.PtetaTriggSFdata_Period4.GetXaxis().FindBin( muoneta  )
+                    biny = self.PtetaTriggSFdata_Period4.GetYaxis().FindBin( muonpt )
                     TriggEff = self.PtetaTriggSFdata_Period4.GetBinContent(binx, biny )
                 elif self.itIsTTbar :
-                    binx = self.PtetaTriggSFmc_Period4.GetXaxis().FindBin( muonpt  )
-                    biny = self.PtetaTriggSFmc_Period4.GetYaxis().FindBin( muoneta )
+                    binx = self.PtetaTriggSFmc_Period4.GetXaxis().FindBin( muoneta  )
+                    biny = self.PtetaTriggSFmc_Period4.GetYaxis().FindBin( muonpt )
                     TriggEff = self.PtetaTriggSFmc_Period4.GetBinContent(binx, biny )
                 else :
-                    binx = self.PtetaTriggEffmc_Period4.GetXaxis().FindBin( muonpt  )
-                    biny = self.PtetaTriggEffmc_Period4.GetYaxis().FindBin( muoneta )
+                    binx = self.PtetaTriggEffmc_Period4.GetXaxis().FindBin( muoneta  )
+                    biny = self.PtetaTriggEffmc_Period4.GetYaxis().FindBin( muonpt )
                     TriggEff = self.PtetaTriggEffmc_Period4.GetBinContent(binx, biny )  
         if self.verbose : print "Muon trigger Eff/SFis {} : using pt) {}, and eta {}".format( TriggEff, binx, biny )
         return float(TriggEff)      
@@ -611,7 +609,19 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         if self.verbose : print "(using eta) {}, HIP SF is {}".format(muoneta,  MuonHIPScaleF )
         return float(MuonHIPScaleF)    
 
-
+    def ElectronHEEPEff(self, eleta) :     
+		effHEEP = 1.
+        etabinnedHEEPefficiency = [  [ 0.984, 0.971, 0.961, 0.973, 0.978 , 0.980], [0.002, 0.001, 0.001, 0.001, 0.001, 0.002] ]
+        etabins = [-2.5, -1.566, -1.4442, -.5, 0., 0.5, 1.4442, 1.566, 2.5]  
+        for ebin, ibin in enumerate(etabins):
+			if  ebin < eleta < etabins[ibin+1]:
+				effHEEP = etabinnedHEEPefficiency[0][ibin]
+		return float(effHEEP)
+		
+		
+		
+		
+		
     ### TO-DO: Eventually apply Kalman corrections
     '''
     if options.isMC :
