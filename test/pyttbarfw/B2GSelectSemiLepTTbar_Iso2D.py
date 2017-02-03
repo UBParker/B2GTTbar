@@ -186,7 +186,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         ### Electron reconstruction SF
         ###  Info here https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaIDRecipesRun2#Electron_efficiencies_and_scale
         self.ElrecoSFIs = 1.
-        self.finCor5 = ROOT.TFile.Open( "./gammaEff_reconstructionSF.root","READ")
+        self.finCor5 = ROOT.TFile.Open( "./egammaEff_reconstructionSF.root","READ")
 
         #effdatareco = self.finCor5.Get("Gamma_EffData2D")
         #effmcreco =   self.finCor5.Get("EGamma_EffMC2D")
@@ -344,10 +344,10 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         self.CutIDScaleFLooseIs =  1.0
 
         if self.leptonP4 != None  and not self.itIsData: # self.RunNumber
-            if self.tree.LeptonIsMu[0] == 1
+            if self.tree.LeptonIsMu[0] == 1:
                 self.CutIDScaleFLooseIs = self.MuonCutIDScaleFLoose( self.leptonP4.Perp() , abs(self.leptonP4.Eta()) , self.tree.SemiLeptRunNum[0] )
                 if self.verbose : "MuonCutIDScaleFLoose: {0:2.2f} for pt {1:2.2f} and abs(eta) {2:2.2f}".format(self.CutIDScaleFLooseIs ,self.leptonP4.Perp() , abs(self.leptonP4.Eta())  )
-            if self.tree.LeptonIsMu[0] == 0 : :
+            if self.tree.LeptonIsMu[0] == 0  :
                 print"WARNING: ElectronCutIDScaleFLoose not yet applied"
                 #self.CutIDScaleFLooseIs = self.ElectronCutIDScaleFLoose( self.leptonP4.Perp() , abs(self.leptonP4.Eta()) , self.tree.SemiLeptRunNum[0] )
                 if self.verbose : "ElectronCutIDScaleFLoose: {0:2.2f} for pt {1:2.2f} and abs(eta) {2:2.2f}".format(self.CutIDScaleFLooseIs ,self.leptonP4.Perp() , abs(self.leptonP4.Eta())  )
@@ -440,7 +440,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         if self.verbose  : print "Stage 3: Muon (Electron) passed Tight (Medium) Cut based ID (with no iso) passnoiso loose {} med {} tight {}".format(self.tree.Electron_noiso_passLoose[0] , self.tree.Electron_noiso_passMedium[0], self.tree.Electron_noiso_passTight[0] )
 
 
-        if self.tree.LeptonIsMu[0] == 1 and self.leptonP4 != None  not self.itIsData  :
+        if self.tree.LeptonIsMu[0] == 1 and self.leptonP4 != None and  not self.itIsData  :
             self.MuHighPtScaleFIs = self.MuonHighPtScaleF( self.leptonP4.Perp() , abs(self.leptonP4.Eta()) ,  self.RunNumber )
             if self.verbose : "MuonHighPtScaleF: {0:2.2f} for pt {1:2.2f} and abs(eta) {2:2.2f}".format(self.CutIDScaleFIs,self.leptonP4.Perp() , abs(self.leptonP4.Eta())  )
 
