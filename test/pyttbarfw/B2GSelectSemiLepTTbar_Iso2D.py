@@ -526,7 +526,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         if 0. < runNum <= 274094. : ### Run Period 1
             binxsf = self.PtetaTriggSFmc_Period1.GetXaxis().FindBin( muoneta )
             binysf = self.PtetaTriggSFmc_Period1.GetYaxis().FindBin( muonpt )
-            TriggSF = self.PtetaTriggSFmc_Period1.GetBinContent(binx, biny )
+            TriggSF = self.PtetaTriggSFmc_Period1.GetBinContent(binxsf, binysf )
 
             binx = self.PtetaTriggEffmc_Period1.GetXaxis().FindBin( muoneta  )
             biny = self.PtetaTriggEffmc_Period1.GetYaxis().FindBin( muonpt )
@@ -534,7 +534,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         if 274094. < runNum < 278167. : ### Run Period 2
             binxsf = self.PtetaTriggSFmc_Period2.GetXaxis().FindBin( muoneta )
             binysf = self.PtetaTriggSFmc_Period2.GetYaxis().FindBin( muonpt )
-            TriggSF = self.PtetaTriggSFmc_Period2.GetBinContent(binx, biny )
+            TriggSF = self.PtetaTriggSFmc_Period2.GetBinContent(binxsf , binysf )
 
             binx = self.PtetaTriggEffmc_Period2.GetXaxis().FindBin( muoneta  )
             biny = self.PtetaTriggEffmc_Period2.GetYaxis().FindBin( muonpt )
@@ -542,7 +542,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         if  278167. <= runNum < 278820.: ### Run Period 3
             binxsf = self.PtetaTriggSFmc_Period3.GetXaxis().FindBin( muoneta )
             binysf = self.PtetaTriggSFmc_Period3.GetYaxis().FindBin( muonpt )
-            TriggSF = self.PtetaTriggSFmc_Period3.GetBinContent(binx, biny )
+            TriggSF = self.PtetaTriggSFmc_Period3.GetBinContent(binxsf, binysf )
 
             binx = self.PtetaTriggEffmc_Period3.GetXaxis().FindBin( muoneta  )
             biny = self.PtetaTriggEffmc_Period3.GetYaxis().FindBin( muonpt )
@@ -550,7 +550,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         if  278820.<= runNum : ### Run Period 4
             binxsf = self.PtetaTriggSFmc_Period4.GetXaxis().FindBin( muoneta )
             binysf = self.PtetaTriggSFmc_Period4.GetYaxis().FindBin( muonpt )
-            TriggSF = self.PtetaTriggSFmc_Period4.GetBinContent(binx, biny )
+            TriggSF = self.PtetaTriggSFmc_Period4.GetBinContent(binxsf, binysf )
 
             binx = self.PtetaTriggEffmc_Period4.GetXaxis().FindBin( muoneta  )
             biny = self.PtetaTriggEffmc_Period4.GetYaxis().FindBin( muonpt )
@@ -585,7 +585,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
 
         binx = PtetaCutIDMuScaleFLoose.GetXaxis().FindBin( muoneta  )
         biny = PtetaCutIDMuScaleFLoose.GetYaxis().FindBin( muonpt )
-        CutIDScaleFl = PtetaCutIDScaleFLoose.GetBinContent(binx, biny )
+        CutIDScaleFl = PtetaCutIDMuScaleFLoose.GetBinContent(binx, biny )
         if self.verbose : print "MuonCutIDScaleFLoose: get bin: x (using eta) {}, y (using pt) {}, SF is {}".format(binx, biny, CutIDScaleFl )
         return float(CutIDScaleFl)
     '''
