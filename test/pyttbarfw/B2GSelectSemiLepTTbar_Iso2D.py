@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-
 import ROOT
 
 import TrigMap
@@ -17,9 +16,6 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         if self.verbose: print "Begin leptonic top selection with {} stages".format(self.nstages)
         self.tree = tree
         self.trigMap = TrigMap.TrigMap()
-
-
-
         # Define Kinematic Cut Values
 
         # Work the cut flow
@@ -331,8 +327,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
 
         self.passed = [False] * self.nstages
         self.passedCount = [0] * self.nstages
-
-
+                                                                                                               
         ### MC generator weights and PU  weights
         if self.itIsData :
             self.EventWeight = 1.0
@@ -352,13 +347,12 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
                 #self.CutIDScaleFLooseIs = self.ElectronCutIDScaleFLoose( self.leptonP4.Perp() , abs(self.leptonP4.Eta()) , self.tree.SemiLeptRunNum[0] )
                 if self.verbose : "ElectronCutIDScaleFLoose: {0:2.2f} for pt {1:2.2f} and abs(eta) {2:2.2f}".format(self.CutIDScaleFLooseIs ,self.leptonP4.Perp() , abs(self.leptonP4.Eta())  )
 
-
-
+        self.theWeight =  self.EventWeight * self.PUWeight #* self.CutIDScaleFLooseIs
+        if self.verbose : print "theWeight for stage {} is : {} = eventWeight {} * self.PUWeight{} * self.CutIDScaleFLooseIs {}".format( 0, self.theWeight,  self.EventWeight , self.PUWeight , self.CutIDScaleFLooseIs )
 
         self.passed[0] = True
         self.passedCount[0] += 1
         if self.verbose: print"Stage 0: Preliminary cuts from B2GTreeMaker V4"
-
 
         if self.tree.LeptonIsMu[0] == 1 and self.leptonP4 != None  : # self.RunNumber
             self.TriggEffIs = 1.
@@ -366,13 +360,15 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
                 self.TriggEffIs = self.MuonTriggEff( self.leptonP4.Perp() , abs(self.leptonP4.Eta())   , self.tree.SemiLeptRunNum[0] )
 
         if self.tree.LeptonIsMu[0] == 0 and not self.itIsData and self.leptonP4 != None  :
-            print"WARNING: Electron trigger SF and eff not yet applied"
+            print"WARNING: Electron trigger SF and eff not yet applied" 
+              
+        ### Trigger efficiency for morind MC + ReReco data Mu50 PR TRKMu50                                               
+        ### we are using Mu50, switching with v5 ttrees                                                                  
+                                                                                                                     
+        self.theWeight =  self.EventWeight * self.PUWeight #* self.CutIDScaleFLooseIs *  self.TriggEffIs
+        if self.verbose : print "theWeight for stage {} is : {} = eventWeight {} * self.PUWeight{} * self.CutIDScaleFLooseIs {}".format( 0, self.theWeight,  self.EventWeight , self.PUWeight , self.CutIDScaleFLooseIs * self.CutIDScaleFLooseIs, self.TriggEffIs)
 
-            self.TriggEffIs = 1.
-            #if not self.itIsData :
-                #self.TriggEffIs = self.MuonTriggEff( self.leptonP4.Perp() , abs(self.leptonP4.Eta())   , self.tree.SemiLeptRunNum[0] )
-
-
+        self.trigIs = ""
         if not self.ignoreTrig :
             self.trigIs = ""
             for itrig in self.trigIndex :
@@ -556,6 +552,10 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
             biny = self.PtetaTriggEffmc_Period4.GetYaxis().FindBin( muonpt )
             TriggEff = self.PtetaTriggEffmc_Period4.GetBinContent(binx, biny )
 
+        if TriggSF > 3. :
+            TriggSF =float( TriggSF/100.)
+            if TriggEff > 3.:
+                    TriggEff =float( TriggEff/100.)
         if self.itIsTTbar :
             TriggEff = TriggSF
             if self.verbose : print "ttbar : Muon trigger SF is {} : using pt) {}, and eta {}".format( TriggEff, muonpt, muoneta)
@@ -573,10 +573,10 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
 
         binx = PtetaCutIDMuScaleFTight.GetXaxis().FindBin( muoneta  )
         biny = PtetaCutIDMuScaleFTight.GetYaxis().FindBin( muonpt )
-        CutIDScaleFl = PtetaCutIDScaleFTight.GetBinContent(binx, biny )
+        CutIDScaleFl = PtetaCutIDMuScaleFTight.GetBinContent(binx, biny )
         if self.verbose : print "MuonCutIDScaleFTight: get bin: x (using eta) {}, y (using pt) {}, SF is {}".format(binx, biny, CutIDScaleFl )
         return float(CutIDScaleFl)
-
+    '''
     def MuonCutIDScaleFLoose(self, muonpt, muoneta, runNum) :
         if runNum < 278808. : #run2106B-F
             PtetaCutIDMuScaleFLoose = self.PtetaCutIDMuScaleFLooseBtoF
@@ -585,10 +585,65 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
 
         binx = PtetaCutIDMuScaleFLoose.GetXaxis().FindBin( muoneta  )
         biny = PtetaCutIDMuScaleFLoose.GetYaxis().FindBin( muonpt )
-        CutIDScaleFl = PtetaCutIDMuScaleFLoose.GetBinContent(binx, biny )
+        CutIDScaleFl = PtetaCutIDScaleFLoose.GetBinContent(binx, biny )
         if self.verbose : print "MuonCutIDScaleFLoose: get bin: x (using eta) {}, y (using pt) {}, SF is {}".format(binx, biny, CutIDScaleFl )
         return float(CutIDScaleFl)
+    #PtetaCutIDMuScaleFLoose = 1.0
     '''
+    def MuonCutIDScaleFLoose(self, muonpt, muoneta, runNum) :  
+        if runNum < 278808. : #run2106B-F
+            PtetaCutIDMuScaleFLoose = self.PtetaCutIDMuScaleFLooseBtoF
+        else : #run2106GH
+            PtetaCutIDMuScaleFLoose =    self.PtetaCutIDMuScaleFLooseGH
+
+        binx = PtetaCutIDMuScaleFLoose.GetXaxis().FindBin( muoneta  )
+        biny = PtetaCutIDMuScaleFLoose.GetYaxis().FindBin( muonpt )
+        CutIDScaleFl = PtetaCutIDMuScaleFLoose.GetBinContent(binx, biny )
+        return CutIDScaleFl
+     
+     
+     
+     
+     
+
+     
+     
+     
+     
+     
+
+    def MuonHighPtScaleF(self, muonpt, muoneta, runNum) :
+        highSF = 1.0
+        if runNum < 278808. : #run2106B-F                                     
+            if self.itIsData:
+                HighPt = self.PtetaCutIDMuScaleFdataHightPtBtoF
+            else:
+                HighPt = self.PtetaCutIDMuScaleFmcHighPtBtoF
+
+        else :
+            if self.itIsData:
+                HighPt = self.PtetaCutIDMuScaleFdataHighPtGH
+            else:
+                HighPt = self.PtetaCutIDMuScaleFmcHighPtGH
+
+        binx = HighPt.GetXaxis().FindBin( muoneta  )
+        biny = HighPt.GetYaxis().FindBin( muonpt )
+        CutIDScaleFl = HighPt.GetBinContent(binx, biny )
+        if self.verbose : print "MuonHighPtScaleF: get bin: x (using eta) {\
+}, y (using pt) {}, SF is {}".format( muoneta , muonpt, CutIDScaleFl )
+        return float(CutIDScaleFl)
+    '''
+
+
+        self.PtetaCutIDMuScaleFdataHighPtBtoF = self.finCor2.Get("h_mu_hpt_data\
+_1")
+        self.PtetaCutIDMuScaleFdataHighPtGH = self.finCor2.Get("h_mu_hpt_data_2\
+")
+        self.PtetaCutIDMuScaleFmcHighPtBtoF = self.finCor2.Get("h_mu_hpt_mc_1")
+        self.PtetaCutIDMuScaleFmcHighPtGH = self.finCor2.Get("h_mu_hpt_mc_2")
+
+
+
     ### SF for High-pT ID and (detector based) Tracker Relative Isolation
     def MuonIsoScaleF(self, muonpt, muoneta) : #{ROOT file from
         #https://twiki.cern.ch/twiki/bin/view/CMS/MuonWorkInProgressAndPagResults            ### TO-DO: Implement this for type 2 selection
