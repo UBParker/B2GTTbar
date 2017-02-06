@@ -178,7 +178,6 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.PuppiCorr = self.tree.JetPuppiCorrFactor[0]
         self.Corr = self.tree.JetCorrFactor[0]
         self.CorrL2L3 = self.tree.JetSDptCorrL23[0]
-        self.CorrL2L3SD = self.tree.JetSDmassCorrL23[0]
         if self.itIsData :
             self.PtSmear = 1.
             self.PuppiPtSmear = 1.
@@ -246,7 +245,8 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.ak4Jet = None
         self.ak4JetBdisc = None 
         
-
+        #self.theWeight12 = None
+        
         ### Define the AK8 4-vectors
         
         ### AK8 jets
@@ -437,6 +437,10 @@ class B2GSelectSemiLepTTbar_Type1( ) :
                                                                                                                         self.AK8PtCut,
                                                                                                                     self.ak8JetP4.Eta(),
                                                                                                                        self.AK8EtaCut)
+                                                                                                                       
+        #self.theWeight12 =  a.EventWeight * a.PUWeight * a.CutIDScaleFIs * a.recoSFIs * a.TriggEffIs * a.MuHighPtScaleFIs * a.HEEPSFIs * a.BtagWeight
+        #if self.verbose : print "theWeight for stage {0:} is : {1:2.4f} = eventWeight {2:2.2f} * self.PUWeight{3:2.2f} * self.CutIDScaleFIs {4:2.2f} * self.recoSFIs  {5:2.2f} * self.TriggEffIs {6:2.3f} *  self.MuHighPtScaleFIs {7:2.3f} * self.HEEPSFIs {8:2.3f} * a.BtagWeight {9:2.3f}".format( 0, a.theWeight, a.EventWeight , a.PUWeight , a.CutIDScaleFIs, a.recoSFIs , a.TriggEffIs ,  a.MuHighPtScaleFIs , a.HEEPSFIs, a.BtagWeight)
+
         if not ( self.ak4JetBdisc >  self.bdiscmin  ) : return self.passed
         self.passed[2] = True
         self.passedCount[2] += 1

@@ -270,7 +270,7 @@ class RunSemiLepTTbar_HighMass() :
             
             for ival in xrange(self.nstages):
                 self.RunNumberHist[ilep].append( ROOT.TH1F("RunNumberHist" + self.lepNames[ilep] + str(ival) , "Run Number for lepton "+self.lepNames[ilep] + str(ival), 286591, 0, 286591) )
-                self.WeightHist[ilep].append( ROOT.TH1F("WeightHist" +  self.lepNames[ilep] + str(ival), "Jet p_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 1000) )
+                self.WeightHist[ilep].append( ROOT.TH1F("WeightHist" +  self.lepNames[ilep] + str(ival), "Jet p_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000, -2, 2) )
                 self.AK8PtHist[ilep].append( ROOT.TH1F("AK8PtHist" +  self.lepNames[ilep] + str(ival), "Jet p_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 1000) )
                 self.AK8MSDRawHist[ilep].append( ROOT.TH1F("AK8MSDRawHist" +  self.lepNames[ilep] + str(ival), "AK8 Soft Drop Jet p_{T} RAW, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 1000) )
                 self.AK8MSDPUPPIHist[ilep].append( ROOT.TH1F("AK8MSDPUPPIHist" +  self.lepNames[ilep] + str(ival), "AK8 Soft Drop Jet p_{T} PUPPI, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 1000) )
@@ -335,52 +335,14 @@ class RunSemiLepTTbar_HighMass() :
 
         ### Define the weights used for histo filling
         self.theWeight = a.theWeight
-        self.EventWeight =  a.EventWeight
-        self.PUWeight = a.PUWeight
-        self.TriggEffIs  = a.TriggEffIs
-        self.CutIDScaleFIs = a.CutIDScaleFIs
-        self.CutIDScaleFLooseIs = a.CutIDScaleFLooseIs
-        self.MuonHIPScaleFIs = a.MuonHIPScaleFIs
-        self.BtagWeight =  a.BtagWeight
-        '''
+
         #self.theWeight = 1.
 
-        
-        #if self.verbose and index == 0 : print "Event weight {0:2.4f} * PU weight {1:2.4f} *Trigger Eff. {2:2.4f} * Cut ID {3:2.4f} * HIP SF {4:2.4f} * Btag SF {5:2.4f} * self.CutIDScaleFLooseIs {6:2.4f}".format(self.EventWeight , self.PUWeight , self.TriggEffIs , self.CutIDScaleFIs, self.MuonHIPScaleFIs, self.BtagWeight, self.CutIDScaleFLooseIs)
-
-        ### The total weight depends on the stage of selection
-        #self.theWeight =  self.EventWeight * self.PUWeight
-        ### Before all selection (LooseID is applied)
-        if index == 0: 
-            self.theWeight =  self.EventWeight * self.PUWeight * self.CutIDScaleFLooseIs
-            if self.verbose : print "theWeight for stage {} is : {} =  self.EventWeight {} * self.PUWeight{} * self.CutIDScaleFLooseIs {}".format(index ,self.theWeight,  self.EventWeight , self.PUWeight , self.CutIDScaleFLooseIs)
-        ### Trigger
-        if index == 1: 
-            self.theWeight =  self.EventWeight * self.PUWeight * self.TriggEffIs * self.CutIDScaleFLooseIs
-            if self.verbose : print "theWeight for stage {} is : {} =  self.EventWeight {} * self.PUWeight {} * self.TriggEffIs {} *self.CutIDScaleFLooseIs {}".format(index ,self.theWeight,  self.EventWeight , self.PUWeight ,self.TriggEffIs,  self.CutIDScaleFLooseIs)
-        if index == 2: 
-            self.theWeight =  self.EventWeight * self.PUWeight * self.TriggEffIs * self.CutIDScaleFLooseIs
-            if self.verbose : print "theWeight for stage {} is : {}".format(index ,self.theWeight)
-        ### Cut based ID
-        if index == 3: 
-            self.theWeight =  self.EventWeight * self.PUWeight * self.TriggEffIs  * self.CutIDScaleFIs
-            if self.verbose : print "theWeight for stage {} is : {}".format(index ,self.theWeight)
-        ### HighPt ID
-        if index == 4: 
-            self.theWeight =  self.EventWeight * self.PUWeight * self.TriggEffIs  * self.CutIDScaleFIs *self.MuonHIPScaleFIs
-            if self.verbose : print "theWeight for stage {} is : {}".format(index ,self.theWeight)
-        if 4 < index < 12: # Same as stage 4
-            self.theWeight =  self.EventWeight * self.PUWeight * self.TriggEffIs  * self.CutIDScaleFIs *self.MuonHIPScaleFIs 
-            if self.verbose : print "theWeight for stage {} is {} ".format(index ,self.theWeight )
         ### B tag SF
         if index >= 12: 
-            self.theWeight =  self.EventWeight * self.PUWeight * self.TriggEffIs  * self.CutIDScaleFIs *self.MuonHIPScaleFIs * self.BtagWeight
-            if self.verbose : print "theWeight for stage {} is : {}".format(index ,self.theWeight)
-        #if self.verbose : print "Event weight {1:2.4f} * PU weight {2:2.4f} *Trigger Eff. {3:2.4f} * Cut ID {4:2.4f} * HIP SF {5:2.4f} * Btag SF {6:2.4f}".format(self.EventWeight , self.PUWeight , self.TriggEffIs , self.CutIDScaleFIs, self.MuonHIPScaleFIs, self.BtagWeight)
+            self.theWeight =  a.EventWeight * a.PUWeight * a.CutIDScaleFIs * a.recoSFIs * a.TriggEffIs * a.MuHighPtScaleFIs * a.HEEPSFIs * a.BtagWeight
+            if self.verbose : print "theWeight for stage {0:} is : {1:2.4f} = eventWeight {2:2.2f} * self.PUWeight{3:2.2f} * self.CutIDScaleFIs {4:2.2f} * self.recoSFIs  {5:2.2f} * self.TriggEffIs {6:2.3f} *  self.MuHighPtScaleFIs {7:2.3f} * self.HEEPSFIs {8:2.3f} * BtagWeight {9:2.3f}".format( 0, a.theWeight, a.EventWeight , a.PUWeight , a.CutIDScaleFIs, a.recoSFIs , a.TriggEffIs ,  a.MuHighPtScaleFIs , a.HEEPSFIs, a.BtagWeight)
 
-        #self.hCutFlow[ilep][index].Fill(self.passedCutCount[ilep][index])
-        #self.WeightHist[ilep][index].Fill(self.theWeight )
-       ''' 
         if self.verbose: print"a.RunNumber: {}".format( a.RunNumber)
         if a.RunNumber > 0. :
             self.RunNumberHist[ilep][index].Fill(a.RunNumber)

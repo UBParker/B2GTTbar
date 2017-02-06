@@ -101,13 +101,12 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         self.EventWeight = 1.
         self.PUWeight = 1.
         self.TriggEffIs  = 1.
-        self.CutIDScaleFTightIs = 1.
+        self.CutIDScaleFIs = 1.
         self.CutIDScaleFLooseIs =1.
-        self.CutIDScaleFMediumIs = 1.
         #self.MuonHIPScaleFIs =1.
         self.recoSFIs = 1.
         self.HEEPSFIs = 1.
-
+        self.MuHighPtScaleFIs = 1.
 
         ### Muon Scale factors and efficiencies
         ### See https://twiki.cern.ch/twiki/bin/view/CMS/MuonWorkInProgressAndPagResults#Results_on_the_full_2016_data
@@ -322,7 +321,9 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         self.ElHEEPeffIs = 1.
         self.recoSFIs = 1.
         self.HEEPSFIs = 1.
-
+        self.MuHighPtScaleFIs = 1.
+        
+        
         if  self.itIsData :        self.BtagWeight = 1.0
         else: self.BtagWeight = self.reader.eval_auto_bounds(
                                                         'central',      # systematic (here also 'up'/'down' possible)
@@ -436,28 +437,18 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         self.passMuon_Tight = self.tree.LeptonIsMu[0] > 0. and self.tree.MuTight[0] > 0.
         self.passElectron_Tight_noIso = self.tree.LeptonIsMu[0] < 1.  and self.tree.Electron_noiso_passTight[0] > 0.
 
-        if self.tree.LeptonIsMu[0] == 1 and self.leptonP4 != None  : # self.RunNumber
-
-                self.CutIDScaleFIs = self.MuonCutIDScaleFTight( self.leptonP4.Perp() , abs(self.leptonP4.Eta()) , self.tree.SemiLeptRunNum[0] )
-                if self.verbose : "MuonCutIDScaleFTight: {0:2.2f} for pt {1:2.2f} and abs(eta) {2:2.2f}".format(self.CutIDScaleFIs,self.leptonP4.Perp() , abs(self.leptonP4.Eta())  )
-
-        if self.tree.LeptonIsMu[0] == 0 and not self.itIsData and self.leptonP4 != None  :
-            print"WARNING: ElectronCutIDScaleFTight not yet available yet"
-
-
 
         if self.leptonP4 != None  and not self.itIsData: # self.RunNumber                                                                                                                                        
             if self.tree.LeptonIsMu[0] == 1:
-                self.CutIDScaleFLooseIs = self.MuonCutIDScaleFLoose( self.leptonP4.Perp() , (self.leptonP4.Eta()) , self.tree.SemiLeptRunNum[0] )
-                if self.verbose : "MuonCutIDScaleFLoose: {0:2.4f} for pt {1:2.2f} and abs(eta) {2:2.2f}".format(self.CutIDScaleFLooseIs ,self.leptonP4.Perp() , abs(self.leptonP4.Eta())  )
+                self.CutIDScaleFIs = self.MuonCutIDScaleFTight( self.leptonP4.Perp() , (self.leptonP4.Eta()) , self.tree.SemiLeptRunNum[0] )
+                if self.verbose : "MuonCutIDScaleFTight: {0:2.4f} for pt {1:2.2f} and abs(eta) {2:2.2f}".format(self.CutIDScaleFIs ,self.leptonP4.Perp() , abs(self.leptonP4.Eta())  )
             elif self.tree.LeptonIsMu[0] == 0  :
                 #print"WARNING: ElectronCutIDScaleFLoose not yet applied"                                                                                                                                        
-                self.CutIDScaleFLooseIs = self.ElectronCutIDScaleFLoose( self.leptonP4.Perp() , (self.leptonP4.Eta()) , self.tree.SemiLeptRunNum[0] )
-                if self.verbose : "ElectronCutIDScaleFLoose: {0:2.4f} for pt {1:2.2f} and abs(eta) {2:2.2f}".format(self.CutIDScaleFLooseIs ,self.leptonP4.Perp() , abs(self.leptonP4.Eta())  )
-                self.recoSFIs = self.ElectronRecoSF( self.leptonP4.Eta(), self.leptonP4.Perp( ))
+                self.CutIDScaleFIs = self.ElectronCutIDScaleFMedium( self.leptonP4.Perp() , (self.leptonP4.Eta()) , self.tree.SemiLeptRunNum[0] )
+                if self.verbose : "ElectronCutIDScaleFMedium: {0:2.4f} for pt {1:2.2f} and abs(eta) {2:2.2f}".format(self.CutIDScaleFIs ,self.leptonP4.Perp() , (self.leptonP4.Eta())  )
 
-        self.theWeight =  self.EventWeight * self.PUWeight * self.CutIDScaleFLooseIs * self.recoSFIs
-        if self.verbose : print "theWeight for stage {0:} is : {1:2.4f} = eventWeight {2:2.2f} * self.PUWeight{3:2.2f} * self.CutIDScaleFLooseIs {4:2.2f} * self.recoSFIs  {5:2.2f}".format( 0, self.theWeight, self.EventWeight , self.PUWeight , self.CutIDScaleFLooseIs, self.recoSFIs  )
+        self.theWeight =  self.EventWeight * self.PUWeight * self.CutIDScaleFIs * self.recoSFIs * self.TriggEffIs
+        if self.verbose : print "theWeight for stage {0:} is : {1:2.4f} = eventWeight {2:2.2f} * self.PUWeight{3:2.2f} * self.CutIDScaleFIs {4:2.2f} * self.recoSFIs  {5:2.2f} * self.TriggEffIs {6:2.3f}".format( 0, self.theWeight, self.EventWeight , self.PUWeight , self.CutIDScaleFIs, self.recoSFIs , self.TriggEffIs )
 
 
         if self.verbose  : print "Stage 3 CHECK: ELECTRON  passnoiso loose {} med {} tight {}- MUON is High Pt {} is tight {}".format(
@@ -482,15 +473,20 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
             if self.verbose : "MuonHighPtScaleF: {0:2.2f} for pt {1:2.2f} and abs(eta) {2:2.2f}".format(self.CutIDScaleFIs,self.leptonP4.Perp() , abs(self.leptonP4.Eta())  )
 
         if self.tree.LeptonIsMu[0] == 0 and not self.itIsData and self.leptonP4 != None  :
-            self.HEEPSFIs = self.ElectronHEEPEff(self.leptonP4.Perp() , self.leptonP4.Eta() )
+            self.HEEPSFIs = self.ElectronHEEPEff(self.leptonP4.Eta() )
             print"ElectronHEEPEff: {0:2.3f} for eta {1:2.3f}".format(self.HEEPSFIs,  self.leptonP4.Eta() )
 
+
+        self.theWeight =  self.EventWeight * self.PUWeight * self.CutIDScaleFIs * self.recoSFIs * self.TriggEffIs * self.MuHighPtScaleFIs * self.HEEPSFIs
+        if self.verbose : print "theWeight for stage {0:} is : {1:2.4f} = eventWeight {2:2.2f} * self.PUWeight{3:2.2f} * self.CutIDScaleFIs {4:2.2f} * self.recoSFIs  {5:2.2f} * self.TriggEffIs {6:2.3f} *  self.MuHighPtScaleFIs {7:2.3f} * self.HEEPSFIs {8:2.3f}".format( 0, self.theWeight, self.EventWeight , self.PUWeight , self.CutIDScaleFIs, self.recoSFIs , self.TriggEffIs ,  self.MuHighPtScaleFIs , self.HEEPSFIs)
+
+
         ### NOTE : High Pt Muon ID is now required as suggested here https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideMuonIdRun2#2016_Data
-        if not (( self.tree.LeptonIsMu[0] == 1 and self.tree.MuHighPt[0] == 1 and self.tree.SemiLeptPassMETFilters[0] == 1) or  (self.tree.LeptonIsMu[0] == 0 and  self.tree.SemiLeptPassMETFilters[0] == 1 )) :
+        if not (( self.tree.LeptonIsMu[0] == 1 and self.tree.MuHighPt[0] == 1 and self.tree.SemiLeptPassMETFilters[0] == 1) or  (self.tree.LeptonIsMu[0] == 0 and  self.tree.SemiLeptPassMETFilters[0] == 1 and self.tree.Electron_iso_passHEEP[0] > 0. )) :
             return self.passed
         self.passed[4] = True
         self.passedCount[4] += 1
-        if self.verbose  : print "Stage 4: Muon is HighPt and lepton pass self.tree.SemiLeptPassMETFilters[0] == {} ".format(self.tree.SemiLeptPassMETFilters[0] )
+        if self.verbose  : print "Stage 4: Muon is HighPt (or Eletron pass HEEPv6) and lepton pass self.tree.SemiLeptPassMETFilters[0] == {} ".format(self.tree.SemiLeptPassMETFilters[0] )
 
 
         if self.verbose: print"Stage 5 CHECK: Lepton is a Muon bool {0:}, MET is {1:2.2f} GeV".format(self.tree.LeptonIsMu[0] , self.nuP4.Perp() )
@@ -683,6 +679,14 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         if self.verbose : print "ElectronCutIDScaleFLoose: eta {0:2.2f}, pt {1:2.2f}, SF is {2:2.2f}".format( eleta , elpt, CutIDScaleFl )
 
         #print "ElectronCutIDScaleFLoose hist is {0:} for pt {1:2.2f} bin {2:} and eta {3:2.2f} bin {4:} the SF is {5:2.2f} ".format( PtetaCutIDElScaleFLoose, muonpt, binx, muoneta, biny, CutIDScaleFl)
+        return CutIDScaleFl
+        
+    def ElectronCutIDScaleFMedium(self, elpt, eleta, runNum) :
+        PtetaCutIDElScaleFMedium = self.PtetaCutIDElScaleFMedium
+        binx = PtetaCutIDElScaleFMedium.GetXaxis().FindBin( eleta  )
+        biny = PtetaCutIDElScaleFMedium.GetYaxis().FindBin( elpt )
+        CutIDScaleFl = PtetaCutIDElScaleFMedium.GetBinContent(binx, biny )
+        if self.verbose : print "ElectronCutIDScaleFMedium: eta {0:2.2f}, pt {1:2.2f}, SF is {2:2.2f}".format( eleta , elpt, CutIDScaleFl )
         return CutIDScaleFl
     '''
        self.PtetaCutIDElScaleFMedium     = self.finCor6.Get("EGamma_SF2D")
