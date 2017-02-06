@@ -230,7 +230,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
 
         # make a reader instance and load the sf data
         self.reader = ROOT.BTagCalibrationReader(
-            0,              # 0 is for loose op, 1: medium, 2: tight, 3: discr. reshaping
+            1,              # 0 is for loose op, 1: medium, 2: tight, 3: discr. reshaping
             "central",      # central systematic type
             self.v_sys,          # vector of other sys. types
         )
