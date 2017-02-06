@@ -327,8 +327,11 @@ class RunSemiLepTTbar_HighMass() :
         '''
         a = self.lepSelection
         b = self.hadSelection 
-        ilep = a.tree.LeptonIsMu[0]     
-        if self.verbose: print 'ilep = ', ilep       
+        ilep = a.tree.LeptonIsMu[0]
+        if ilep == 1:         
+            if self.verbose: print 'Muon Candidate'
+        if ilep== 0:
+            if self.verbose: print 'Electron Candidate'
 
         ### Define the weights used for histo filling
         self.theWeight = a.theWeight
@@ -339,8 +342,8 @@ class RunSemiLepTTbar_HighMass() :
         self.CutIDScaleFLooseIs = a.CutIDScaleFLooseIs
         self.MuonHIPScaleFIs = a.MuonHIPScaleFIs
         self.BtagWeight =  a.BtagWeight
-
-        self.theWeight = 1.
+        '''
+        #self.theWeight = 1.
 
         
         #if self.verbose and index == 0 : print "Event weight {0:2.4f} * PU weight {1:2.4f} *Trigger Eff. {2:2.4f} * Cut ID {3:2.4f} * HIP SF {4:2.4f} * Btag SF {5:2.4f} * self.CutIDScaleFLooseIs {6:2.4f}".format(self.EventWeight , self.PUWeight , self.TriggEffIs , self.CutIDScaleFIs, self.MuonHIPScaleFIs, self.BtagWeight, self.CutIDScaleFLooseIs)
@@ -377,8 +380,8 @@ class RunSemiLepTTbar_HighMass() :
 
         #self.hCutFlow[ilep][index].Fill(self.passedCutCount[ilep][index])
         #self.WeightHist[ilep][index].Fill(self.theWeight )
-        
-        if self.verbose: print"run number is filled as a.runNum value {}".format( a.RunNumber)
+       ''' 
+        if self.verbose: print"a.RunNumber: {}".format( a.RunNumber)
         if a.RunNumber > 0. :
             self.RunNumberHist[ilep][index].Fill(a.RunNumber)
         if self.theWeight > -1. :
@@ -448,7 +451,7 @@ class RunSemiLepTTbar_HighMass() :
             for iptbin, ptbin in enumerate(b.ak8Jet_Ptbins) :
                 if ptbin <  800.:
                     if (  ptbin < b.ak8PuppiSDJetP4.Perp()  < b.ak8Jet_Ptbins[iptbin+1] ) :
-                        if self.verbose : print"The corrected ak8 puppi SD jet pt is {0:3.2f} which is btw pt min {1:} and pt max {2:}".format( b.ak8PuppiSDJetP4.Perp(), ptbin, b.ak8Jet_Ptbins[iptbin+1] )
+                        if self.verbose : print"b.ak8PuppiSDJetP4.Perp() : {0:3.2f} ptbin [ {1:} , {2:}]".format( b.ak8PuppiSDJetP4.Perp(), ptbin, b.ak8Jet_Ptbins[iptbin+1] )
                         
                         self.ak8SDPuppiMass =  b.ak8PuppiSD_m_Pcorr
                         self.ak8PuppiMass = b.ak8Puppi_m_Pcorr
@@ -459,7 +462,7 @@ class RunSemiLepTTbar_HighMass() :
                         self.theSDsj0Masshist = self.AK8MSDSJ0PtBinnedHistList[iptbin]
                         self.theSDsj1Masshist = self.AK8MSDSJ1PtBinnedHistList[iptbin]
                         if  self.theMassHist != None and self.ak8PuppiMass != None :
-                            if self.verbose: print"Filling Pt binned arrays e.g. this one {0:} with the value of ak8puppimass {1:2.2f} for ipt {2:} ptbin {3:}".format(self.theMassHist[ilep][index], self.ak8PuppiMass , iptbin, ptbin)
+                            #if self.verbose: print"Filling Pt binned arrays e.g. this one {0:} with the value of ak8puppimass {1:2.2f} for ipt {2:} ptbin {3:}".format(self.theMassHist[ilep][index], self.ak8PuppiMass , iptbin, ptbin)
 
                             self.theMassHist[ilep][index].Fill( self.ak8PuppiMass  , self.theWeight )
                             self.theSDMassHist[ilep][index].Fill(  self.ak8SDPuppiMass , self.theWeight )
@@ -468,7 +471,7 @@ class RunSemiLepTTbar_HighMass() :
                             self.theSDsj1Masshist[ilep][index].Fill(  self.ak8SDsj1_m  , self.theWeight )
 
                     if (  ptbin < b.ak8PuppiSDJetP4_Subjet0.Perp() < self.ak8Jet_Ptbins[iptbin+1] ) :
-                        if self.verbose : print"The SD subjet 0 jet pt is {0:3.2f} which is btw pt min {1:} and pt max {2:}".format( b.ak8PuppiSDJetP4_Subjet0.Perp(), ptbin, b.ak8Jet_Ptbins[iptbin+1] )
+                        if self.verbose : print"b.ak8PuppiSDJetP4_Subjet0.Perp() : {0:3.2f} pt bin[ {1:}, {2:}]".format( b.ak8PuppiSDJetP4_Subjet0.Perp(), ptbin, b.ak8Jet_Ptbins[iptbin+1] )
                     
                         self.ak8SDPuppiMass0 =  b.ak8PuppiSD_m_Pcorr
                         self.ak8PuppiMass0 =  b.ak8Puppi_m_Pcorr
@@ -482,7 +485,7 @@ class RunSemiLepTTbar_HighMass() :
                       
 
                         if  self.theMassHist0 != None and self.ak8PuppiMass0 != None :
-                            if self.verbose: print"Filling Pt binned by SD subjet 0 pt arrays e.g. this one {0:} with the value of ak8puppimass0 {1:2.2f} for ipt {2:d} ptbin {3:d}".format(self.theMassHist0[ilep][index],float( self.ak8PuppiMass0 ), iptbin, ptbin)
+                            #if self.verbose: print"Filling Pt binned by SD subjet 0 pt arrays e.g. this one {0:} with the value of ak8puppimass0 {1:2.2f} for ipt {2:d} ptbin {3:d}".format(self.theMassHist0[ilep][index],float( self.ak8PuppiMass0 ), iptbin, ptbin)
 
                             self.theMassHist0[ilep][index].Fill( self.ak8PuppiMass0  , self.theWeight )                       
                             self.theSDMassHist0[ilep][index].Fill(  self.ak8SDPuppiMass0 , self.theWeight )
