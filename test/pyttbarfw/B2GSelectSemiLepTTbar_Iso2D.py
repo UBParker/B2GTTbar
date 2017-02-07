@@ -190,7 +190,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         #effdatareco = self.finCor5.Get("Gamma_EffData2D")
         #effmcreco =   self.finCor5.Get("EGamma_EffMC2D")
 
-        hSFreco =      self.finCor5.Get("EGamma_SF2D")
+        self.hSFreco =      self.finCor5.Get("EGamma_SF2D")
 
         ### Electron cut based ID corrections
 
@@ -592,8 +592,11 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
 
         if TriggSF > 3. :
             TriggSF =float( TriggSF/100.)
-            if TriggEff > 3.:
-                    TriggEff =float( TriggEff/100.)
+            if self.verbose: print"MuonTriggEff WARNING: SF is > 3., dividing by 100."
+        if TriggEff > 3.:
+            TriggEff =float( TriggEff/100.)
+            if self.verbose: print"MuonTriggEff WARNING: eff is > 3., dividing by 100."
+
         if self.itIsTTbar :
             TriggEff = TriggSF
             if self.verbose : print "MuonTriggEff ttbar : Muon trigger SF is {0:2.2f} : using pt {1:2.2f},  eta {2:2.2f}".format( TriggEff, muonpt, muoneta)
@@ -738,10 +741,11 @@ _1")
         effHEEP = 1.
         etabinnedHEEPefficiency = [  [ 0.984, 0.971, 0.961, 0.973, 0.978 , 0.980], [0.002, 0.001, 0.001, 0.001, 0.001, 0.002] ]
         etabins = [-2.5, -1.566, -1.4442, -.5, 0., 0.5, 1.4442, 1.566, 2.5]
-        for ebin, ibin in enumerate(etabins):
+        for ibin, ebin in enumerate(etabins):
             if  ebin < eleta < etabins[ibin+1]:
-                effHEEP = etabinnedHEEPefficiency[0][ibin]
-        if self.verbose : print "ElectronHEEPEff: {0:2.2f}, pt {1:2.2f}, eta {2:2.2f}".format( effHEEP, elpt, eleta)
+                if self.verbose: print "Here elets {0:2.2f} is btw the values [{1:2.2f}, {2:2.2f}] which puts it is bin {3:} and eff {4:2.3f}".format(eleta, ebin, etabins[ibin+1], ibin-1 , effHEEP)
+                effHEEP = etabinnedHEEPefficiency[0][ibin-2]
+        #if self.verbose : print "ElectronHEEPEff: {0:2.2f}, eta {1:2.2f}".format( effHEEP, eleta)
         return float(effHEEP)
 
     def ElectronRecoSF(self, eleta, elpt)    :

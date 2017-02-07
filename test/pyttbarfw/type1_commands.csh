@@ -1,8 +1,8 @@
 
+
 python RunSemiLepTTbar_HighMass.py --infile root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ttbar_all_V4.root --outfile ttbarTuneCUETP8M1_highmass_outfileCommit605c442.root >& ttbarTuneCUETP8M1_highmass_outfileCommit605c442_out.log &
 
 python RunSemiLepTTbar_HighMass.py --infile root://131.225.207.127:1094//uscmst1b_scratch/lpc1/lpcphys/jdolen/B2G2016/V4/b2gtreeV4_TT_TuneCUETP8M2T4_13TeV-powheg-pythia8_RunIISpring16MiniAODv2-premix_withHLT_try3.root --outfile ttbarTuneCUETP8M2T4_highmass_outfileCommit605c442.root >& ttbarTuneCUETP8M2T4_highmass_outfileCommit605c442_out.log &
-
 
 python RunSemiLepTTbar_HighMass.py --infile root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_100_V4.root --ignoreTrig --outfile wjets100to200_highmass_outfileCommit605c442.root >& wjets100to200_highmass_outfileCommit605c442_out.log &
 python RunSemiLepTTbar_HighMass.py --infile root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_200_V4.root --ignoreTrig --outfile wjets200to400_highmass_outfileCommit605c442.root >& wjets200to400_highmass_outfileCommit605c442_out.log &
