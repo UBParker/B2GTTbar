@@ -54,12 +54,13 @@ ROOT.gStyle.SetOptStat(000000)
 xs_ttbar = 831.
 nev_ttbar = 92925926.
 
-lumi = 36220. # pb-1
+lumi = 36494. # pb-1
 expectedRunsHist = None
 expectedRunsList = None
 if (options.hist.find("RunNumberHist")!= -1)  : 
     
     ### Plot lumis that should be present. json production described here https://docs.google.com/document/d/1aTeTVIi9eb-aup37dbUL8cWDPCJrn_sRYrZcjFhd4tI/edit?usp=sharing
+
     if options.el : expectedRuns = json.loads(open('./CertandsingleEl.json').read())
     elif options.mu : expectedRuns = json.loads(open('./CertandSingleMu.json').read()) 
     elif not (options.mu or options.el) : expectedRuns = None #    json.loads(open('./singleMuEl2016B-H.json').read())
@@ -135,8 +136,8 @@ nev_singletop = [
 
     
 instring = ''
-endstring1 = ''
-endstring2 = 'Commit0529f0f' #'Commit8651dac' # plotstack_Commite39827c
+endstring1 =  '605c442'
+endstring2 = 'Commit' + endstring1  # plotstack_Commite39827c
 endstrings = endstring2
 
 #   ____  _    _ _______ _____  _    _ _______   _____   ____   ____ _______ 
@@ -155,8 +156,8 @@ theOutfile.cd()
 
 if options.highmass :
     instring = '_highmass'
-else: endstrings = ''
-ttbarfile = ROOT.TFile('ttbar' + instring + '_outfile'+ endstrings +'.root')
+else: endstring2 = ''
+ttbarfile = ROOT.TFile('ttbar' + instring + '_outfile'+ endstring2 +'.root') #ttbarTuneCUETP8M2T4 or ttbarTuneCUETP8M1 currently the latter
 
 if  options.el :  datafile = ROOT.TFile('singleel' + instring + '_outfile'+ endstring1 +'.root')
 if options.mu :  datafile = ROOT.TFile('singlemu' + instring + '_outfile'+ endstring1 +'.root')
@@ -166,35 +167,35 @@ if not (options.el or options.mu):
 
 
 wjetsfiles = [
-    ROOT.TFile('wjets100to200' + instring + '_outfile'+ endstrings +'.root'),
-    ROOT.TFile('wjets200to400' + instring + '_outfile'+ endstrings +'.root'),
-    ROOT.TFile('wjets400to600' + instring + '_outfile'+ endstrings +'.root'),
-    ROOT.TFile('wjets600to800' + instring + '_outfile'+ endstrings +'.root'),
-    ROOT.TFile('wjets800to1200' + instring + '_outfile'+ endstrings +'.root'),
-    ROOT.TFile('wjets1200to2500' + instring + '_outfile'+ endstrings +'.root'),
-    ROOT.TFile('wjets2500toinf' + instring + '_outfile'+ endstrings +'.root'),
+    ROOT.TFile('wjets100to200' + instring + '_outfile'+ endstring2 +'.root'),
+    ROOT.TFile('wjets200to400' + instring + '_outfile'+ endstring2 +'.root'),
+    ROOT.TFile('wjets400to600' + instring + '_outfile'+ endstring2 +'.root'),
+    ROOT.TFile('wjets600to800' + instring + '_outfile'+ endstring2 +'.root'),
+    ROOT.TFile('wjets800to1200' + instring + '_outfile'+ endstring2 +'.root'),
+    ROOT.TFile('wjets1200to2500' + instring + '_outfile'+ endstring2 +'.root'),
+    ROOT.TFile('wjets2500toinf' + instring + '_outfile'+ endstring2 +'.root'),
     ]
 
 wjets_colors = [ 
     ROOT.kWhite,ROOT.kRed - 9, ROOT.kRed - 7, ROOT.kRed - 4, ROOT.kRed, ROOT.kRed +1, ROOT.kRed +2   ]
 
 qcdfiles = [
-    ROOT.TFile('qcd100' + instring + '_outfile'+ endstrings +'.root'),
-    ROOT.TFile('qcd200' + instring + '_outfile'+ endstrings +'.root'),
-    ROOT.TFile('qcd300' + instring + '_outfile'+ endstrings +'.root'),
-    ROOT.TFile('qcd500' + instring + '_outfile'+ endstrings +'.root'),
-    ROOT.TFile('qcd700' + instring + '_outfile'+ endstrings +'.root'),
-    ROOT.TFile('qcd1000' + instring + '_outfile'+ endstrings +'.root'),
-    ROOT.TFile('qcd1500' + instring + '_outfile'+ endstrings +'.root'),
-    ROOT.TFile('qcd2000' + instring + '_outfile'+ endstrings +'.root'),
+    ROOT.TFile('qcd100' + instring + '_outfile'+ endstring2 +'.root'),
+    ROOT.TFile('qcd200' + instring + '_outfile'+ endstring2 +'.root'),
+    ROOT.TFile('qcd300' + instring + '_outfile'+ endstring2 +'.root'),
+    ROOT.TFile('qcd500' + instring + '_outfile'+ endstring2 +'.root'),
+    ROOT.TFile('qcd700' + instring + '_outfile'+ endstring2 +'.root'),
+    ROOT.TFile('qcd1000' + instring + '_outfile'+ endstring2 +'.root'),
+    ROOT.TFile('qcd1500' + instring + '_outfile'+ endstring2 +'.root'),
+    ROOT.TFile('qcd2000' + instring + '_outfile'+ endstring2 +'.root'),
     ]
 
 singletopfiles = [
-    ROOT.TFile('singletop_tchanneltop' + instring + '_outfile'+ endstrings +'.root'),
-    ROOT.TFile('singletop_tchannel' + instring + '_outfile'+ endstrings +'.root'),
-    ROOT.TFile('singletop_tW' + instring + '_outfile'+ endstrings +'.root'),
-    ROOT.TFile('singletop_tWantitop' + instring + '_outfile'+ endstrings +'.root'),
-    ROOT.TFile('singletop_schannel' + instring + '_outfile'+ endstrings +'.root'),
+    ROOT.TFile('singletop_tchanneltop' + instring + '_outfile'+ endstring2 +'.root'),
+    ROOT.TFile('singletop_tchannel' + instring + '_outfile'+ endstring2 +'.root'),
+    ROOT.TFile('singletop_tW' + instring + '_outfile'+ endstring2 +'.root'),
+    ROOT.TFile('singletop_tWantitop' + instring + '_outfile'+ endstring2 +'.root'),
+    ROOT.TFile('singletop_schannel' + instring + '_outfile'+ endstring2 +'.root'),
     ]
     
 objs = []
@@ -371,8 +372,8 @@ for istage in range(rangenum) :
         
     theCanvas = zplot.GetPlotCanvas()
     
-    theCanvas.Print("./plotstack_"+ str(endstring2)+ "/" + histName0 + lep + str(istage)  + instring + endstrings+".pdf", "pdf")
-    theCanvas.Print("./plotstack_"+ str(endstring2)+ "/" + histName0 + lep + str(istage)  + instring + endstrings+".png", "png")
+    theCanvas.Print("./plotstack_"+ str(endstring2)+ "/" + histName0 + lep + str(istage)  + instring + endstring2+".pdf", "pdf")
+    theCanvas.Print("./plotstack_"+ str(endstring2)+ "/" + histName0 + lep + str(istage)  + instring + endstring2+".png", "png")
 
     theOutfile.cd()
                     
@@ -408,7 +409,7 @@ if expectedRunsList != None :
     print( "Philosophy is written in this grand book")  
     print("      *     the universe   *        .       .")
     print(" which stands continually open to our gaze.  ")
-    print("       *         *           .       ^   ") #-0-
+    print("       *      -0-   *           .       ^   ")
     print("          .                .  *       - )-  ")
     print("The book wont be understood until one learns")
     print("       .      *       *       .       *     ")

@@ -343,6 +343,10 @@ class RunSemiLepTTbar_HighMass() :
             self.theWeight =  a.EventWeight * a.PUWeight * a.CutIDScaleFIs * a.recoSFIs * a.TriggEffIs * a.MuHighPtScaleFIs * a.HEEPSFIs * a.BtagWeight
             if self.verbose : print "theWeight for stage {0:} is : {1:2.4f} = eventWeight {2:2.2f} * self.PUWeight{3:2.2f} * self.CutIDScaleFIs {4:2.2f} * self.recoSFIs  {5:2.2f} * self.TriggEffIs {6:2.3f} *  self.MuHighPtScaleFIs {7:2.3f} * self.HEEPSFIs {8:2.3f} * BtagWeight {9:2.3f}".format( 0, a.theWeight, a.EventWeight , a.PUWeight , a.CutIDScaleFIs, a.recoSFIs , a.TriggEffIs ,  a.MuHighPtScaleFIs , a.HEEPSFIs, a.BtagWeight)
 
+        if index == 17: 
+            self.theWeight =  a.EventWeight * a.PUWeight * a.CutIDScaleFIs * a.recoSFIs * a.TriggEffIs * a.MuHighPtScaleFIs * a.HEEPSFIs * a.BtagWeight * a.BtagWeightsubjet
+            if self.verbose : print "theWeight for stage {0:} is : {1:2.4f} = eventWeight {2:2.2f} * self.PUWeight{3:2.2f} * self.CutIDScaleFIs {4:2.2f} * self.recoSFIs  {5:2.2f} * self.TriggEffIs {6:2.3f} *  self.MuHighPtScaleFIs {7:2.3f} * self.HEEPSFIs {8:2.3f} * BtagWeight {9:2.3f} *  a.BtagWeightsubjet {10:2.3f}".format( 0, a.theWeight, a.EventWeight , a.PUWeight , a.CutIDScaleFIs, a.recoSFIs , a.TriggEffIs ,  a.MuHighPtScaleFIs , a.HEEPSFIs, a.BtagWeight,  a.BtagWeightsubjet)
+
         if self.verbose: print"a.RunNumber: {}".format( a.RunNumber)
         if a.RunNumber > 0. :
             self.RunNumberHist[ilep][index].Fill(a.RunNumber)
@@ -374,7 +378,7 @@ class RunSemiLepTTbar_HighMass() :
                 self.AK8MHist[ilep][index].Fill( b.ak8Puppi_m_Pcorr , self.theWeight )
             if b.ak8PuppiSDJetP4 != None :
                 if b.ak8PuppiJetP4  != None and b.SDptPuppipt != None :
-                    self.AK8PuppiSDPtResponse[ilep][index].Fill( b.ak8PuppiJetP4.Perp()* b.PuppiPtSmear , b.SDptPuppipt )# * b.PuppiPtSmear )  
+                    self.AK8PuppiSDPtResponse[ilep][index].Fill( b.SDptPuppipt, b.ak8PuppiJetP4.Perp()* b.PuppiPtSmear  )# * b.PuppiPtSmear )  
 
         if  b.SDRhoRatio  != None :
             self.AK8SDRhoRatioHist[ilep][index].Fill(b.SDRhoRatio  , self.theWeight ) 

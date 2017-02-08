@@ -26,13 +26,11 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         self.ak8ptCut = 140.
 
         self.trigIndex = [
-            self.trigMap.HLT_Mu45_eta2p1_v,
-            #elf.trigMap.HLT_Mu30_eta2p1_PFJet150_PFJet50_v,
-            #self.trigMap.HLT_Mu30_eta2p1_PFJet150_PFJet50_v,
-            #self.trigMap.HLT_Mu40_eta2p1_PFJet200_PFJet50_v,
+            self.trigMap.HLT_Mu50_v,
+            #elf.trigMap.HLT_TkMu50_v
             self.trigMap.HLT_Ele45_CaloIdVT_GsfTrkIdT_PFJet200_PFJet50_v,
-            self.trigMap.HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet140_v,
-            self.trigMap.HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165_v
+            #self.trigMap.HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet140_v,
+            #self.trigMap.HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165_v
             ]
 
         # Stage 2 : Lepton kinematic selection
@@ -89,7 +87,9 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         self.ak4Jet = None
         self.ak8Jet = None
         self.ak8SDJetP4 = None
-
+        self.self.ak8PuppiSDJetP4_Subjet1 = None
+        
+        
         if self.verbose: print "self.trigIndex[0] {}".format(self.trigIndex[0])
         #self.printAK4Warning = True
 
@@ -239,7 +239,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
             "comb"      # measurement type
         )
         self.BtagWeight = 1.0
-
+        self.BtagWeightsubjet = 1.
         ### Flags to distinguish different input files
         self.itIsData = None
         self.itIsTTbar = None
@@ -273,7 +273,9 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         self.nuP4 = None
         self.ak4Jet = None
         self.ak8SDJetP4 = None
-
+        self.self.ak8PuppiSDJetP4_Subjet1 = None
+        
+        
         ### Get Run Number of data event
         self.RunNumber =  self.tree.SemiLeptRunNum[0]
         #if self.verbose : print"run number in Iso2D is self.runNum {} from tree value is  {}".format(self.RunNumber, self.tree.SemiLeptRunNum[0])
@@ -309,7 +311,13 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
                                      self.tree.JetSDetaRaw[0],
                                      self.tree.JetSDphiRaw[0],
                                     self.tree.JetSDmassRaw[0] ) 
-
+                                    
+        ### AK8 Soft Drop Jet subjet 1 , the b candidate subjet
+        self.ak8PuppiSDJetP4_Subjet1 = ROOT.TLorentzVector()
+        self.ak8PuppiSDJetP4_Subjet1.SetPtEtaPhiM( self.tree.JetPuppiSDsubjet1pt[0],
+                                            self.tree.JetPuppiSDsubjet1eta[0], 
+                                            self.tree.JetPuppiSDsubjet1phi[0],
+                                            self.tree.JetPuppiSDsubjet1mass[0] )
 
         self.EventWeight = 1.
         self.PUWeight = 1.
@@ -318,11 +326,12 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         self.CutIDScaleFIs = 1.
         self.MuonHIPScaleFIs = 1.
         self.BtagWeight = 1.
+        self.BtagWeightsubjet = 1.
         self.ElHEEPeffIs = 1.
         self.recoSFIs = 1.
         self.HEEPSFIs = 1.
         self.MuHighPtScaleFIs = 1.
-        
+
         
         if  self.itIsData :        self.BtagWeight = 1.0
         else: self.BtagWeight = self.reader.eval_auto_bounds(
@@ -330,6 +339,13 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
                                                         0,              # jet flavor (0 for b jets)
                                                         self.ak4Jet.Eta() ,            # eta
                                                         self.ak4Jet.Perp()            # pt
+                                                    )
+        if  self.itIsData :        self.BtagWeightsubjet = 1.0
+        else: self.BtagWeightsubjet = self.reader.eval_auto_bounds(
+                                                        'central',      # systematic (here also 'up'/'down' possible)
+                                                        0,              # jet flavor (0 for b jets)
+                                                        self.ak8PuppiSDJetP4_Subjet1.Eta() ,            # eta
+                                                        self.ak8PuppiSDJetP4_Subjet1.Perp()            # pt
                                                     )
 
 
@@ -353,16 +369,14 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
 
         if self.leptonP4 != None  and not self.itIsData: # self.RunNumber
             if self.tree.LeptonIsMu[0] == 1:
-                self.CutIDScaleFLooseIs = self.MuonCutIDScaleFLoose( self.leptonP4.Perp() , (self.leptonP4.Eta()) , self.tree.SemiLeptRunNum[0] )
+                self.CutIDScaleFLooseIs = self.MuonCutIDScaleFLoose( self.leptonP4.Perp() , abs(self.leptonP4.Eta()) , self.tree.SemiLeptRunNum[0] )
                 if self.verbose : "MuonCutIDScaleFLoose: {0:2.4f} for pt {1:2.2f} and abs(eta) {2:2.2f}".format(self.CutIDScaleFLooseIs ,self.leptonP4.Perp() , abs(self.leptonP4.Eta())  )
             elif self.tree.LeptonIsMu[0] == 0  :
                 #print"WARNING: ElectronCutIDScaleFLoose not yet applied"
-                self.CutIDScaleFLooseIs = self.ElectronCutIDScaleFLoose( self.leptonP4.Perp() , (self.leptonP4.Eta()) , self.tree.SemiLeptRunNum[0] )
+                self.CutIDScaleFLooseIs = self.ElectronCutIDScaleFLoose( self.leptonP4.Perp() , abs(self.leptonP4.Eta()) , self.tree.SemiLeptRunNum[0] )
                 if self.verbose : "ElectronCutIDScaleFLoose: {0:2.4f} for pt {1:2.2f} and abs(eta) {2:2.2f}".format(self.CutIDScaleFLooseIs ,self.leptonP4.Perp() , abs(self.leptonP4.Eta())  )
                 self.recoSFIs = self.ElectronRecoSF( self.leptonP4.Eta(), self.leptonP4.Perp( ))
 
-        self.theWeight =  self.EventWeight * self.PUWeight * self.CutIDScaleFLooseIs * self.recoSFIs 
-        if self.verbose : print "theWeight for stage {0:} is : {1:2.4f} = eventWeight {2:2.2f} * self.PUWeight{3:2.2f} * self.CutIDScaleFLooseIs {4:2.2f} * self.recoSFIs  {5:2.2f}".format( 0, self.theWeight,  self.EventWeight , self.PUWeight , self.CutIDScaleFLooseIs, self.recoSFIs  )
 
         self.passed[0] = True
         self.passedCount[0] += 1
@@ -440,11 +454,11 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
 
         if self.leptonP4 != None  and not self.itIsData: # self.RunNumber                                                                                                                                        
             if self.tree.LeptonIsMu[0] == 1:
-                self.CutIDScaleFIs = self.MuonCutIDScaleFTight( self.leptonP4.Perp() , (self.leptonP4.Eta()) , self.tree.SemiLeptRunNum[0] )
+                self.CutIDScaleFIs = self.MuonCutIDScaleFTight( self.leptonP4.Perp() , abs(self.leptonP4.Eta()) , self.tree.SemiLeptRunNum[0] )
                 if self.verbose : "MuonCutIDScaleFTight: {0:2.4f} for pt {1:2.2f} and abs(eta) {2:2.2f}".format(self.CutIDScaleFIs ,self.leptonP4.Perp() , abs(self.leptonP4.Eta())  )
             elif self.tree.LeptonIsMu[0] == 0  :
                 #print"WARNING: ElectronCutIDScaleFLoose not yet applied"                                                                                                                                        
-                self.CutIDScaleFIs = self.ElectronCutIDScaleFMedium( self.leptonP4.Perp() , (self.leptonP4.Eta()) , self.tree.SemiLeptRunNum[0] )
+                self.CutIDScaleFIs = self.ElectronCutIDScaleFMedium( self.leptonP4.Perp() , abs(self.leptonP4.Eta()) , self.tree.SemiLeptRunNum[0] )
                 if self.verbose : "ElectronCutIDScaleFMedium: {0:2.4f} for pt {1:2.2f} and abs(eta) {2:2.2f}".format(self.CutIDScaleFIs ,self.leptonP4.Perp() , (self.leptonP4.Eta())  )
 
         self.theWeight =  self.EventWeight * self.PUWeight * self.CutIDScaleFIs * self.recoSFIs * self.TriggEffIs

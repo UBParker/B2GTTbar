@@ -96,7 +96,6 @@ class APlot () :
         self.histofAlldata.GetYaxis().SetTitleOffset(0.9)
         self.histofAlldata.GetYaxis().SetTitleFont(42)
         #self.histofAlldata.SetXTitle(HistoTitle +" , Stage "+str(self.isstage))
-        self.histofAlldata.SetTitle("")
 
         self.fitter_mc = None
         self.fitter_data = None
@@ -113,7 +112,7 @@ class APlot () :
             self.histofAllMC.GetXaxis().SetRangeUser( rangeMin, rangeMax )          
         
             self.mcStack.Draw("hist same")
-            self.histofAlldata.Draw("e same x0")
+            self.histofAlldata.Draw("e x0 same")
         self.minn = 0.
         self.maxx = 0.     
         rangenum = 17
@@ -181,8 +180,6 @@ class APlot () :
             self.fitter_mc.SetLineStyle(4) 
             self.fitter_mc.GetXaxis().SetRangeUser( rangeMin, rangeMax )          
             self.fitter_data.GetXaxis().SetRangeUser( rangeMin, rangeMax )          
-            self.fitter_data.SetTitle("")
-            self.fitter_mc.SetTitle("")
 
             if self.fixFit :
                 self.histofAlldata.Fit(self.fitter_data,'B' )
@@ -232,11 +229,11 @@ class APlot () :
                 self.fitDiffs[2][2] = self.fitValues[1][2] - self.fitValues[1][3]
                 self.fitDiffs[2][3] = self.fitValues[1][2] + self.fitValues[1][3]
                             
-            self.fitter_data.Draw("same")
-            self.mcStack.SetTitle("")
+            self.fitter_data.Draw("e same")
+            self.fitter_mc.Draw("e same")
+
             self.mcStack.Draw("hist same")
             self.histofAlldata.Draw("e same x0")
-            self.fitter_mc.Draw("same")
 
             '''''
                
@@ -453,14 +450,15 @@ class APlot () :
         self.leg = ROOT.TLegend(0.63,0.4,0.78,0.84)
         self.leg.SetFillColor(0)
         self.leg.SetBorderSize(0)
-        self.leg.SetTextSize(0.036)
+        self.leg.SetTextSize(0.026)
 
         if self.expectedRuns != None :
             self.leg.AddEntry( self.histofAlldata, str(self.tagg), 'p')
             self.leg.AddEntry( self.expectedRuns  , 'Expected Data', 'p')
         else :
-            self.leg.AddEntry( self.httbar, 't#bar{t} (80X Powheg + Pythia 8 )', 'f')
+            self.leg.AddEntry( self.httbar, 't#bar{t} (80X Powheg + Pythia 8) Tune CUETP8M1', 'f')
             #if options.allMC :
+            self.leg.SetTextSize(0.036)
             self.leg.AddEntry( self.hST, 'Single Top', 'f')
             self.leg.AddEntry( self.hwjets, 'W+jets', 'f')
             self.leg.AddEntry( self.hQCD, 'QCD', 'f')
@@ -470,7 +468,6 @@ class APlot () :
                 
         self.leg.Draw()
         self.pad1.Modified()
-        self.c1.Update()        
         self.c1.cd()
         
         print("Making pad2")

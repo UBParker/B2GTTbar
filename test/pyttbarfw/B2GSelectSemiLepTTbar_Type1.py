@@ -37,16 +37,17 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         # Stage 2 (12) - AK4 Jet bdisc cut
         # see self.bdiscmin above
 
-        # Stage 3 (13) - AK8 Jet tau32 cut
-        #  see self.tau32Cut above
-
-        # Stage 4 (14) - AK8 SD Jet mass cut
-        self.minAK8Mass = 100.
+        # Stage 3 (13) -  AK8 SD Jet mass cut
+        self.minAK8Mass = 110.
         self.maxAK8Mass = 250.
 
+
+        # Stage 4 (14) - 
+        #  see self.tau32Cut above
+
         # Stage 5 (15) - AK8 SD Subjet 0 mass cut
-        self.minAK8sjMass = 55.
-        self.maxAK8sjMass = 115.
+        self.minAK8sjMass = 50.
+        self.maxAK8sjMass = 120.
 
         #Stage 6 (16) - AK8 SD Subjt 0 tau21 cut
         # see options.tau21Cut 
@@ -244,9 +245,7 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         
         self.ak4Jet = None
         self.ak4JetBdisc = None 
-        
-        #self.theWeight12 = None
-        
+                
         ### Define the AK8 4-vectors
         
         ### AK8 jets
@@ -438,9 +437,6 @@ class B2GSelectSemiLepTTbar_Type1( ) :
                                                                                                                     self.ak8JetP4.Eta(),
                                                                                                                        self.AK8EtaCut)
                                                                                                                        
-        #self.theWeight12 =  a.EventWeight * a.PUWeight * a.CutIDScaleFIs * a.recoSFIs * a.TriggEffIs * a.MuHighPtScaleFIs * a.HEEPSFIs * a.BtagWeight
-        #if self.verbose : print "theWeight for stage {0:} is : {1:2.4f} = eventWeight {2:2.2f} * self.PUWeight{3:2.2f} * self.CutIDScaleFIs {4:2.2f} * self.recoSFIs  {5:2.2f} * self.TriggEffIs {6:2.3f} *  self.MuHighPtScaleFIs {7:2.3f} * self.HEEPSFIs {8:2.3f} * a.BtagWeight {9:2.3f}".format( 0, a.theWeight, a.EventWeight , a.PUWeight , a.CutIDScaleFIs, a.recoSFIs , a.TriggEffIs ,  a.MuHighPtScaleFIs , a.HEEPSFIs, a.BtagWeight)
-
         if not ( self.ak4JetBdisc >  self.bdiscmin  ) : return self.passed
         self.passed[2] = True
         self.passedCount[2] += 1

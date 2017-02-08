@@ -35,6 +35,7 @@ class TrigMap () :
             "HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet140_v",
             "HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165_v",
             "HLT_Ele105_CaloIdVT_GsfTrkIdT_v",
+            #"HLT_TkMu50_v"
             ]
         for iname in self.names:
             setattr( self, iname, self.names.index(iname) )
