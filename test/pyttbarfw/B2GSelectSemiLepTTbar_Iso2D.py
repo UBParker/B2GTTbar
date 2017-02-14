@@ -77,7 +77,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
 
         # Stage 9 : Wlep pt selection
         self.MuonHtLepCut = 200.
-        self.ElectronHtLepCut = 200.
+        self.ElectronHtLepCut = 0.
 
         ### Cached class member variables for plotting
         self.RunNumber = None

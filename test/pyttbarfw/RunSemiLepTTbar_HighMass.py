@@ -372,7 +372,7 @@ class RunSemiLepTTbar_HighMass() :
         if b.ak8PuppiJetP4 != None :
             self.AK8PuppiPtHist[ilep][index].Fill( b.ak8PuppiJetP4.Perp() * b.PuppiPtSmear  , self.theWeight )
             self.AK8EtaHist[ilep][index].Fill( b.ak8PuppiJetP4.Eta()  , self.theWeight )
-            self.AK8puppitau21Hist[ilep][index].Fill( b.puppitau21  , self.theWeight )
+            self.AK8puppitau21Hist[ilep][index].Fill( b.ak8SDsubjet0tau21  , self.theWeight ) ### actually tau21 of subjet, misleading name
             self.AK8puppitau32Hist[ilep][index].Fill( b.puppitau32  , self.theWeight )
             if b.ak8Puppi_m_Pcorr != None: 
                 self.AK8MHist[ilep][index].Fill( b.ak8Puppi_m_Pcorr , self.theWeight )
