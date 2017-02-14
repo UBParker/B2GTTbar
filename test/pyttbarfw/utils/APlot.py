@@ -1,11 +1,12 @@
 import ROOT
-
+import math 
+import array as array
 from utils.HistoTitles import HistoTitles
 import tdrstyle
 
 class APlot () :
     
-    def __init__(self, isstage = None , y_max = None, histofAlldata = None, histofAlldata2 = None, histofAllMC = None, histofAllMC2 = None, mcStack = None, httbar = None, hwjets = None, hST = None, hQCD = None, histoName = None, lumi = None, tagg = None, cuttag = None, fixFit = None, expectedRuns = None) :
+    def __init__(self, isstage = None , y_max = None, histofAlldata = None, histofAlldata2 = None, histofAllMC = None, histofAllMC2 = None, mcStack = None, httbar = None, hwjets = None, hST = None, hQCD = None, histoName = None, lumi = None, tagg = None, cuttag = None, fixFit = None, expectedRuns = None, otherttbar = None) :
         self.isstage = isstage
         self.y_max = y_max
         self.histofAlldata = histofAlldata
@@ -20,12 +21,29 @@ class APlot () :
         self.hQCD = hQCD
         self.histoName = histoName
         self.lumi = lumi
-        
+        self.otherttbar = otherttbar
+
         self.tagg = tagg
         self.cuttag = cuttag
         self.fixFit = fixFit
         self.expectedRuns = expectedRuns
         
+        self.isWmass = False
+        self.isTopmass = False
+        self.fixFit = False
+        self.SF = -1.
+        self.SF_sd = -1.
+        self.MCeff = -1.
+        self.Dataeff = -1.
+        self.jms =    [0., 0.]
+        self.jmr =    [0., 0.]
+        self.scaleW = [0., 0.]
+        #self.passPosttag = []
+        #self.passPosttagUncert = []
+        self.ptBs =  array.array('d', [200., 300., 400., 500., 800., 200., 800.,800.])
+        self.nptBs = len(self.ptBs) - 1
+
+
         ROOT.gStyle.SetOptStat(000000)
         self.c1 = ROOT.TCanvas("c" + str(self.isstage), "c" + str(self.isstage),1,1,745,701)
         self.c1.SetHighLightColor(2)
@@ -123,18 +141,39 @@ class APlot () :
         self.ipt = None          
         if  rangenum  -4 <self.isstage < rangenum  -1 :
             print("rangenum is {}".format(self.isstage))
-            
-            if (self.histoName.find("AK8MPt")== -1 ) and (self.histoName.find("AK8MSD")== -1 ) and self.expectedRuns == None: 
+             
+            if (self.histoName.find("AK8M")== -1 ) and self.expectedRuns == None: 
                 self.histofAlldata.Draw("e same x0")
             else : 
                 ### Fit these histos to a Gaussian and save mean and std dev for later use
                 self.histofAlldata.Draw("e same x0")
-            if (self.histoName.find("AK8MPt")== -1 ) :
-                self.minn = 55.
-                self.maxx = 115.
-            elif (self.histoName.find("AK8MSD")== -1 ) :
-                self.minn = 110.
-                self.maxx = 210.
+                if (self.histoName.find("SDSJ")== -1 ) :
+                    self.minn = 110.
+                    self.maxx = 250.
+                    self.isTopmass = True
+                else :
+                    self.minn = 55.
+                    self.maxx = 115.
+                    self.isWmass = True
+            if self.isWmass :        
+                self.hpeak = ROOT.TH1F("hpeak", " ;p_{T} of SD subjet 0 (GeV); JMS ",  self.nptBs, self.ptBs) 
+                self.hwidth = ROOT.TH1F("hwidth", " ;p_{T} of SD subjet 0 (GeV); JMR ", self.nptBs, self.ptBs)
+                self.hNpassDataPre  = ROOT.TH1F("hNpassDataPre", " ;p_{T} of SD subjet 0 (GeV); # Integral(mean+- sigma) pre tag ", self.nptBs, self.ptBs)
+                self.hNpassDataPost  = ROOT.TH1F("hNpassDataPost", " ;p_{T} of SD subjet 0 (GeV); # Integral(mean+- sigma) post tag ", self.nptBs, self.ptBs)
+                self.hNpassMCPre  = ROOT.TH1F("hNpassMCPre", " ;p_{T} of SD subjet 0 (GeV); # Integral(mean+- sigma) pre tag ", self.nptBs, self.ptBs)
+                self.hNpassMCPost  = ROOT.TH1F("hNpassMCPost", " ;p_{T} of SD subjet 0 (GeV); # Integral(mean+- sigma) post tag ", self.nptBs, self.ptBs)
+                self.hSFs  = ROOT.TH1F("hSFs", " ;p_{T} of SD subjet 0 (GeV); # data/mc [Integral(mean+- sigma) post/pre ", self.nptBs, self.ptBs)
+
+            if self.isTopmass  :        
+                self.hpeak = ROOT.TH1F("hpeak", " ;p_{T} of AK8 SD jet (GeV); JMS ",  self.nptBs, self.ptBs) 
+                self.hwidth = ROOT.TH1F("hwidth", " ;p_{T}  of AK8 SD jet  (GeV); JMR ", self.nptBs, self.ptBs)
+                self.hNpassDataPre  = ROOT.TH1F("hNpassDataPre", " ;p_{T} of AK8 SD jet  (GeV); Integral(mean+- sigma) pre tag ", self.nptBs, self.ptBs)
+                self.hNpassDataPost  = ROOT.TH1F("hNpassDataPost", " ;p_{T} of AK8 SD jet (GeV); # Integral(mean+- sigma) post tag ", self.nptBs, self.ptBs)
+                self.hNpassMCPre  = ROOT.TH1F("hNpassMCPre", " ;p_{T} of AK8 SD jet (GeV); # Integral(mean+- sigma) pre tag ", self.nptBs, self.ptBs)
+                self.hNpassMCPost  = ROOT.TH1F("hNpassMCPost", " ;p_{T} of AK8 SD jet  (GeV); # Integral(mean+- sigma) post tag ", self.nptBs, self.ptBs)
+        
+            self.ptIs = 0.
+            self.binIs = "200toInf"
             self.thePtBins = ["200To300","300To400","400To500","500To800"]    
             for iptbin, ptbin in enumerate(self.thePtBins):
                 if ptbin.find("200") ==-1 :
@@ -143,23 +182,32 @@ class APlot () :
                             if ptbin.find("500To800") ==-1 :
                                 self.minn = self.minn
                             else:
-                                self.ipt = iptbin        
+                                self.ipt = iptbin 
+                                self.binIs =  ptbin   
+                                self.ptIs = 520.     
 
                         else:
-                            self.ipt = iptbin        
+                            self.ipt = iptbin  
+                            self.binIs =  ptbin  
+                            self.ptIs = 420.     
 
                     else:
-                        self.ipt = iptbin        
+                        self.ipt = iptbin 
+                        self.binIs =  ptbin
+                        self.ptIs = 320.        
                 else:
-                    self.ipt = iptbin                  
-                    
+                    self.ipt = iptbin 
+                    self.binIs =  ptbin
+                    self.ptIs = 220.                
+            ibin = self.hpeak.GetXaxis().FindBin(self.ptIs)
             print( "Fitting range is from {0:2.2f} to {1:2.2f} GeV".format(self.minn, self.maxx ) )
 
             self.fitter_data = ROOT.TF1("fitter_data", "gaus", self.minn , self.maxx )                
 
             self.fitter_mc = ROOT.TF1("fitter_mc", "gaus", self.minn , self.maxx )   
    
-            if self.isstage > rangenum -3 and self.fixFit:
+            if ( self.isWmass and self.isstage == 15 ) and ( self.isTopmass and self.isstage == 13 ) :
+                self.fixFit = True
                 ROOT.gStyle.SetOptStat(000000)
                 histofAlldata.GetXaxis().SetTitle("")
                 data_meanval = self.fitValues[1][0]
@@ -188,7 +236,12 @@ class APlot () :
             else :
                 self.histofAlldata.Fit(self.fitter_data,'R' )
                 self.histofAllMC.Fit(self.fitter_mc,'R' )
+                
+            self.mcStack.Draw("hist same")
+            self.fitter_data.Draw("e same")
+            self.fitter_mc.Draw("e same")
 
+            self.histofAlldata.Draw("e same x0")
             amp_data    = self.fitter_data.GetParameter(0)
             eamp_data   = self.fitter_data.GetParError(0) 
             mean_data   = self.fitter_data.GetParameter(1)
@@ -206,8 +259,21 @@ class APlot () :
             ewidth_mc = self.fitter_mc.GetParError(2) 
                   
             print( 'MC : amp_mc {0:6.3}, eamp_mc {1:6.3}, mean_mc {2:6.3},emean_mc {3:6.3}, width_mc {4:6.3}, ewidth_mc {5:6.3}  '.format(amp_mc , eamp_mc , emean_mc, emean_mc,  width_mc, ewidth_mc   )       )
+            
+            self.mcAxis = self.histofAllMC.GetXaxis()
+            self.dataAxis = self.histofAlldata.GetXaxis()
 
-            if self.isstage == (rangenum -3 ) : ### Save the means and sigmas of the pre-tau21 mass cut distribution
+            binSizeData = self.histofAlldata.GetBinWidth(0)
+            binSizeMC = self.histofAllMC.GetBinWidth(0) 
+
+            print("Bin size in data {0:1.2f} and MC  {1:1.2f}".format(binSizeData, binSizeMC ) )
+            self.bins = [self.dataAxis.FindBin(self.fitDiffs[2][0]), self.dataAxis.FindBin(self.fitDiffs[2][1]), self.mcAxis.FindBin(self.fitDiffs[2][2]), self.mcAxis.FindBin(self.fitDiffs[2][3]) ] # data low high, mc low high
+            self.passPretag = []
+            self.passPretagUncert = []
+            
+            print("stage {0:1.2f} isWmass  {1:}".format(self.isstage, self.isWmass ) )
+
+            if ( self.isWmass and self.isstage == 14 )or ( self.isTopmass and self.isstage == 12 ) : ### Save the means and sigmas of the pre-tau21 mass cut distribution
                 self.fitValues[1][0] = mean_data
                 self.fitValues[1][1] = width_data
                 self.fitValues[1][2] = mean_mc
@@ -217,212 +283,55 @@ class APlot () :
                 self.fitDiffs[1][1] = self.fitValues[1][0] + self.fitValues[1][1]
                 self.fitDiffs[1][2] = self.fitValues[1][2] - self.fitValues[1][3]
                 self.fitDiffs[1][3] = self.fitValues[1][2] + self.fitValues[1][3]
+                
+                self.passPretag = [self.histofAlldata.Integral(self.bins[0], self.bins[1]  ), self.histofAllMC.Integral(self.bins[2] , self.bins[3]  )] # data, mc
+                self.passPretagUncert = [ math.sqrt( self.passPretag[0] ) , math.sqrt( self.passPretag[1] ) ] # data, mc
+                
+                ibin = self.hNpassDataPre.GetXaxis().FindBin(self.ptIs )
+                self.hNpassDataPre.SetBinContent(ibin, self.passPretag[0])
+                self.hNpassMCPre.SetBinContent(ibin, self.passPretag[1])
+                self.hNpassDataPre.SetBinError(ibin, self.passPretagUncert[0]) 
+                self.hNpassMCPre.SetBinError(ibin, self.passPretagUncert[1])
 
-            if self.isstage == (rangenum -2 ) : ### Save the means and sigmas of the tau21 cut distribution
-                self.fitValues[2][0] = amp_data
+            self.MCeff = None
+            self.Dataeff = None
+                
+            if ( self.isWmass and self.isstage == 15 ) or ( self.isTopmass and self.isstage == 13 ): ### Save the means and sigmas of the tau21 cut distribution
+                self.fitValues[2][0] = mean_data
                 self.fitValues[2][1] = width_data
-                self.fitValues[2][2] = amp_mc
+                self.fitValues[2][2] =  mean_mc
                 self.fitValues[2][3] = width_mc    
                 
                 self.fitDiffs[2][0] = self.fitValues[1][0] - self.fitValues[1][1]
                 self.fitDiffs[2][1] = self.fitValues[1][0] + self.fitValues[1][1]
                 self.fitDiffs[2][2] = self.fitValues[1][2] - self.fitValues[1][3]
                 self.fitDiffs[2][3] = self.fitValues[1][2] + self.fitValues[1][3]
-                            
-            self.fitter_data.Draw("e same")
-            self.fitter_mc.Draw("e same")
-
-            self.mcStack.Draw("hist same")
-            self.histofAlldata.Draw("e same x0")
-
-            '''''
-               
-                    datalow = Datameans[ipt] - Datasigmas[ipt] 
-                    datahigh = Datameans[ipt] + Datasigmas[ipt]
-
-                    mudatalow = MuDatameans[ipt] - MuDatasigmas[ipt] 
-                    mudatahigh = MuDatameans[ipt] + MuDatasigmas[ipt]
-
-                    eldatalow = ElDatameans[ipt] - ElDatasigmas[ipt] 
-                    eldatahigh = ElDatameans[ipt] + ElDatasigmas[ipt]
-
-                mcAxis = mchist.GetXaxis()
-                dataAxis = hdataT.GetXaxis()
-                mudataAxis = hmudataT.GetXaxis()
-                eldataAxis = heldataT.GetXaxis()
-
-                bminmc = mcAxis.FindBin(mclow)
-                bmaxmc = mcAxis.FindBin(mchigh)
-
-                bmindata = hdataT.FindBin(datalow)
-                bmaxdata = hdataT.FindBin(datahigh)
-
-
-
-     mclow = MCmeans[ipt] - MCsigmas[ipt] 
-                    mchigh = MCmeans[ipt] + MCsigmas[ipt] 
-
-                    datalow = Datameans[ipt] - Datasigmas[ipt] 
-                    datahigh = Datameans[ipt] + Datasigmas[ipt]
-
-                    self.fitDiffs = [ ["DataLowerBound", "DataHigherBound", "MCLowerBound", "MCHigherBound"],[0.,0.,0.,0.],[0.,0.,0.,0.] ]
-
-                    jms = [0., 0.]
-                    jmr = [0., 0.]
-
-                meanrat = 1.0
-                meanrat_uncert = meanrat
-                jms = 1.0
-                jms_uncert = jms
                 
-                binSizeData = hdataT.GetBinWidth(0)
-                binSizeMC = mchist.GetBinWidth(0) # was mchist
+                self.passPosttag = [self.histofAlldata.Integral(self.bins[0], self.bins[1]  ), self.histofAllMC.Integral(self.bins[2] , self.bins[3]  )] # data, mc
+                self.passPosttagUncert = [ math.sqrt( self.passPosttag[0] ) , math.sqrt( self.passPosttag[1] ) ] # data, mc
 
-                print "Bin size in data {0:1.2f} and MC  {1:1.2f}".format(binSizeData, binSizeMC )
-                mclow = 0. 
-                mchigh = 0.
-
-                datalow = 0.
-                datahigh = 0.
-                if ipt <=6 :
-                    mclow = MCmeans[ipt] - MCsigmas[ipt] 
-                    mchigh = MCmeans[ipt] + MCsigmas[ipt] 
-
-                    datalow = Datameans[ipt] - Datasigmas[ipt] 
-                    datahigh = Datameans[ipt] + Datasigmas[ipt]
-
-                    mudatalow = MuDatameans[ipt] - MuDatasigmas[ipt] 
-                    mudatahigh = MuDatameans[ipt] + MuDatasigmas[ipt]
-
-                    eldatalow = ElDatameans[ipt] - ElDatasigmas[ipt] 
-                    eldatahigh = ElDatameans[ipt] + ElDatasigmas[ipt]
-
-                mcAxis = mchist.GetXaxis()
-                dataAxis = hdataT.GetXaxis()
-                mudataAxis = hmudataT.GetXaxis()
-                eldataAxis = heldataT.GetXaxis()
-
-                bminmc = mcAxis.FindBin(mclow)
-                bmaxmc = mcAxis.FindBin(mchigh)
-
-                bmindata = hdataT.FindBin(datalow)
-                bmaxdata = hdataT.FindBin(datahigh)
-
-                bminmudata = hmudataT.FindBin(mudatalow)
-                bmaxmudata = hmudataT.FindBin(mudatahigh)
-
-                bmineldata = heldataT.FindBin(eldatalow)
-                bmaxeldata = heldataT.FindBin(eldatahigh)
-
-                if ipt <=6:
-                    if options.pre  :
-                        nMCpre[ipt] = mchist.Integral(bminmc , bmaxmc  ) #/ binSizeMC
-                        nDatapre[ipt] = hdataT.Integral(bmindata, bmaxdata  ) #/ binSizeData
-                        nMuDatapre[ipt] = hmudataT.Integral(bminmudata, bmaxmudata  ) #/ binSizeData
-                        nElDatapre[ipt] = heldataT.Integral(bmineldata, bmaxeldata  ) #/ binSizeData
-                        nMCupre[ipt] =  math.sqrt( nMCpre[ipt] )   #mchist.IntegralError(bminmc , bmaxmc  ) / binSizeMC
-                        nDataupre[ipt] = math.sqrt(nDatapre[ipt] ) #hdataT.IntegralError(bmindata, bmaxdata  ) / binSizeData
-                        nMuDataupre[ipt] = math.sqrt(nMuDatapre[ipt] ) 
-                        nElDataupre[ipt] = math.sqrt(nElDatapre[ipt] ) 
-                    else :
-                        nMCpost[ipt] = mchist.Integral(bminmc , bmaxmc  ) #/ binSizeMC
-                        nDatapost[ipt] = hdataT.Integral(bmindata, bmaxdata  ) #/ binSizeData
-                        nMuDatapost[ipt] = hmudataT.Integral(bminmudata, bmaxmudata  ) 
-                        nElDatapost[ipt] = heldataT.Integral(bmineldata, bmaxeldata  ) 
-                        nMCupost[ipt] =  math.sqrt( nMCpost[ipt] )  #mchist.IntegralError(bminmc , bmaxmc  ) / binSizeMC
-                        nDataupost[ipt] = math.sqrt(nDatapost[ipt] )#hdataT.IntegralError(bmindata, bmaxdata  ) / binSizeData
-                        nMuDataupost[ipt] = math.sqrt(nMuDatapost[ipt] )
-                        nElDataupost[ipt] = math.sqrt(nElDatapost[ipt] )
-
-                meanrat = 0.
-                meanrat_uncert = 0.
-                meanratel_uncert = 0.
-                meanratel = 0.
-                meanratmu = 0.
-                meanratmu_uncert = 0.
                 if mean_mc > 0. : 
-                    meanrat = mean_data / mean_mc
-                    meanrat_uncert = meanrat * math.sqrt( (emean_data/mean_data)**2 + (emean_mc/mean_mc)**2 )
-                    if options.Mudata :
-                        meanratmu = mmean_data / mean_mc
-                        meanratmu_uncert = meanratmu * math.sqrt( (memean_data/mmean_data)**2 + (emean_mc/mean_mc)**2 )
-                    if options.Eldata :
-                        meanratel_uncert = 0.
-                        meanratel = 0.
-                        if  ( abs(Emean_data) > 0.01 ) and  ( abs(mean_mc) > 0.01 ) :
-                            meanratel = Emean_data / mean_mc
-                            meanratel_uncert = meanratel * math.sqrt( (Eemean_data/Emean_data)**2 + (emean_mc/mean_mc)**2 )
-                jms = 0.
-                jms_uncert = 0.
-                jms_mu = 0.
-                jms_mu_uncert = 0.
-                jms_el = 0.
-                jms_el_uncert = 0.
+                    self.jms[0] = mean_data / mean_mc
+                    self.jms[1] = 0.
+                    if self.jms[0] > 0.1:
+                        self.jms[1] = self.jms[0] * math.sqrt( (emean_data/mean_data)**2 + (emean_mc/mean_mc)**2 )
                 if width_mc > 0. :
-                    jms = width_data / width_mc
-                    jms_uncert = jms * math.sqrt( (ewidth_data/width_data)**2 + (ewidth_mc/width_mc)**2 )
-                    if options.Mudata :
-                        jms_mu = mwidth_data / width_mc
-                        jms_mu_uncert = jms_mu * math.sqrt( (mewidth_data/mwidth_data)**2 + (ewidth_mc/width_mc)**2 )
-                    if options.Eldata :
-                        jms_el = Ewidth_data / width_mc
-                        jms_el_uncert =  0.0
-                        if abs(Ewidth_data) > 0.0001 :
-                            jms_el_uncert = jms_el * math.sqrt( (Eewidth_data/Ewidth_data)**2 + (ewidth_mc/width_mc)**2 )
-
-                #print 'data_over_mc peak combined {0:6.3}, muon {1:6.3}, electron {2:6.3} '.format(meanrat, meanratmu, meanratel)
-                #print '...........................................................'
-
-                ibin = hpeak.GetXaxis().FindBin(pt)
-                hpeak.SetBinContent(ibin, meanrat ) 
-                hwidth.SetBinContent(ibin, jms )
-                hpeak.SetBinError(ibin, meanrat_uncert)   
-                hwidth.SetBinError(ibin, jms_uncert)
-
-                if options.Mudata :
-                    hpeakmu.SetBinContent(ibin, meanratmu ) 
-                    hwidthmu.SetBinContent(ibin, jms_mu )
-                    hpeakmu.SetBinError(ibin, meanratmu_uncert)   
-                    hwidthmu.SetBinError(ibin, jms_mu_uncert)
-                if options.Eldata :
-                    hpeakel.SetBinContent(ibin, meanratel ) 
-                    hwidthel.SetBinContent(ibin, jms_el )
-                    hpeakel.SetBinError(ibin, meanratel_uncert)   
-                    hwidthel.SetBinError(ibin, jms_el_uncert)
-
-                if ipt <=6:
-                    if options.pre :
-                        ibin = hNpassDataPre.GetXaxis().FindBin(pt)
-                        hNpassDataPre.SetBinContent(ibin, nDatapre[ipt])
-                        hNpassMuDataPre.SetBinContent(ibin, nMuDatapre[ipt])
-                        hNpassElDataPre.SetBinContent(ibin, nElDatapre[ipt])
-                        hNpassMCPre.SetBinContent(ibin, nMCpre[ipt])
-                        hNpassDataPre.SetBinError(ibin, nDataupre[ipt])
-                        hNpassMuDataPre.SetBinError(ibin, nMuDataupre[ipt])
-                        hNpassElDataPre.SetBinError(ibin, nElDataupre[ipt])
-                        hNpassMCPre.SetBinError(ibin, nMCupre[ipt])
-                        hmeanDataPre.SetBinContent(ibin, Datameans[ipt]) 
-                        hmeanMuDataPre.SetBinContent(ibin, MuDatameans[ipt]) 
-                        hmeanElDataPre.SetBinContent(ibin, ElDatameans[ipt]) 
-                        hmeanMCPre.SetBinContent(ibin, MCmeans[ipt] )
-                        hsigmaDataPre.SetBinContent(ibin, Datasigmas[ipt])
-                        hsigmaMuDataPre.SetBinContent(ibin, MuDatasigmas[ipt])
-                        hsigmaElDataPre.SetBinContent(ibin, ElDatasigmas[ipt])
-                        hsigmaMCPre.SetBinContent(ibin,  MCsigmas[ipt] )
-                    else :
-                        ibin = hNpassDataPost.GetXaxis().FindBin(pt)
-                        hNpassDataPost.SetBinContent(ibin, nDatapost[ipt])
-                        hNpassMuDataPost.SetBinContent(ibin, nMuDatapost[ipt])
-                        hNpassElDataPost.SetBinContent(ibin, nElDatapost[ipt])
-                        hNpassMCPost.SetBinContent(ibin, nMCpost[ipt])
-                        hNpassDataPost.SetBinError(ibin, nDataupost[ipt])
-                        hNpassMuDataPost.SetBinError(ibin, nMuDataupost[ipt])
-                        hNpassElDataPost.SetBinError(ibin, nElDataupost[ipt])
-                        hNpassMCPost.SetBinError(ibin, nMCupost[ipt])
-
-
-            '''
-
+                    self.jmr[0] = width_data / width_mc
+                    self.jmr[1] = 0.
+                    if self.jmr[0] > 0.1:
+                        self.jmr[1] = self.jmr[0] * math.sqrt( (ewidth_data/width_data)**2 + (ewidth_mc/width_mc)**2 )
+                        
+                
+                self.hpeak.SetBinContent(ibin, self.jms[0] ) 
+                self.hwidth.SetBinContent(ibin, self.jmr[0] )
+                self.hpeak.SetBinError(ibin, self.jms[1])   
+                self.hwidth.SetBinError(ibin,  self.jmr[1])
+                
+                ibin = self.hNpassDataPost.GetXaxis().FindBin(self.ptIs )
+                self.hNpassDataPost.SetBinContent(ibin, self.passPosttag[0])
+                self.hNpassMCPost.SetBinContent(ibin, self.passPosttag[1])
+                self.hNpassDataPost.SetBinError(ibin, self.passPosttagUncert[0]) 
+                self.hNpassMCPost.SetBinError(ibin, self.passPosttagUncert[1])
 
         self.words = ROOT.TLatex(0.14,0.916,"#font[62]{CMS} #font[52]{Preliminary}")
         self.words.SetNDC()
@@ -456,16 +365,22 @@ class APlot () :
             self.leg.AddEntry( self.histofAlldata, str(self.tagg), 'p')
             self.leg.AddEntry( self.expectedRuns  , 'Expected Data', 'p')
         else :
-            self.leg.AddEntry( self.httbar, 't#bar{t} (80X Powheg + Pythia 8) Tune CUETP8M1', 'f')
+            if self.otherttbar == True :
+                self.leg.AddEntry( self.httbar, 't#bar{t} #scale[0.6]{(80X Powheg + Pythia 8) Tune CUETP8M2T4}', 'f')
+            else:
+                self.leg.AddEntry( self.httbar, 't#bar{t} #scale[0.6]{(80X Powheg + Pythia 8) Tune CUETP8M1}', 'f')
             #if options.allMC :
             self.leg.SetTextSize(0.036)
             self.leg.AddEntry( self.hST, 'Single Top', 'f')
             self.leg.AddEntry( self.hwjets, 'W+jets', 'f')
             self.leg.AddEntry( self.hQCD, 'QCD', 'f')
             self.leg.AddEntry( self.histofAlldata, str(self.tagg), 'p')
-            self.leg.AddEntry( self.fitter_mc  , 'MC Fit', 'l')
-            self.leg.AddEntry( self.fitter_data  , 'Data Fit', 'l')         
-                
+            if ( self.isWmass and self.isstage >= 15 ) and ( self.isTopmass and self.isstage >= 13 )  :
+                self.leg.AddEntry( self.fitter_mc  , 'MC Fit eff {0:3.3f}'.format(self.MCeff), 'l')
+                self.leg.AddEntry( self.fitter_data  , 'Data Fit eff {0:3.3f}'.format(self.Dataeff), 'l') 
+                if ( self.isWmass and self.isstage == 15 ) and ( self.isTopmass and self.isstage == 13 )  :      
+                    self.leg.AddEntry( self.fitter_data  , 'Data/MC SF {0:3.3f} #pm {1:3.3f}'.format(self.SF, self.SF_sd), '')         
+
         self.leg.Draw()
         self.pad1.Modified()
         self.c1.cd()
@@ -577,6 +492,25 @@ class APlot () :
         self.c1.Update()
         return self.c1  
                  
+    def GetJMSHist(self) :
+        return self.hpeak
+        
+    def GetJMRHist(self) :
+        return self.hwidth
+        
+    def GetDataPostHist(self) :
+        return self.hNpassDataPost
+        
+    def GetDataPreHist(self) :
+        return self.hNpassDataPre
+        
+    def GetMCPreHist(self) :
+        return self.hNpassMCPre
+
+    def GetMCPostHist(self) :
+        return self.hNpassMCPost
+        
+        
 '''
                 ## Only fit the histos of SD jet mass in later stages of selection
                 if (iHisto <17 and iHisto > 12 )  and self.isstage >= (options.nstages-2) : 
