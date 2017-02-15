@@ -179,7 +179,7 @@ class plotstack() :
 
         theOutfile.cd()
         
-        self.ptBs =  array.array('d', [200., 300., 400., 500., 800., 200., 800.,800.])
+        self.ptBs =  array.array('d', [200., 300., 400., 500., 800., 900., 1000.,1100.])
         self.nptBs = len(self.ptBs) - 1
 
 
@@ -189,7 +189,12 @@ class plotstack() :
         hNpassDataPost  = ROOT.TH1F("hNpassDataPost", " ;p_{T} of AK8 SD jet (GeV); # Integral(mean+- sigma) post tag ", self.nptBs, self.ptBs)
         hNpassMCPre  = ROOT.TH1F("hNpassMCPre", " ;p_{T} of AK8 SD jet (GeV); # Integral(mean+- sigma) pre tag ", self.nptBs, self.ptBs)
         hNpassMCPost  = ROOT.TH1F("hNpassMCPost", " ;p_{T} of AK8 SD jet  (GeV); # Integral(mean+- sigma) post tag ", self.nptBs, self.ptBs)
+        hSFs  = ROOT.TH1F("hSFs", " ;p_{T} of SD subjet 0 (GeV); # data/mc [Integral(mean+- sigma) post/pre ", self.nptBs, self.ptBs)
 
+        fitValues = [ ["Datamean", "Datasigma", "MCmean", "MCsigma"],[0.,0.,0.,0.],[0.,0.,0.,0.] ]
+        fitDiffs = [ ["DataLowerBound", "DataHigherBound", "MCLowerBound", "MCHigherBound"],[0.,0.,0.,0.],[0.,0.,0.,0.] ]
+        passPretagUncert = []
+        passPretag = []
 
         if options.highmass :
             instring = '_highmass'
@@ -283,12 +288,15 @@ class plotstack() :
             httbar = ttbarfile.Get(histName)
             #print ("Extracting histo titled {}".format(histName))
             if not (options.el and options.mu): 
+                histName = histName1
                 httbar1 = ttbarfile.Get(histName1)
                 httbar1.Sumw2()
                 httbar.Add(httbar1)
             httbar.Sumw2()
             httbar.Scale( xs_ttbar / nev_ttbar* lumi ) 
             httbar.SetFillColor(ROOT.kGreen + 2)
+            httbar.SetName("httbar"+histName )
+
 
             ROOT.gStyle.SetOptStat(000000)
             hdata = datafile.Get(histName)
@@ -305,7 +313,8 @@ class plotstack() :
             hdata.SetTitle("")#Electron and Muon Data at Stage, {}".format( str(istage)))
             #hdata.GetYaxis().SetTitle("Events")
             hdata.GetXaxis().SetTitle("")#Histogram name {}".format(options.hist + str(istage)))
-           
+            hdata.SetName("hdata"+histName )
+
             if options.hist == "RunNumberHist" and istage == 0:
                 nbinsis = hdata.GetNbinsX()
                 for i in range(nbinsis):
@@ -333,6 +342,7 @@ class plotstack() :
                     hwjets.Add( htemp )
                 hwjets_stack.Add( htemp )
             #hwjets_stack.Draw("hist")
+            hwjets.SetName("hwjets"+histName )
 
 
             hwjets.SetFillColor( ROOT.kRed )
@@ -358,7 +368,9 @@ class plotstack() :
                 hqcd_stack.Add( htemp )
             #hqcd_stack.Draw("hist")
             hqcd.SetFillColor( ROOT.kYellow )
-            
+            hqcd.SetName("hqcd"+histName )
+
+
             hsingletop_list = []
             hsingletop = None
             hsingletop_stack = ROOT.THStack("hsingletop_stack", "hsingletop_stack")
@@ -378,6 +390,7 @@ class plotstack() :
                     hsingletop.Add( htemp )
                 hsingletop_stack.Add( htemp )
             #hsingletop_stack.Draw("hist")
+            hsingletop.SetName("hsingletop"+histName )
 
 
             hsingletop.SetFillColor( ROOT.kMagenta )
@@ -391,16 +404,20 @@ class plotstack() :
                 hdata.Rebin(10)
             hdata2 = hdata.Clone('hdata2')
             
-            hstack = ROOT.THStack("bkgs", "")
+            hstack = ROOT.THStack("bkgs" + str(istage), "bkgs" + str(istage))
             hstack.Add( hqcd )
             hstack.Add( hsingletop )
             hstack.Add( hwjets )
             hstack.Add( httbar )
+            hstack.SetName("hstack" +histName )
 
-            hmc = hqcd.Clone('hmc')
+
+            hmc = hqcd.Clone('hmc'+ str(istage))
             hmc.Add(hsingletop )
             hmc.Add( hwjets )
             hmc.Add( httbar )
+            hmc.SetName("hmc" +histName )
+
             hmc2 = hmc.Clone('hmc2')
 
 
@@ -408,19 +425,36 @@ class plotstack() :
                 cutTag = CutsPerStage_Type1[str(istage)][1]    
             else: cutTag =  CutsPerStage_Type2[str(istage)][1]
             
-            zplot = APlot(istage , y_max_scale, hdata, hdata2, hmc,hmc2 , hstack, httbar, hwjets, hsingletop, hqcd, str(histName0), lumi/1000., lepTag, cutTag, options.fixFit, expectedRunsHist, self.otherttbar)
+
+            zplot = APlot(istage , y_max_scale, hdata, hdata2, hmc,hmc2 , hstack, httbar, hwjets, hsingletop, hqcd, str(histName0), lumi/1000., lepTag, cutTag, options.fixFit, expectedRunsHist, self.otherttbar, fitValues, fitDiffs, passPretag, passPretagUncert )
    
-            if ( isWmass and istage == 15 ) or ( isTopmass and istage == 13 ):
+            if ( isWmass and istage == 16 ) or ( isTopmass and istage == 14 ):
                 hpeak = zplot.GetJMSHist()
                 hwidth = zplot.GetJMRHist()
+                hSFs = zplot.GetSFHist()
+
                 hNpassDataPost = zplot.GetDataPostHist()
+                hNpassDataPost.SetName("hNpassDataPost" +histName )
+
                 hNpassMCPost = zplot.GetMCPostHist()
-                
-            if ( isWmass and istage == 14 ) or ( isTopmass and istage == 12 ):
+                hNpassMCPost.SetName("hNpassMCPost" +histName )
+
+            if ( isWmass and istage == 15 ) or ( isTopmass and istage == 13 ):
                 hNpassDataPre = zplot.GetDataPreHist()
+                hNpassDataPre.SetName("hNpassDataPre" +histName )
+
                 hNpassMCPre = zplot.GetMCPreHist()
-                
-                
+                hNpassMCPre.SetName("hNpassMCPre" +histName )
+
+                fitValues = zplot.GetFitValues()
+                print("fitValues {}".format(fitValues))
+                fitDiffs = zplot.GetFitDiffs()
+                print("fitDiffs {}".format(fitDiffs))
+
+                passPretagUncert = zplot.GetpassPretagUncert()
+                passPretag = zplot.GetpassPretag()
+
+            zplot.ResetHists()
             theCanvas = zplot.GetPlotCanvas()
             
             theCanvas.Print("./plotstack_"+ str(endstring2)+ "/" + histName0 + lep + str(istage)  + instring + endstring2+tune+".pdf", "pdf")
@@ -429,24 +463,25 @@ class plotstack() :
             theOutfile.cd()
                             
             objs.append( [hdata, httbar, hwjets, hqcd, hsingletop, hmc, theCanvas, hstack, expectedRunsList, actualRunsList,  hNpassDataPre, hNpassMCPre, hpeak, hwidth, hNpassDataPost, hNpassMCPost ] )
-            keepers = [hdata, httbar, hwjets, hqcd, hsingletop, hmc, theCanvas, hstack,  hNpassDataPre, hNpassMCPre , hpeak, hwidth, hNpassDataPost, hNpassMCPost]
-            keepersNames = ['hdata', 'httbar', 'hwjets', 'hqcd', 'hsingletop', 'hmc', 'theCanvas', 'hstack','hNpassDataPre', 'hNpassMCPre' , 'hpeak', 'hwidth', 'hNpassDataPost', 'hNpassMCPost' ]
+            keepers = [hdata, httbar, hwjets, hqcd, hsingletop, hmc, theCanvas, hstack,  hNpassDataPre, hNpassMCPre , hpeak, hwidth, hNpassDataPost, hNpassMCPost, hSFs]
+            keepersNames = ['hdata', 'httbar', 'hwjets', 'hqcd', 'hsingletop', 'hmc', 'theCanvas', 'hstack','hNpassDataPre', 'hNpassMCPre' , 'hpeak', 'hwidth', 'hNpassDataPost', 'hNpassMCPost' , 'hSFs']
             lenobj = 1.
-            if ( isWmass and istage <= 14 ) or ( isTopmass and istage <= 12 ) :
+            if ( isWmass and istage <= 15 ) or ( isTopmass and istage <= 13 ) :
                 lenobj = len(keepers) - 5
-            if ( isWmass and istage == 14 ) or ( isTopmass and istage == 12 ) :
-                lenobj = len(keepers) - 3
             if ( isWmass and istage == 15 ) or ( isTopmass and istage == 13 ) :
+                lenobj = len(keepers) - 3
+            if ( isWmass and istage == 16 ) or ( isTopmass and istage == 14 ) :
                 lenobj = len(keepers) 
-            if ( isWmass and istage > 15 ) or ( isTopmass and istage > 13 ) :
+            if ( isWmass and istage > 16 ) or ( isTopmass and istage > 14 ) :
                 lenobj = len(keepers) - 5
-            for i in range(0, lenobj-1):
+            for i in range(0, lenobj):
                 print("obj {} is being saved to the root outfile".format(keepers[i]))
                 #keepers[i].SetName(keepersNames[i] + str(istage))
-                if ( isWmass and istage >= 15 ) or ( isTopmass and istage >= 13 ) and i == (8 or 9) :
+                if ( isWmass and istage > 16 ) or ( isTopmass and istage > 14 ) and i >= 8  :
                     continue
-                keepers[i].Write()
-            theOutfile.Close()
+                keepers[i].SetName(keepersNames[i] +histName)
+                keepers[i].Write(keepersNames[i] +histName, ROOT.TObject.kWriteDelete)
+ 
             
         missingRunsList = []
 
@@ -493,5 +528,9 @@ class plotstack() :
             print(" = = (_________)             .")
             print("                 .                        *")
             print("       *               - ) -       *")
+            
+        theOutfile.Write()
+        theOutfile.Close()
+
 if __name__ == "__main__" :
     plotstack(sys.argv)
