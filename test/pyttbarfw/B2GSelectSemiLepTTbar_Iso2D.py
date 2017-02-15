@@ -87,7 +87,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         self.ak4Jet = None
         self.ak8Jet = None
         self.ak8SDJetP4 = None
-        self.self.ak8PuppiSDJetP4_Subjet1 = None
+        self.ak8PuppiSDJetP4_Subjet1 = None
         
         
         if self.verbose: print "self.trigIndex[0] {}".format(self.trigIndex[0])
@@ -273,7 +273,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         self.nuP4 = None
         self.ak4Jet = None
         self.ak8SDJetP4 = None
-        self.self.ak8PuppiSDJetP4_Subjet1 = None
+        self.ak8PuppiSDJetP4_Subjet1 = None
         
         
         ### Get Run Number of data event

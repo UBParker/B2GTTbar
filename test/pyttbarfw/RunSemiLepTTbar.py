@@ -53,7 +53,7 @@ class RunSemiLepTTbar() :
 
         parser.add_option('--tau21Cut', type='float', action='store',
                           dest='tau21Cut',
-                          default = 0.7,
+                          default = 0.55,
                           help='Tau 21 cut')
 
         parser.add_option('--tau32Cut', type='float', action='store',
@@ -312,7 +312,6 @@ class RunSemiLepTTbar() :
         self.CutIDScaleFLooseIs = a.CutIDScaleFLooseIs
         self.MuonHIPScaleFIs = a.MuonHIPScaleFIs
         self.BtagWeight =  a.BtagWeight
-        
         self.theWeight = 1.
         
         #if self.verbose and index == 0 : print "Event weight {0:2.4f} * PU weight {1:2.4f} *Trigger Eff. {2:2.4f} * Cut ID {3:2.4f} * HIP SF {4:2.4f} * Btag SF {5:2.4f} * self.CutIDScaleFLooseIs {6:2.4f}".format(self.EventWeight , self.PUWeight , self.TriggEffIs , self.CutIDScaleFIs, self.MuonHIPScaleFIs, self.BtagWeight, self.CutIDScaleFLooseIs)
@@ -344,10 +343,6 @@ class RunSemiLepTTbar() :
             if self.verbose : print "theWeight for stage {} is : {}".format(index ,self.theWeight)
         #if self.verbose : print "Event weight {1:2.4f} * PU weight {2:2.4f} *Trigger Eff. {3:2.4f} * Cut ID {4:2.4f} * HIP SF {5:2.4f} * Btag SF {6:2.4f}".format(self.EventWeight , self.PUWeight , self.TriggEffIs , self.CutIDScaleFIs, self.MuonHIPScaleFIs, self.BtagWeight)
 
-
-     
-     
-    
             
         if b.ak8JetP4 != None :                 
             self.AK8PtHist[ilep][index].Fill( b.ak8JetP4.Perp()* b.PtSmear   , self.theWeight )  ### TO-DO : Implement Pt smear in hadselection and replace 1.000 with b.PtSmear
