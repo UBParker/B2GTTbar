@@ -28,7 +28,8 @@ class B2GSelectSemiLepTTbar_IsoStd( ) :
         self.trigIndex = [ self.trigMap.HLT_Mu50_v,
             #elf.trigMap.HLT_TkMu50_v
             self.trigMap.HLT_Ele45_CaloIdVT_GsfTrkIdT_PFJet200_PFJet50_v,
-            #self.trigMap.HLT_Ele105_CaloIdVT_GsfTrkIdT_v          ] ### To-Do: Add other trigger as suggested here https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideMuonIdRun2
+                     ] 
+        ### To-Do: Add other trigger as suggested here https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideMuonIdRun2
         ### Cached class member variables for plotting
         self.RunNumber = None
         self.theWeight = None
