@@ -318,32 +318,13 @@ class RunSemiLepTTbar() :
 
         ### The total weight depends on the stage of selection
         #self.theWeight =  self.EventWeight * self.PUWeight
-        ### Before all selection (LooseID is applied)
-        if index == 0: 
-            self.theWeight =  self.EventWeight * self.PUWeight * self.CutIDScaleFLooseIs
-            if self.verbose : print "theWeight for stage {} is : {} =  self.EventWeight {} * self.PUWeight{} * self.CutIDScaleFLooseIs {}".format(index ,self.theWeight,  self.EventWeight , self.PUWeight , self.CutIDScaleFLooseIs)
-        ### Trigger
-        if index == 1: 
-            self.theWeight =  self.EventWeight * self.PUWeight * self.TriggEffIs * self.CutIDScaleFLooseIs
-            if self.verbose : print "theWeight for stage {} is : {} =  self.EventWeight {} * self.PUWeight {} * self.TriggEffIs {} *self.CutIDScaleFLooseIs {}".format(index ,self.theWeight,  self.EventWeight , self.PUWeight ,self.TriggEffIs,  self.CutIDScaleFLooseIs)
-        if index == 2: 
-            self.theWeight =  self.EventWeight * self.PUWeight * self.TriggEffIs * self.CutIDScaleFLooseIs
-            if self.verbose : print "theWeight for stage {} is : {}".format(index ,self.theWeight)
-        ### Cut based ID
-        if index == 3: 
-            self.theWeight =  self.EventWeight * self.PUWeight * self.TriggEffIs  * self.CutIDScaleFIs
-            if self.verbose : print "theWeight for stage {} is : {}".format(index ,self.theWeight)
-        ### HighPt ID
-        if 4<= index < 12: 
-            self.theWeight =  self.EventWeight * self.PUWeight * self.TriggEffIs  * self.CutIDScaleFIs *self.MuonHIPScaleFIs
-            if self.verbose : print "theWeight for stage {} is : {}".format(index ,self.theWeight)
-        ### B tag SF
-        if index >= 12: 
-            self.theWeight =  self.EventWeight * self.PUWeight * self.TriggEffIs  * self.CutIDScaleFIs *self.MuonHIPScaleFIs * self.BtagWeight
-            if self.verbose : print "theWeight for stage {} is : {}".format(index ,self.theWeight)
-        #if self.verbose : print "Event weight {1:2.4f} * PU weight {2:2.4f} *Trigger Eff. {3:2.4f} * Cut ID {4:2.4f} * HIP SF {5:2.4f} * Btag SF {6:2.4f}".format(self.EventWeight , self.PUWeight , self.TriggEffIs , self.CutIDScaleFIs, self.MuonHIPScaleFIs, self.BtagWeight)
 
-            
+        ### B tag SF
+        if index >= 12: #        
+            self.theWeight =  self.EventWeight * self.PUWeight * self.CutIDScaleFIs * self.recoSFIs * self.TriggEffIs * self.MuHighPtScaleFIs * self.HEEPSFIs  * self.BtagWeight
+            if self.verbose : print "theWeight for stage {0:} is : {1:2.4f} = eventWeight {2:2.2f} * self.PUWeight{3:2.2f} * self.CutIDScaleFIs {4:2.2f} * self.recoSFIs  {5:2.2f} * self.TriggEffIs {6:2.3f} self.MuHighPtScaleFIs{7:2.3f} * self.HEEPSFIs {8:2.3f}  * self.BtagWeight  {9:2.3f} ".format( 0, self.theWeight, self.EventWeight , self.PUWeight , self.CutIDScaleFIs, self.recoSFIs , self.TriggEffIs ,self.MuHighPtScaleFIs,  self.HEEPSFIs, self.BtagWeight)
+
+
         if b.ak8JetP4 != None :                 
             self.AK8PtHist[ilep][index].Fill( b.ak8JetP4.Perp()* b.PtSmear   , self.theWeight )  ### TO-DO : Implement Pt smear in hadselection and replace 1.000 with b.PtSmear
             self.AK8HTHist[ilep][index].Fill( b.ak8JetHT  , self.theWeight )

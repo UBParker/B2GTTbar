@@ -267,7 +267,7 @@ class B2GSelectSemiLepTTbar_Type2( ) :
         self.passedCount[2] += 1
         if self.verbose: print"Stage 12: B-tag , medium WP CSVv2"
 
-        if not ( 30. < self.ak8PuppiSDJetP4.M() < 150. ) : return self.passed
+        if not ( 50. < self.ak8PuppiSDJetP4.M() < 120. ) : return self.passed
         self.passed[3] = True
         self.passedCount[3] += 1
         if self.verbose: print"Stage 13: AK8 W mass window cut , 30< MAK8 (GeV) < 150"
