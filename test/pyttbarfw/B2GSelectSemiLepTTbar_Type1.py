@@ -18,7 +18,7 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.infile = options.infile
         if self.verbose : print "The infile is : {}".format(self.infile)
 
-        self.nstages = 8
+        self.nstages = 9
         
         self.tree = tree
         self.lepsel = lepsel
@@ -467,18 +467,21 @@ class B2GSelectSemiLepTTbar_Type1( ) :
 
 
         if self.verbose :print " tau21 of SD subjet 0 is: {0:2.2f}".format( float( self.ak8SDsubjet0tau21) )
-        if not ( self.ak8SDsubjet0tau21 < self.tau21Cut ) : return self.passed
-        self.passed[6] = True
-        self.passedCount[6] += 1
-        if self.verbose : print "Stage 16: AK8 SD subjet 0 tau21  {0:2.2f}  < ( {1} ) ".format( self.ak8SDsubjet0tau21 , self.tau21Cut )
+        if not ( self.ak8SDsubjet0tau21 < self.tau21Cut ) :
+            self.passed[6] = True
+            self.passedCount[6] += 1
+            if self.verbose : print "Stage 16: FAIL AK8 SD subjet 0 tau21  {0:2.2f}  < ( {1} ) ".format( self.ak8SDsubjet0tau21 , self.tau21Cut )
+            return self.passed
+        self.passed[7] = True
+        self.passedCount[7] += 1
+        if self.verbose : print "Stage 17: PASS AK8 SD subjet 0 tau21  {0:2.2f}  < ( {1} ) ".format( self.ak8SDsubjet0tau21 , self.tau21Cut )
 
         if self.verbose :print "Bdisc of SD subjet 1 is: {0:2.2f}".format( float( self.ak8PuppiSDsubjet1Bdisc) )
         if not ( self.ak8PuppiSDsubjet1Bdisc >  self.bdiscmin ) : return self.passed
-        self.passed[7] = True
-        self.passedCount[7] += 1
+        self.passed[8] = True
+        self.passedCount[8] += 1
         if self.verbose : 
-            print "Stage 17: Bdisc of SD subjet 1 {0:2.2f}  < ( {1} ) ".format( float( self.ak8PuppiSDsubjet1Bdisc) ,   self.Subjettau21Cut )
-
+            print "Stage 18: Bdisc of SD subjet 1 {0:2.2f}  < ( {1} ) ".format( float( self.ak8PuppiSDsubjet1Bdisc) ,   self.Subjettau21Cut )
 
 
         return self.passed

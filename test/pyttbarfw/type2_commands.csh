@@ -1,5 +1,5 @@
 
-python RunSemiLepTTbar.py --infile root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ttbar_all_V4.root --outfile ttbar_outfileCommit4e6154.root >& ttbar_outfileCommit4e6154_out.log &
+python RunSemiLepTTbar.py --infile root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ttbar_all_V4.root --outfile ttbarCUETP8M1_outfileCommit4e6154.root >& ttbar_outfileCommit4e6154_out.log &
 python RunSemiLepTTbar.py --infile root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ttbarTuneCUETP8M2T4_all_V4.root --outfile ttbarTuneCUETP8M2T4_outfileCommite4e6154.root >& ttbarTuneCUETP8M2T4_outfileCommite4e6154_out.log &
 
 python RunSemiLepTTbar.py --infile root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_100_V4.root --outfile wjets100to200_outfileCommit4e6154.root --ignoreTrig >& wjets100to200_outfileCommit4e6154_out.log &

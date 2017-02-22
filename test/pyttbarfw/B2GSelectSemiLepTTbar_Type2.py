@@ -14,7 +14,7 @@ class B2GSelectSemiLepTTbar_Type2( ) :
         self.infile = options.infile
         self.verbose = options.verbose
         self.ignoreTrig = options.ignoreTrig
-        self.nstages = 5
+        self.nstages = 6
         self.tree = tree
         self.lepsel = lepsel
         
@@ -270,13 +270,17 @@ class B2GSelectSemiLepTTbar_Type2( ) :
         if not ( 50. < self.ak8PuppiSDJetP4.M() < 120. ) : return self.passed
         self.passed[3] = True
         self.passedCount[3] += 1
-        if self.verbose: print"Stage 13: AK8 W mass window cut , 30< MAK8 (GeV) < 150"
+        if self.verbose: print"Stage 13: AK8 W mass window cut , 50< MAK8 (GeV) < 120"
 
 
-        if not ( self.puppitau21 < self.puppitau21Cut ) : return self.passed
-        self.passed[4] = True
-        self.passedCount[4] += 1
-        if self.verbose: print"Stage 14: W tag tau21 cut"
+        if not ( self.puppitau21 < self.puppitau21Cut ) : 
+            self.passed[4] = True
+            self.passedCount[4] += 1
+            if self.verbose: print"Stage 14: FAIL W tag tau21 cut"
+            return self.passed
+        self.passed[5] = True
+        self.passedCount[5] += 1
+        if self.verbose: print"Stage 15 : PASS W tag tau21 cut"
 
         return self.passed
 

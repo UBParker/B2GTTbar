@@ -35,10 +35,10 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
 
         # Stage 2 : Lepton kinematic selection
 
-        self.muonPtCut = 53.
+        self.muonPtCut = 55.
         self.muonEtaCut = 2.1
 
-        self.electronPtCut = 53.
+        self.electronPtCut = 50.
         self.electronEtaCut = 2.5
 
         #self.passMuon_Pt = self.tree.LeptonIsMu[0] == 1 and self.leptonP4.Perp() > self.muonPtCut
@@ -76,7 +76,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         #  DR(AK8, Lepton) > 1.
 
         # Stage 9 : Wlep pt selection
-        self.MuonHtLepCut = 200.
+        self.MuonHtLepCut = 150.
         self.ElectronHtLepCut = 0.
 
         ### Cached class member variables for plotting
@@ -427,7 +427,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         self.passElectron_Pt = self.tree.LeptonIsMu[0] == 0 and self.leptonP4.Perp() > self.electronPtCut
 
         self.passMuon_Eta = self.tree.LeptonIsMu[0] == 1 and abs(self.leptonP4.Eta()) < self.muonEtaCut
-        self.passElectron_Eta = self.tree.LeptonIsMu[0] == 0  and abs(self.leptonP4.Eta()) < self.electronEtaCut
+        self.passElectron_Eta = self.tree.LeptonIsMu[0] == 0  and (0. < abs(self.leptonP4.Eta()) < 1.442 or 1.56  < abs(self.leptonP4.Eta()) < 2.5 )
 
         if self.tree.LeptonIsMu[0] > 0. : ### Muon
             if not ( self.leptonP4.Perp() > self.muonPtCut and   abs(self.leptonP4.Eta()) < self.muonEtaCut ) : return self.passed

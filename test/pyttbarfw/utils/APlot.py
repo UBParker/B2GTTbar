@@ -6,7 +6,7 @@ import tdrstyle
 
 class APlot () :
     
-    def __init__(self, isstage = None , y_max = None, histofAlldata = None, histofAlldata2 = None, histofAllMC = None, histofAllMC2 = None, mcStack = None, httbar = None, hwjets = None, hST = None, hQCD = None, histoName = None, lumi = None, tagg = None, cuttag = None, fixFit = None, expectedRuns = None, otherttbar = None, fitValues = None, fitDiffs = None, passPretag = None, passPretagUncert = None) :
+    def __init__(self, isstage = None , y_max = None, histofAlldata = None, histofAlldata2 = None, histofAllMC = None, histofAllMC2 = None, mcStack = None, httbar = None, hwjets = None, hST = None, hQCD = None, histoName = None, lumi = None, tagg = None, cuttag = None, fixFit = None, expectedRuns = None, otherttbar = None, fitValues = None, fitDiffs = None, passPretag = None, passPretagUncert = None, typeis = None) :
         self.isstage = isstage
         self.y_max = y_max
         self.histofAlldata = histofAlldata
@@ -31,6 +31,7 @@ class APlot () :
         self.fitDiffs = fitDiffs
         self.passPretag = passPretag
         self.passPretagUncert = passPretagUncert
+        self.typeis =  typeis
         
         self.isWmass = False
         self.isTopmass = False
@@ -46,13 +47,14 @@ class APlot () :
         #self.passPosttagUncert = []
         self.ptBs =  array.array('d', [200., 300., 400., 500., 800., 900., 1000.,1100.])
         self.nptBs = len(self.ptBs) - 1
-        self.hpeak = ROOT.TH1F("hpeak", " ;p_{T} of SD subjet 0 (GeV); JMS ",  self.nptBs, self.ptBs) 
-        self.hwidth = ROOT.TH1F("hwidth", " ;p_{T} of SD subjet 0 (GeV); JMR ", self.nptBs, self.ptBs)
-        self.hNpassDataPre  = ROOT.TH1F("hNpassDataPre", " ;p_{T} of SD subjet 0 (GeV); # Integral(mean+- sigma) pre tag ", self.nptBs, self.ptBs)
-        self.hNpassDataPost  = ROOT.TH1F("hNpassDataPost", " ;p_{T} of SD subjet 0 (GeV); # Integral(mean+- sigma) post tag ", self.nptBs, self.ptBs)
-        self.hNpassMCPre  = ROOT.TH1F("hNpassMCPre", " ;p_{T} of SD subjet 0 (GeV); # Integral(mean+- sigma) pre tag ", self.nptBs, self.ptBs)
-        self.hNpassMCPost  = ROOT.TH1F("hNpassMCPost", " ;p_{T} of SD subjet 0 (GeV); # Integral(mean+- sigma) post tag ", self.nptBs, self.ptBs)
-        self.hSFs  = ROOT.TH1F("hSFs", " ;p_{T} of SD subjet 0 (GeV); # data/mc [Integral(mean+- sigma) post/pre ", self.nptBs, self.ptBs)
+        if self.isstage >=11 :
+            self.hpeak = ROOT.TH1F("hpeak", " ;p_{T} of SD subjet 0 (GeV); JMS ",  self.nptBs, self.ptBs) 
+            self.hwidth = ROOT.TH1F("hwidth", " ;p_{T} of SD subjet 0 (GeV); JMR ", self.nptBs, self.ptBs)
+            self.hNpassDataPre  = ROOT.TH1F("hNpassDataPre", " ;p_{T} of SD subjet 0 (GeV); # Integral(mean+- sigma) pre tag ", self.nptBs, self.ptBs)
+            self.hNpassDataPost  = ROOT.TH1F("hNpassDataPost", " ;p_{T} of SD subjet 0 (GeV); # Integral(mean+- sigma) post tag ", self.nptBs, self.ptBs)
+            self.hNpassMCPre  = ROOT.TH1F("hNpassMCPre", " ;p_{T} of SD subjet 0 (GeV); # Integral(mean+- sigma) pre tag ", self.nptBs, self.ptBs)
+            self.hNpassMCPost  = ROOT.TH1F("hNpassMCPost", " ;p_{T} of SD subjet 0 (GeV); # Integral(mean+- sigma) post tag ", self.nptBs, self.ptBs)
+            self.hSFs  = ROOT.TH1F("hSFs", " ;p_{T} of SD subjet 0 (GeV); # data/mc [Integral(mean+- sigma) post/pre ", self.nptBs, self.ptBs)
 
 
         ROOT.gStyle.SetOptStat(000000)
@@ -145,25 +147,43 @@ class APlot () :
         self.minn = 0.
         self.maxx = 0.     
         rangenum = 17
-
+        if self.typeis: rangenum = 15
         #fittingLimits = [ [minAvg, minAvg, minAvg, minAvg, minAvg, minAvg, minAvg ] , [maxAvg, maxAvg, maxAvg, maxAvg, maxAvg, maxAvg, maxAvg ] ]
-        self.ipt = None          
-        if  (rangenum  -4 )<self.isstage <= rangenum   :
+        self.ipt = None     
+        noFitList = ['LeptonPtHist', 'LeptonEtaHist', 'METPtHist', 'HTLepHist', 'WeightHist',
+                     'RunNumberHist', 'AK8PuppiSDPtResponse', 'AK8SDPtResponse', 'AK8SDPuppiptGenptResponse',
+                     'AK8SDPuppimassSDCHSmassResponse', 'AK8SDPuppiMasswithPuppiCorrvsSDPuppiMassResponse', 'AK8MSDRawHist',
+                     'AK8PtHist', 'AK8HTHist','AK8SDPtHist','AK8PuppiSDPtHist','AK8PuppiPtHist', 'AK8PuppiSDPtResponse', 'AK8SDPtResponse',
+                     'AK8SDSJ0PtHist', 'AK8EtaHist','AK8puppitau21Hist','AK8puppitau32Hist', 'AK8SDRhoRatioHist', 'LeptonPtHist','LeptonEtaHist',
+                     'METPtHist','HTLepHist','Iso2DHist','AK4BdiscHist'
+                    ]       
+                    
+                    
+                    
+        if  (rangenum  - 4 )  <= self.isstage <= rangenum   :
             print("rangenum is {}".format(self.isstage))
-             
-            if (self.histoName.find("AK8M")== -1 ) and self.expectedRuns == None: 
-                self.histofAlldata.Draw("e same x0")
-            else : 
+            if self.histoName in noFitList:
+                print("Histo is in the noFitList.")
+            else :
                 ### Fit these histos to a Gaussian and save mean and std dev for later use
                 self.histofAlldata.Draw("e same x0")
-                if (self.histoName.find("SDSJ")== -1 ) :
-                    self.minn = 110.
-                    self.maxx = 250.
-                    self.isTopmass = True
-                else :
-                    self.minn = 55.
-                    self.maxx = 115.
-                    self.isWmass = True
+
+                if self.typeis:
+                        self.isWmass = True
+                        self.minn = 55.
+                        self.maxx = 115.
+                        print("Type2 W mass fit range [{0},{1}]".format(self.minn,self.maxx ))
+                else:   
+                    if (self.histoName.find("SDSJ")== -1 ) :
+                        self.minn = 110.
+                        self.maxx = 250.
+                        self.isTopmass = True
+                        print("Type 1 Top mass fit range [{0},{1}]".format(self.minn,self.maxx ))
+                    else :
+                        self.minn = 55.
+                        self.maxx = 115.
+                        self.isWmass = True
+                        print("Type 1 W mass fit range [{0},{1}]".format(self.minn,self.maxx ))
 
             self.ptIs = 0.
             self.binIs = "200toInf"
@@ -183,11 +203,18 @@ class APlot () :
             self.fitter_data = ROOT.TF1("fitter_data"+ str(self.isstage), "gaus", self.minn , self.maxx )                
 
             self.fitter_mc = ROOT.TF1("fitter_mc"+ str(self.isstage), "gaus", self.minn , self.maxx )   
-   
-            if ( self.isWmass and self.isstage == 16 ) or ( self.isTopmass and self.isstage == 14 ) :
+            histofAlldata.GetXaxis().SetTitle("")
+            self.fitter_data.SetTitle("")
+            self.fitter_mc.SetTitle("")
+            self.histofAllMC.SetTitle("")
+            if ( self.isWmass and self.isstage == 14 and self.typeis) or ( self.isWmass and self.isstage == 16 and not self.typeis) or ( self.isTopmass and self.isstage == 14 and not self.typeis ) :
                 self.fixFit = True
                 ROOT.gStyle.SetOptStat(000000)
+                histofAlldata.SetTitleOffset(1.4)
                 histofAlldata.GetXaxis().SetTitle("")
+                self.fitter_data.SetTitle("")
+                self.fitter_mc.SetTitle("")
+                self.histofAllMC.SetTitle("")
                 data_meanval = self.fitValues[1][0]
                 data_sigmaval = self.fitValues[1][1] 
                 mc_meanval = self.fitValues[1][2]
@@ -208,8 +235,8 @@ class APlot () :
             self.fitter_data.GetXaxis().SetRangeUser( rangeMin, rangeMax )          
 
             if self.fixFit :
-                self.histofAlldata.Fit(self.fitter_data,'B' )
-                self.histofAllMC.Fit(self.fitter_mc,'B' )
+                self.histofAlldata.Fit(self.fitter_data,'R' )
+                self.histofAllMC.Fit(self.fitter_mc,'R' )
                 
             else :
                 self.histofAlldata.Fit(self.fitter_data,'R' )
@@ -251,7 +278,7 @@ class APlot () :
             
             print("stage {0:1.2f} isWmass  {1:}".format(self.isstage, self.isWmass ) )
 
-            if ( self.isWmass and self.isstage == 15 ) or ( self.isTopmass and self.isstage == 13 ) : ### Save the means and sigmas of the pre-tau21 mass cut distribution
+            if  ( self.isWmass and self.isstage == 13 and self.typeis) or ( self.isWmass and self.isstage == 15 and not self.typeis ) or ( self.isTopmass and self.isstage == 13 and not self.typeis  ) : ### Save the means and sigmas of the pre-tau21 mass cut distribution
                 self.fitValues[1][0] = mean_data
                 self.fitValues[1][1] = width_data
                 self.fitValues[1][2] = mean_mc
@@ -277,7 +304,7 @@ class APlot () :
                 self.hNpassMCPre.SetBinError(ibin, self.passPretagUncert[1])
 
                 
-            if ( self.isWmass and self.isstage == 16 ) or ( self.isTopmass and self.isstage == 14 ): ### Save the means and sigmas of the tau21 cut distribution
+            if  ( self.isWmass and self.isstage == 14 and self.typeis) or ( self.isWmass and self.isstage == 16 and not self.typeis ) or ( self.isTopmass and self.isstage == 14 and not self.typeis ): ### Save the means and sigmas of the tau21 cut distribution
                 self.fitValues[2][0] = mean_data
                 self.fitValues[2][1] = width_data
                 self.fitValues[2][2] =  mean_mc
@@ -330,8 +357,10 @@ class APlot () :
                     print( "             SCALE FACTOR                   ")
                     print( "............................................")
                     print( "pt Bin :  " + str(self.binIs))
-                    print( "Preliminary W tagging SF from subjet w : " + str(self.SF))
-                    print( "standard deviation : " + str(self.SF_sd))
+                    if self.isTopmass:
+                        print( "Preliminary Top tagging SF : {0:3.3f} #pm {1:3.3f}".format(  self.SF, self.SF_sd))
+                    else:
+                        print( "Preliminary W tagging SF from subjet w : {0:3.3f} #pm {1:3.3f}".format(  self.SF, self.SF_sd))
                     print( "Data efficiency for this  bin {0:3.3f}".format(  self.Dataeff ))
                     print( "MC efficiency for this  bin {0:3.3f}".format(self.MCeff))
 

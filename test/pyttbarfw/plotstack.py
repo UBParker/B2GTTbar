@@ -61,16 +61,35 @@ class plotstack() :
         import ROOT
         ROOT.gStyle.SetOptStat(000000)
         
+        type1 = False
+        type2 = False
+        if options.highmass:
+            type1 = True
+        else: type2 = True  
+        
+        isMu = False
+        isEl = False
+        isBoth = False
+        
+        if options.mu: isMu = True
+        elif options.el: isEl = True
+        else: isBoth = True
+
         isTopmass = False
         isWmass = False
         if (options.hist.find("AK8")== -1 ) :
-            print("Not fitting this histo.")
+            print("Not fitting this histo since AK8 wasn't found.")
         else:
-            if (options.hist.find("SDSJ")== -1 ) :
-                isTopmass = True
-            else :
-                isWmass = True
-                
+            if type1:
+                if (options.hist.find("SDSJ")== -1 ) :
+                    isTopmass = True
+                else :
+                    isWmass = True
+            if type2:
+                if (options.hist.find("MPt")== -1 ) and (options.hist.find("SD")== -1 ) :
+                    print("Not fitting this histo since MPt and SD werent found.")
+                else:   
+                    isWmass = True                
         xs_ttbar = 831.
         nev_ttbar = 92925926. 
         self.otherttbar = False
@@ -163,10 +182,27 @@ class plotstack() :
 
             
         instring = ''
-        endstring1 =  '5db659f' #'605c442'
-        endstring2 = 'Commit' + endstring1  # plotstack_Commite39827c
-        endstrings = endstring2
+        if options.highmass: endstring1 =  'f271a16'
+        else: endstring1 =  '186b8ea'
 
+         # #'5db659f' #'605c442'
+        endstring2 = 'Commit' + endstring1  # plotstack_Commite39827c
+        endstring3 = 'Commit' + endstring1  # plotstack_Commite39827c
+
+        endstrings = endstring2
+        
+        lepName0 = 'Electron'
+        lepName1 = 'Muon'
+        lep = None
+        if isEl : 
+            lep = str(lepName0)
+            print("Data is Electrons!")
+        if isMu : 
+            lep = str(lepName1)
+            print("Data is Muons!")
+        if isBoth: 
+            print("Data is for Electrons and Muons!")
+            lep = 'Lepton'
         #   ____  _    _ _______ _____  _    _ _______   _____   ____   ____ _______ 
         #  / __ \| |  | |__   __|  __ \| |  | |__   __| |  __ \ / __ \ / __ \__   __|
         # | |  | | |  | |  | |  | |__) | |  | |  | |    | |__) | |  | | |  | | | |   
@@ -175,7 +211,7 @@ class plotstack() :
         #  \____/ \____/   |_|  |_|     \____/   |_|    |_|  \_\\____/ \____/  |_|   
 
 
-        theOutfile = ROOT.TFile( "./plotstack_"+ str(endstring2)+ '/plotstack_outfile_'+ str(options.hist)+'_' +str(endstrings)+ '.root' , "RECREATE") 
+        theOutfile = ROOT.TFile( "./plotstack_"+ str(endstring2)+ '/plotstack_outfile_'+ str(options.hist)+'_' +lep+ str(endstrings)+ '.root' , "RECREATE") 
 
         theOutfile.cd()
         
@@ -196,21 +232,48 @@ class plotstack() :
         passPretagUncert = []
         passPretag = []
 
+        highmass = False
         if options.highmass :
             instring = '_highmass'
+            highmass = True
         else: endstring2 = ''
-        ttbarfile = ROOT.TFile('ttbarTuneCUETP8M1' + instring + '_outfile'+ endstring2 +'.root') #ttbarTuneCUETP8M2T4 or ttbarTuneCUETP8M1 currently the latter
+        
+        #ttbarfile = ROOT.TFile('ttbar' + instring + '_outfile'+ endstring3 +'.root') #ttbarTuneCUETP8M2T4 or ttbarTuneCUETP8M1 currently the latter
+        print('Opening file ttbarTuneCUETP8M1' + instring + '_outfile'+ endstring3 +'.root')
+        ttbarfile = ROOT.TFile('ttbarTuneCUETP8M1' + instring + '_outfile'+ endstring3 +'.root') #ttbarTuneCUETP8M2T4 or ttbarTuneCUETP8M1 currently the latter
         if options.otherttbar : 
             self.otherttbar = options.otherttbar
-            ttbarfile = ROOT.TFile('ttbarTuneCUETP8M2T4' + instring + '_outfile'+ endstring2 +'.root')
+            print('Opening file ttbarTuneCUETP8M2T4' + instring + '_outfile'+ endstring3 +'.root')
 
-        if  options.el :  datafile = ROOT.TFile('singleel' + instring + '_outfile'+ endstring1 +'.root')
-        if options.mu :  datafile = ROOT.TFile('singlemu' + instring + '_outfile'+ endstring1 +'.root')
-        if not (options.el or options.mu):
-            datafile = ROOT.TFile('singleel' + instring + '_outfile'+ endstring1 +'.root')
-            datafile1 = ROOT.TFile('singlemu' + instring + '_outfile'+ endstring1 +'.root')
-
-
+            ttbarfile = ROOT.TFile('ttbarTuneCUETP8M2T4' + instring + '_outfile'+ endstring3 +'.root')
+        datafile = None
+        datafile1 = None
+        if isEl :  
+            if highmass:
+                datafile = ROOT.TFile('singleel' + instring + '_outfile'+ endstring1 +'.root')
+            else:
+                datafile = ROOT.TFile('singleel' + instring + '_outfile'+ endstring3 +'.root')
+            print('Opening file singleel' + instring + '_outfile'+ endstring1 +'.root')
+        if isMu :  
+            if highmass:
+                datafile = ROOT.TFile('singlemu' + instring + '_outfile'+ endstring1 +'.root')
+            else:
+                datafile = ROOT.TFile('singlemu' + instring + '_outfile'+ endstring3 +'.root')            
+            print('Opening file singlemu' + instring + '_outfile'+ endstring1 +'.root')
+        if isBoth:
+            if  highmass:
+                datafile = ROOT.TFile('singleel' + instring + '_outfile'+ endstring1 +'.root')
+                print('Opening file singleel' + instring + '_outfile'+ endstring1 +'.root')
+            else:
+                datafile = ROOT.TFile('singleel' + instring + '_outfile'+ endstring3 +'.root')  
+                print('Opening file singleel' + instring + '_outfile'+ endstring3 +'.root')          
+            if options.highmass:
+                datafile1 = ROOT.TFile('singlemu' + instring + '_outfile'+ endstring1 +'.root')
+                print('Opening file singlemu' + instring + '_outfile'+ endstring1 +'.root')
+            else:
+                datafile1 = ROOT.TFile('singlemu' + instring + '_outfile'+ endstring3 +'.root')
+                print('Opening file singlemu' + instring + '_outfile'+ endstring3 +'.root')
+                
         wjetsfiles = [
             ROOT.TFile('wjets100to200' + instring + '_outfile'+ endstring2 +'.root'),
             ROOT.TFile('wjets200to400' + instring + '_outfile'+ endstring2 +'.root'),
@@ -248,50 +311,49 @@ class plotstack() :
         ### Set the maximum y axis increment with respect to the maximum y axis value
         y_max_scale = 4.9
 
-
-        lepName0 = 'Electron'
-        lepName1 = 'Muon'
-        lep = None 
         lepTag = None
         cutTag = None
 
         histName0 = options.hist 
             
             
-        rangenum = 14
+        rangenum = 15
         if options.highmass: rangenum = 17 #14
 
         ### Runs in stage 0 data selection
         actualRunsList = [] 
-          
+        
+        hdata1 = None
+        hdata = None  
         for istage in range(rangenum) : 
 
             print("The Stage is : {}".format(istage))
             histName = None
             histName1 = None
             
-            if options.el : 
+            if isEl : 
                 histName = options.hist + lepName0 + str(istage)
-                lep = str(lepName0)
                 lepTag = 'Electron Data'
-            if options.mu : 
+                print("Data is Electrons!")
+            if isMu : 
                 histName = options.hist + lepName1 + str(istage)
-                lep = str(lepName1)
                 lepTag = 'Muon Data'
+                print("Data is Muons!")
 
-            if not (options.el and options.mu): 
+
+            if isBoth: 
+                print("Data is for Electrons and Muons!")
                 histName = options.hist + lepName0 + str(istage)
                 histName1 = options.hist + lepName1 + str(istage)
                 lepTag = 'Electron and Muon Data'
-                lep = 'Lepton'
-            #print("mc file is {}".format(ttbarfile))
-            httbar = ttbarfile.Get(histName)
-            #print ("Extracting histo titled {}".format(histName))
-            if not (options.el and options.mu): 
-                histName = histName1
+                httbar = ttbarfile.Get(histName) 
                 httbar1 = ttbarfile.Get(histName1)
                 httbar1.Sumw2()
                 httbar.Add(httbar1)
+                httbar.SetName("httbar"+histName )
+            else:    
+                httbar = ttbarfile.Get(histName)
+                
             httbar.Sumw2()
             httbar.Scale( xs_ttbar / nev_ttbar* lumi ) 
             httbar.SetFillColor(ROOT.kGreen + 2)
@@ -299,20 +361,23 @@ class plotstack() :
 
 
             ROOT.gStyle.SetOptStat(000000)
+            print ("Extracting histo titled {} from file {}".format(histName, datafile))
             hdata = datafile.Get(histName)
-            if not (options.el and options.mu):
+            
+            if isBoth :
                 hdata1 = datafile1.Get(histName1)
                 hdata1.Sumw2()
-                hdata1.GetXaxis().SetTitle("")#Electron and Muon Data at Stage, {}".format( str(istage)))
-
+                hdata1.SetTitle("")
+                hdata1.GetXaxis().SetTitle("")
                 hdata.Add(hdata1)
-            print ("Extracting histo titled {}".format(histName))
+                hdata.SetName("hdata"+histName )
+                print ("Extracting histo titled {} from file {}".format(histName1, datafile1))
             hdata.Sumw2()    
             hdata.SetMarkerStyle(20)
            
-            hdata.SetTitle("")#Electron and Muon Data at Stage, {}".format( str(istage)))
-            #hdata.GetYaxis().SetTitle("Events")
-            hdata.GetXaxis().SetTitle("")#Histogram name {}".format(options.hist + str(istage)))
+            hdata.SetTitle("")
+            hdata.SetTitleOffset(1.4)
+            hdata.GetXaxis().SetTitle("")
             hdata.SetName("hdata"+histName )
 
             if options.hist == "RunNumberHist" and istage == 0:
@@ -328,12 +393,13 @@ class plotstack() :
             hwjets_stack = ROOT.THStack("hwjets_stack", "hwjets_stack")
 
             for iwjet in range(len(wjetsfiles)) :
+                print("Opening file : {}".format(wjetsfiles[iwjet]))
                 htemp = wjetsfiles[iwjet].Get(histName)
-                if not (options.el or options.mu): 
+                if isBoth: 
                     htemp1 = wjetsfiles[iwjet].Get(histName1)
                     htemp1.Sumw2()
                     htemp.Add(htemp1)        
-                htemp.Scale( xs_wjets[iwjet] / nev_wjets[iwjet] * lumi )
+                htemp.Scale( 1.2* xs_wjets[iwjet] / nev_wjets[iwjet] * lumi )
                 hwjets_list.append( htemp )
                 htemp.SetFillColor( wjets_colors[iwjet] )
                 if iwjet == 0 :
@@ -354,7 +420,7 @@ class plotstack() :
 
             for iqcd in range(len(qcdfiles)) :
                 htemp = qcdfiles[iqcd].Get(histName)
-                if not (options.el or options.mu): 
+                if isBoth: 
                     htemp1 = qcdfiles[iqcd].Get(histName1)
                     htemp1.Sumw2()
                     htemp.Add(htemp1)  
@@ -377,7 +443,7 @@ class plotstack() :
 
             for isingletop in range(len(singletopfiles)) :
                 htemp = singletopfiles[isingletop].Get(histName)
-                if not (options.el or options.mu):
+                if isBoth:
                     htemp1 = singletopfiles[isingletop].Get(histName1)
                     htemp1.Sumw2()
                     htemp.Add(htemp1)  
@@ -425,10 +491,11 @@ class plotstack() :
                 cutTag = CutsPerStage_Type1[str(istage)][1]    
             else: cutTag =  CutsPerStage_Type2[str(istage)][1]
             
-
-            zplot = APlot(istage , y_max_scale, hdata, hdata2, hmc,hmc2 , hstack, httbar, hwjets, hsingletop, hqcd, str(histName0), lumi/1000., lepTag, cutTag, options.fixFit, expectedRunsHist, self.otherttbar, fitValues, fitDiffs, passPretag, passPretagUncert )
+            print("passPretag {}".format(passPretag))
+            zplot = APlot(istage , y_max_scale, hdata, hdata2, hmc,hmc2 , hstack, httbar, hwjets, hsingletop, hqcd, str(histName0), lumi/1000., lepTag, cutTag, options.fixFit, expectedRunsHist, self.otherttbar, fitValues, fitDiffs, passPretag, passPretagUncert, type2 )
    
-            if ( isWmass and istage == 16 ) or ( isTopmass and istage == 14 ):
+            print("isWmass {} isTopmass {} istage {} type2 {} type1 {} ".format(isWmass,isTopmass, istage ,type2, type1))
+            if ( isWmass and istage == 14 and type2) or ( isWmass and istage == 16 and type1) or ( isTopmass and istage == 14 and type1 ):
                 hpeak = zplot.GetJMSHist()
                 hwidth = zplot.GetJMRHist()
                 hSFs = zplot.GetSFHist()
@@ -439,7 +506,7 @@ class plotstack() :
                 hNpassMCPost = zplot.GetMCPostHist()
                 hNpassMCPost.SetName("hNpassMCPost" +histName )
 
-            if ( isWmass and istage == 15 ) or ( isTopmass and istage == 13 ):
+            if ( isWmass and istage == 13 and type2) or  ( isWmass and istage == 15 and type1) or ( isTopmass and istage == 13 and type1):
                 hNpassDataPre = zplot.GetDataPreHist()
                 hNpassDataPre.SetName("hNpassDataPre" +histName )
 
@@ -452,13 +519,18 @@ class plotstack() :
                 print("fitDiffs {}".format(fitDiffs))
 
                 passPretagUncert = zplot.GetpassPretagUncert()
-                passPretag = zplot.GetpassPretag()
+                print("passPretagUncert {}".format(passPretagUncert))
 
-            zplot.ResetHists()
+                passPretag = zplot.GetpassPretag()
+                print("passPretag {}".format(passPretag))
+
+
+            if istage >= 11:    
+                zplot.ResetHists()
             theCanvas = zplot.GetPlotCanvas()
             
-            theCanvas.Print("./plotstack_"+ str(endstring2)+ "/" + histName0 + lep + str(istage)  + instring + endstring2+tune+".pdf", "pdf")
-            theCanvas.Print("./plotstack_"+ str(endstring2)+ "/" + histName0 + lep + str(istage)  + instring + endstring2+tune+".png", "png")
+            theCanvas.Print("./plotstack_"+ str(endstring3)+ "/" + histName0 + lep + str(istage)  + instring + endstring2+tune+".pdf", "pdf")
+            theCanvas.Print("./plotstack_"+ str(endstring3)+ "/" + histName0 + lep + str(istage)  + instring + endstring2+tune+".png", "png")
 
             theOutfile.cd()
                             
@@ -474,14 +546,14 @@ class plotstack() :
                 lenobj = len(keepers) 
             if ( isWmass and istage > 16 ) or ( isTopmass and istage > 14 ) :
                 lenobj = len(keepers) - 5
-            for i in range(0, lenobj):
+            for i in range(0, int(lenobj)):
                 print("obj {} is being saved to the root outfile".format(keepers[i]))
                 #keepers[i].SetName(keepersNames[i] + str(istage))
                 if ( isWmass and istage > 16 ) or ( isTopmass and istage > 14 ) and i >= 8  :
                     continue
                 keepers[i].SetName(keepersNames[i] +histName)
                 keepers[i].Write(keepersNames[i] +histName, ROOT.TObject.kWriteDelete)
- 
+            print("theOutfile is {}".format(theOutfile))
             
         missingRunsList = []
 

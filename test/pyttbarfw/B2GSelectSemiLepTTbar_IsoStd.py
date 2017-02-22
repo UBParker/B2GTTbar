@@ -27,7 +27,8 @@ class B2GSelectSemiLepTTbar_IsoStd( ) :
         self.ak8SDJet = None
         self.trigIndex = [ self.trigMap.HLT_Mu50_v,
             #elf.trigMap.HLT_TkMu50_v
-            self.trigMap.HLT_Ele45_CaloIdVT_GsfTrkIdT_PFJet200_PFJet50_v,
+            self.trigMap.HLT_Ele105_CaloIdVT_GsfTrkIdT_v,
+            #self.trigMap.HLT_Ele45_CaloIdVT_GsfTrkIdT_PFJet200_PFJet50_v,
             #self.trigMap.HLT_Ele105_CaloIdVT_GsfTrkIdT_v          ] ### To-Do: Add other trigger as suggested here https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideMuonIdRun2
         ### Cached class member variables for plotting
         self.RunNumber = None
@@ -370,10 +371,10 @@ class B2GSelectSemiLepTTbar_IsoStd( ) :
         if not (self.MuTight or  self.ElMedium ): return self.passed 
         self.passed[3] = True
         self.passedCount[3] += 1         
-        if self.verbose: print"Stage 3: Muon is tight {} or Electron passed tight cut based ID with no iso {}".format(self.tree.MuTight[0], self.tree.Electron_noiso_passTight[0] )
+        if self.verbose: print"Stage 3: Muon is tight {} or Electron passed medium cut based ID with no iso {}".format(self.tree.MuTight[0], self.tree.Electron_noiso_passTight[0] )
 
 
-        if not (( self.tree.LeptonIsMu[0] == 1 and self.leptonP4.Perp() > 53. and abs(self.leptonP4.Eta()) < 2.1 ) or  (self.tree.LeptonIsMu[0] == 0 and self.leptonP4.Perp() > 120. and (0. < abs(self.leptonP4.Eta()) < 1.442 or 1.56  < abs(self.leptonP4.Eta()) < 2.5 )  )) : return self.passed
+        if not (( self.tree.LeptonIsMu[0] == 1 and self.leptonP4.Perp() > 55. and abs(self.leptonP4.Eta()) < 2.1 ) or  (self.tree.LeptonIsMu[0] == 0 and self.leptonP4.Perp() > 120. and (0. < abs(self.leptonP4.Eta()) < 1.442 or 1.56  < abs(self.leptonP4.Eta()) < 2.5 )  )) : return self.passed
         self.passed[4] = True
         self.passedCount[4] += 1        
         if self.verbose: print"Stage 4: Lepton passed Pt and eta cuts"
