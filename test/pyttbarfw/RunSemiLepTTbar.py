@@ -308,9 +308,12 @@ class RunSemiLepTTbar() :
         self.EventWeight =  a.EventWeight
         self.PUWeight = a.PUWeight
         self.TriggEffIs  = a.TriggEffIs
+        self.recoSFIs = a.recoSFIs 
         self.CutIDScaleFIs = a.CutIDScaleFIs
         self.CutIDScaleFLooseIs = a.CutIDScaleFLooseIs
-        self.MuonHIPScaleFIs = a.MuonHIPScaleFIs
+        self.MuHighPtScaleFIs = a.MuHighPtScaleFIs
+        self.HEEPSFIs = a.HEEPSFIs
+        #self.MuonHIPScaleFIs = a.MuonHIPScaleFIs
         self.BtagWeight =  a.BtagWeight
         self.theWeight = 1.
         

@@ -43,4 +43,3 @@ python RunSemiLepTTbar.py --infile root://131.225.207.127:1094//store/user/aspar
 python RunSemiLepTTbar.py --infile root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ST_tchannel-antitop_V4.root --outfile singletop_tchannel_outfileCommit4e6154.root --ignoreTrig >& singletop_tchannel_outfileCommit4e6154_out.log &
 python RunSemiLepTTbar.py --infile root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ST_tW-antitop_V4.root --outfile singletop_tWantitop_outfileCommit4e6154.root --ignoreTrig >& singletop_tWantitop_outfileCommit4e6154_out.log &
 python RunSemiLepTTbar.py --infile /uscms_data/d2/rappocc/analysis/B2G/CMSSW_8_0_22/src/Analysis/B2GTTbar/test/pyttbarfw/b2gtree_MC_ST_tchannel-top_V4.root --outfile singletop_tchanneltop_outfileCommit4e6154.root --ignoreTrig >& singletop_tchanneltop_outfileCommit4e6154_out.log &
-
