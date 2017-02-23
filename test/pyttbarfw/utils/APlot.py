@@ -35,6 +35,7 @@ class APlot () :
         
         self.isWmass = False
         self.isTopmass = False
+        self.dontFit = True
         self.fixFit = False
         self.SF = -1.
         self.SF_sd = -1.
@@ -141,7 +142,9 @@ class APlot () :
             self.expectedRuns.Draw("same")
         else:    
             self.histofAllMC.GetXaxis().SetRangeUser( rangeMin, rangeMax )          
-        
+            self.histofAllMC.SetFillStyle(3144)#3019)
+            self.histofAllMC.SetFillColor(ROOT.kGray+1)
+            self.histofAllMC.Draw("E2 same")
             self.mcStack.Draw("hist same")
             self.histofAlldata.Draw("e x0 same")
         self.minn = 0.
@@ -149,7 +152,8 @@ class APlot () :
         rangenum = 17
         if self.typeis: rangenum = 15
         #fittingLimits = [ [minAvg, minAvg, minAvg, minAvg, minAvg, minAvg, minAvg ] , [maxAvg, maxAvg, maxAvg, maxAvg, maxAvg, maxAvg, maxAvg ] ]
-        self.ipt = None     
+        self.ipt = None  
+        print("Histname is {}".format(self.histoName)   )
         noFitList = ['LeptonPtHist', 'LeptonEtaHist', 'METPtHist', 'HTLepHist', 'WeightHist',
                      'RunNumberHist', 'AK8PuppiSDPtResponse', 'AK8SDPtResponse', 'AK8SDPuppiptGenptResponse',
                      'AK8SDPuppimassSDCHSmassResponse', 'AK8SDPuppiMasswithPuppiCorrvsSDPuppiMassResponse', 'AK8MSDRawHist',
@@ -160,11 +164,13 @@ class APlot () :
                     
                     
                     
-        if  (rangenum  - 4 )  <= self.isstage <= rangenum   :
+        if ( self.isWmass and self.isstage == (14 or 13 or 15) and self.typeis) or ( self.isWmass and self.isstage ==( 17 or 15)and not self.typeis) or ( self.isTopmass and self.isstage ==( 14 or 13) and not self.typeis ) :
             print("rangenum is {}".format(self.isstage))
             if self.histoName in noFitList:
                 print("Histo is in the noFitList.")
+                self.dontFit = True
             else :
+                self.dontFit = False
                 ### Fit these histos to a Gaussian and save mean and std dev for later use
                 self.histofAlldata.Draw("e same x0")
 
@@ -172,7 +178,7 @@ class APlot () :
                         self.isWmass = True
                         self.minn = 55.
                         self.maxx = 115.
-                        print("Type2 W mass fit range [{0},{1}]".format(self.minn,self.maxx ))
+                        print("Type 2 W mass fit range [{0},{1}]".format(self.minn,self.maxx ))
                 else:   
                     if (self.histoName.find("SDSJ")== -1 ) :
                         self.minn = 110.
@@ -198,179 +204,185 @@ class APlot () :
 
 
             ibin = self.hpeak.GetXaxis().FindBin(self.ptIs)
-            print( "Fitting range is from {0:2.2f} to {1:2.2f} GeV".format(self.minn, self.maxx ) )
+            if self.dontFit == False:
+                print( "Fitting range is from {0:2.2f} to {1:2.2f} GeV".format(self.minn, self.maxx ) )
 
-            self.fitter_data = ROOT.TF1("fitter_data"+ str(self.isstage), "gaus", self.minn , self.maxx )                
+                self.fitter_data = ROOT.TF1("fitter_data"+ str(self.isstage), "gaus", self.minn , self.maxx )                
 
-            self.fitter_mc = ROOT.TF1("fitter_mc"+ str(self.isstage), "gaus", self.minn , self.maxx )   
-            histofAlldata.GetXaxis().SetTitle("")
-            self.fitter_data.SetTitle("")
-            self.fitter_mc.SetTitle("")
-            self.histofAllMC.SetTitle("")
-            if ( self.isWmass and self.isstage == 14 and self.typeis) or ( self.isWmass and self.isstage == 16 and not self.typeis) or ( self.isTopmass and self.isstage == 14 and not self.typeis ) :
-                self.fixFit = True
-                ROOT.gStyle.SetOptStat(000000)
-                histofAlldata.SetTitleOffset(1.4)
+                self.fitter_mc = ROOT.TF1("fitter_mc"+ str(self.isstage), "gaus", self.minn , self.maxx )   
                 histofAlldata.GetXaxis().SetTitle("")
                 self.fitter_data.SetTitle("")
                 self.fitter_mc.SetTitle("")
                 self.histofAllMC.SetTitle("")
-                data_meanval = self.fitValues[1][0]
-                data_sigmaval = self.fitValues[1][1] 
-                mc_meanval = self.fitValues[1][2]
-                mc_sigmaval = self.fitValues[1][3] 
-                print("Fixing Fit in data (mc) to mean {0:2.2f}({1:2.2f}) and width {2:2.2f}({3:2.2f}) ".format(data_meanval, mc_meanval, data_sigmaval, mc_sigmaval  ))
-                self.fitter_data.FixParameter(1, data_meanval)
-                self.fitter_data.FixParameter(2, data_sigmaval)
-                self.fitter_mc.FixParameter(1, mc_meanval)
-                self.fitter_mc.FixParameter(2, mc_sigmaval)                    
+                if ( self.isWmass and self.isstage == 14 and self.typeis) or ( self.isWmass and self.isstage == 17 and not self.typeis) or ( self.isTopmass and self.isstage == 14 and not self.typeis ) :
+                    self.fixFit = True
+                    ROOT.gStyle.SetOptStat(000000)
+                    histofAlldata.SetTitleOffset(1.4)
+                    histofAlldata.GetXaxis().SetTitle("")
+                    self.fitter_data.SetTitle("")
+                    self.fitter_mc.SetTitle("")
+                    self.histofAllMC.SetTitle("")
+                    data_meanval = self.fitValues[1][0]
+                    data_sigmaval = self.fitValues[1][1] 
+                    mc_meanval = self.fitValues[1][2]
+                    mc_sigmaval = self.fitValues[1][3] 
+                    print("Fixing Fit in data (mc) to mean {0:2.2f}({1:2.2f}) and width {2:2.2f}({3:2.2f}) ".format(data_meanval, mc_meanval, data_sigmaval, mc_sigmaval  ))
+                    self.fitter_data.FixParameter(1, data_meanval)
+                    self.fitter_data.FixParameter(2, data_sigmaval)
+                    self.fitter_mc.FixParameter(1, mc_meanval)
+                    self.fitter_mc.FixParameter(2, mc_sigmaval)                    
 
-            self.fitter_data.SetLineColor(1)
-            self.fitter_data.SetLineWidth(2)
-            self.fitter_data.SetLineStyle(2)
-            self.fitter_mc.SetLineColor(4)
-            self.fitter_mc.SetLineWidth(2)
-            self.fitter_mc.SetLineStyle(4) 
-            self.fitter_mc.GetXaxis().SetRangeUser( rangeMin, rangeMax )          
-            self.fitter_data.GetXaxis().SetRangeUser( rangeMin, rangeMax )          
+                self.fitter_data.SetLineColor(1)
+                self.fitter_data.SetLineWidth(2)
+                self.fitter_data.SetLineStyle(2)
+                self.fitter_mc.SetLineColor(4)
+                self.fitter_mc.SetLineWidth(2)
+                self.fitter_mc.SetLineStyle(4) 
+                self.fitter_mc.GetXaxis().SetRangeUser( rangeMin, rangeMax )          
+                self.fitter_data.GetXaxis().SetRangeUser( rangeMin, rangeMax )          
 
-            if self.fixFit :
-                self.histofAlldata.Fit(self.fitter_data,'R' )
-                self.histofAllMC.Fit(self.fitter_mc,'R' )
-                
-            else :
-                self.histofAlldata.Fit(self.fitter_data,'R' )
-                self.histofAllMC.Fit(self.fitter_mc,'R' )
-                
-            self.mcStack.Draw("hist same")
-            self.fitter_data.Draw("e same")
-            self.fitter_mc.Draw("e same")
-
-            self.histofAlldata.Draw("e same x0")
-            amp_data    = self.fitter_data.GetParameter(0)
-            eamp_data   = self.fitter_data.GetParError(0) 
-            mean_data   = self.fitter_data.GetParameter(1)
-            emean_data  = self.fitter_data.GetParError(1) 
-            width_data  = self.fitter_data.GetParameter(2)
-            ewidth_data = self.fitter_data.GetParError(2) 
-
-            print( 'Combined: amp_data {0:6.3}, eamp_data {1:6.3}, mean_data {2:6.3},emean_data {3:6.3}, width_data {4:6.3}, ewidth_data {5:6.3}  '.format(amp_data , eamp_data , mean_data, emean_data,  width_data, ewidth_data   ) )
-
-            amp_mc    = self.fitter_mc.GetParameter(0)
-            eamp_mc   = self.fitter_mc.GetParError(0) 
-            mean_mc   = self.fitter_mc.GetParameter(1)
-            emean_mc  = self.fitter_mc.GetParError(1) 
-            width_mc  = self.fitter_mc.GetParameter(2)
-            ewidth_mc = self.fitter_mc.GetParError(2) 
-                  
-            print( 'MC : amp_mc {0:6.3}, eamp_mc {1:6.3}, mean_mc {2:6.3},emean_mc {3:6.3}, width_mc {4:6.3}, ewidth_mc {5:6.3}  '.format(amp_mc , eamp_mc , emean_mc, emean_mc,  width_mc, ewidth_mc   )       )
-            
-            self.mcAxis = self.histofAllMC.GetXaxis()
-            self.dataAxis = self.histofAlldata.GetXaxis()
-
-            binSizeData = self.histofAlldata.GetBinWidth(0)
-            binSizeMC = self.histofAllMC.GetBinWidth(0) 
-
-            print("Bin size in data {0:1.2f} and MC  {1:1.2f}".format(binSizeData, binSizeMC ) )
-            #print("self.fitDiffs[2][0] {}".format(self.fitDiffs[2][0]))
-            self.bins = [self.dataAxis.FindBin(self.fitDiffs[2][0]), self.dataAxis.FindBin(self.fitDiffs[2][1]), self.mcAxis.FindBin(self.fitDiffs[2][2]), self.mcAxis.FindBin(self.fitDiffs[2][3]) ] # data low high, mc low high
-
-            
-            print("stage {0:1.2f} isWmass  {1:}".format(self.isstage, self.isWmass ) )
-
-            if  ( self.isWmass and self.isstage == 13 and self.typeis) or ( self.isWmass and self.isstage == 15 and not self.typeis ) or ( self.isTopmass and self.isstage == 13 and not self.typeis  ) : ### Save the means and sigmas of the pre-tau21 mass cut distribution
-                self.fitValues[1][0] = mean_data
-                self.fitValues[1][1] = width_data
-                self.fitValues[1][2] = mean_mc
-                self.fitValues[1][3] = width_mc
-                
-                self.fitDiffs[1][0] = self.fitValues[1][0] - self.fitValues[1][1]
-                self.fitDiffs[1][1] = self.fitValues[1][0] + self.fitValues[1][1]
-                self.fitDiffs[1][2] = self.fitValues[1][2] - self.fitValues[1][3]
-                self.fitDiffs[1][3] = self.fitValues[1][2] + self.fitValues[1][3]
-                print("self.fitDiffs[1][0] {}".format(self.fitDiffs[1][0]))
-                self.bins = [self.dataAxis.FindBin(self.fitDiffs[1][0]), self.dataAxis.FindBin(self.fitDiffs[1][1]), self.mcAxis.FindBin(self.fitDiffs[1][2]), self.mcAxis.FindBin(self.fitDiffs[1][3]) ] # data low high, mc low high
-                self.passPretag = [self.histofAlldata.Integral(self.bins[0], self.bins[1]  ), self.histofAllMC.Integral(self.bins[2] , self.bins[3]  )] # data, mc
-                self.passPretagUncert = [ math.sqrt( self.passPretag[0] ) , math.sqrt( self.passPretag[1] ) ] # data, mc
-                
-                ibin = self.hNpassDataPre.GetXaxis().FindBin(self.ptIs )
-                self.hNpassDataPre.SetBinContent(ibin, self.passPretag[0])
-                print("self.histofAlldata.Integral   {0:4.3f} (self.bins[0]   {1} , self.bins[1]  {2} )".format(self.histofAlldata.Integral(self.bins[0], self.bins[1]  ), self.bins[0], self.bins[1] ))
-
-                self.hNpassMCPre.SetBinContent(ibin, self.passPretag[1])
-                print("self.hNpassMCPre {} in bin {}".format(self.passPretag[1] , ibin ) )
-
-                self.hNpassDataPre.SetBinError(ibin, self.passPretagUncert[0]) 
-                self.hNpassMCPre.SetBinError(ibin, self.passPretagUncert[1])
-
-                
-            if  ( self.isWmass and self.isstage == 14 and self.typeis) or ( self.isWmass and self.isstage == 16 and not self.typeis ) or ( self.isTopmass and self.isstage == 14 and not self.typeis ): ### Save the means and sigmas of the tau21 cut distribution
-                self.fitValues[2][0] = mean_data
-                self.fitValues[2][1] = width_data
-                self.fitValues[2][2] =  mean_mc
-                self.fitValues[2][3] = width_mc    
-                
-                self.fitDiffs[2][0] = self.fitValues[1][0] - self.fitValues[1][1]
-                self.fitDiffs[2][1] = self.fitValues[1][0] + self.fitValues[1][1]
-                self.fitDiffs[2][2] = self.fitValues[1][2] - self.fitValues[1][3]
-                self.fitDiffs[2][3] = self.fitValues[1][2] + self.fitValues[1][3]
-                print("self.fitDiffs[2][0] {}".format(self.fitDiffs[2][0]))
-                self.bins = [self.dataAxis.FindBin(self.fitDiffs[2][0]), self.dataAxis.FindBin(self.fitDiffs[2][1]), self.mcAxis.FindBin(self.fitDiffs[2][2]), self.mcAxis.FindBin(self.fitDiffs[2][3]) ] # data low high, mc low high
-                self.passPosttag = [self.histofAlldata.Integral(self.bins[0], self.bins[1]  ), self.histofAllMC.Integral(self.bins[2] , self.bins[3]  )] # data, mc
-                self.passPosttagUncert = [ math.sqrt( self.passPosttag[0] ) , math.sqrt( self.passPosttag[1] ) ] # data, mc
-
-                if mean_mc > 0. : 
-                    self.jms[0] = mean_data / mean_mc
-                    self.jms[1] = 0.
-                    if self.jms[0] > 0.1:
-                        self.jms[1] = self.jms[0] * math.sqrt( (emean_data/mean_data)**2 + (emean_mc/mean_mc)**2 )
-                if width_mc > 0. :
-                    self.jmr[0] = width_data / width_mc
-                    self.jmr[1] = 0.
-                    if self.jmr[0] > 0.1:
-                        self.jmr[1] = self.jmr[0] * math.sqrt( (ewidth_data/width_data)**2 + (ewidth_mc/width_mc)**2 )
-                        
-                
-                self.hpeak.SetBinContent(ibin, self.jms[0] ) 
-                self.hwidth.SetBinContent(ibin, self.jmr[0] )
-                self.hpeak.SetBinError(ibin, self.jms[1])   
-                self.hwidth.SetBinError(ibin,  self.jmr[1])
-                
-                ibin = self.hNpassDataPost.GetXaxis().FindBin(self.ptIs )
-                self.hNpassDataPost.SetBinContent(ibin, self.passPosttag[0])
-                print("self.hNpassDataPost {} in bin {}".format(self.passPosttag[0] , ibin ) )
-
-                self.hNpassMCPost.SetBinContent(ibin, self.passPosttag[1])
-                print("self.hNpassMCPost {} in bin {}".format(self.passPosttag[1] , ibin ) )
-
-                self.hNpassDataPost.SetBinError(ibin, self.passPosttagUncert[0]) 
-                self.hNpassMCPost.SetBinError(ibin, self.passPosttagUncert[1])
-                
-                if float(self.passPretag[1]) > 0.1 :
-                    self.MCeff = ( float(self.passPosttag[1]) / float(self.passPretag[1]) )
-                if (self.passPretag[0] > 0.1 and self.passPretag[1] > 0.1 and float(self.passPretag[0]) > 0.1 and  self.MCeff > 0.1) :
-                    print( "self.MCeff {} datapre {} datapost {}".format(self.MCeff, self.passPretag[0], self.passPosttag[0]))
-                    self.Dataeff = ( float(self.passPosttag[0]) / float(self.passPretag[0]) ) 
-                    self.SF =  self.Dataeff/self.MCeff
-                    self.SF_sd = self.SF * math.sqrt(   (- float(self.passPosttag[0]) + float(self.passPretag[0]) ) / ( float(self.passPosttag[0]) * float(self.passPretag[0]) )  + (-float(self.passPosttag[1]) + float(self.passPretag[1])) / (float(self.passPosttag[1]) * float(self.passPretag[1]))  )
-                    print( "............................................")
-                    print( "             SCALE FACTOR                   ")
-                    print( "............................................")
-                    print( "pt Bin :  " + str(self.binIs))
-                    if self.isTopmass:
-                        print( "Preliminary Top tagging SF : {0:3.3f} #pm {1:3.3f}".format(  self.SF, self.SF_sd))
-                    else:
-                        print( "Preliminary W tagging SF from subjet w : {0:3.3f} #pm {1:3.3f}".format(  self.SF, self.SF_sd))
-                    print( "Data efficiency for this  bin {0:3.3f}".format(  self.Dataeff ))
-                    print( "MC efficiency for this  bin {0:3.3f}".format(self.MCeff))
-
-                    print( "............................................")
-                    ibin = self.hSFs.GetXaxis().FindBin(self.ptIs)
-                    self.hSFs.SetBinContent(ibin, self.SF )
-                    self.hSFs.SetBinError(ibin, self.SF_sd)
+                if self.fixFit :
+                    self.histofAlldata.Fit(self.fitter_data,'R' )
+                    self.histofAllMC.Fit(self.fitter_mc,'R' )
+                    
                 else :
-                    ibin = self.hSFs.GetXaxis().FindBin(self.ptIs)
-                    self.hSFs.SetBinContent(ibin, 0.0 )
+                    self.histofAlldata.Fit(self.fitter_data,'R' )
+                    self.histofAllMC.Fit(self.fitter_mc,'R' )
+                    
+                self.mcStack.Draw("hist same")
+                self.fitter_data.Draw("same")
+                self.fitter_mc.Draw("same")
+
+                self.histofAlldata.Draw("e same x0")
+                amp_data    = self.fitter_data.GetParameter(0)
+                eamp_data   = self.fitter_data.GetParError(0) 
+                mean_data   = self.fitter_data.GetParameter(1)
+                emean_data  = self.fitter_data.GetParError(1) 
+                width_data  = self.fitter_data.GetParameter(2)
+                ewidth_data = self.fitter_data.GetParError(2) 
+
+                print( 'Combined: amp_data {0:6.3}, eamp_data {1:6.3}, mean_data {2:6.3},emean_data {3:6.3}, width_data {4:6.3}, ewidth_data {5:6.3}  '.format(amp_data , eamp_data , mean_data, emean_data,  width_data, ewidth_data   ) )
+
+                amp_mc    = self.fitter_mc.GetParameter(0)
+                eamp_mc   = self.fitter_mc.GetParError(0) 
+                mean_mc   = self.fitter_mc.GetParameter(1)
+                emean_mc  = self.fitter_mc.GetParError(1) 
+                width_mc  = self.fitter_mc.GetParameter(2)
+                ewidth_mc = self.fitter_mc.GetParError(2) 
+                      
+                print( 'MC : amp_mc {0:6.3}, eamp_mc {1:6.3}, mean_mc {2:6.3},emean_mc {3:6.3}, width_mc {4:6.3}, ewidth_mc {5:6.3}  '.format(amp_mc , eamp_mc , emean_mc, emean_mc,  width_mc, ewidth_mc   )       )
+                
+                self.mcAxis = self.histofAllMC.GetXaxis()
+                self.dataAxis = self.histofAlldata.GetXaxis()
+
+                binSizeData = self.histofAlldata.GetBinWidth(0)
+                binSizeMC = self.histofAllMC.GetBinWidth(0) 
+
+                print("Bin size in data {0:1.2f} and MC  {1:1.2f}".format(binSizeData, binSizeMC ) )
+                #print("self.fitDiffs[2][0] {}".format(self.fitDiffs[2][0]))
+                self.bins = [self.dataAxis.FindBin(self.fitDiffs[2][0]), self.dataAxis.FindBin(self.fitDiffs[2][1]), self.mcAxis.FindBin(self.fitDiffs[2][2]), self.mcAxis.FindBin(self.fitDiffs[2][3]) ] # data low high, mc low high
+
+                
+                print("stage {0:1.2f} isWmass  {1:}".format(self.isstage, self.isWmass ) )
+
+                if  ( self.isWmass and self.isstage == 13 and self.typeis) or ( self.isWmass and self.isstage == 15 and not self.typeis ) or ( self.isTopmass and self.isstage == 13 and not self.typeis  ) : ### Save the means and sigmas of the pre-tau21 mass cut distribution
+                    self.fitValues[1][0] = mean_data
+                    self.fitValues[1][1] = width_data
+                    self.fitValues[1][2] = mean_mc
+                    self.fitValues[1][3] = width_mc
+                    
+                    self.fitDiffs[1][0] = self.fitValues[1][0] - self.fitValues[1][1]
+                    self.fitDiffs[1][1] = self.fitValues[1][0] + self.fitValues[1][1]
+                    self.fitDiffs[1][2] = self.fitValues[1][2] - self.fitValues[1][3]
+                    self.fitDiffs[1][3] = self.fitValues[1][2] + self.fitValues[1][3]
+                    print("self.fitDiffs[1][0] {}".format(self.fitDiffs[1][0]))
+                    self.bins = [self.dataAxis.FindBin(self.fitDiffs[1][0]), self.dataAxis.FindBin(self.fitDiffs[1][1]), self.mcAxis.FindBin(self.fitDiffs[1][2]), self.mcAxis.FindBin(self.fitDiffs[1][3]) ] # data low high, mc low high
+                    self.passPretag = [self.histofAlldata.Integral(self.bins[0], self.bins[1]  ), self.histofAllMC.Integral(self.bins[2] , self.bins[3]  )] # data, mc
+                    self.passPretagUncert = [ math.sqrt( self.passPretag[0] ) , math.sqrt( self.passPretag[1] ) ] # data, mc
+                    
+                    ibin = self.hNpassDataPre.GetXaxis().FindBin(self.ptIs )
+                    self.hNpassDataPre.SetBinContent(ibin, self.passPretag[0])
+                    print("self.histofAlldata.Integral   {0:4.3f} (self.bins[0]   {1} , self.bins[1]  {2} )".format(self.histofAlldata.Integral(self.bins[0], self.bins[1]  ), self.bins[0], self.bins[1] ))
+
+                    self.hNpassMCPre.SetBinContent(ibin, self.passPretag[1])
+                    print("self.hNpassMCPre {} in bin {}".format(self.passPretag[1] , ibin ) )
+
+                    self.hNpassDataPre.SetBinError(ibin, self.passPretagUncert[0]) 
+                    self.hNpassMCPre.SetBinError(ibin, self.passPretagUncert[1])
+
+                    
+                if  ( self.isWmass and self.isstage == 14 and self.typeis) or ( self.isWmass and self.isstage == 17 and not self.typeis ) or ( self.isTopmass and self.isstage == 14 and not self.typeis ): ### Save the means and sigmas of the tau21 cut distribution
+                    self.fitValues[2][0] = mean_data
+                    self.fitValues[2][1] = width_data
+                    self.fitValues[2][2] =  mean_mc
+                    self.fitValues[2][3] = width_mc    
+                    
+                    self.fitDiffs[2][0] = self.fitValues[1][0] - self.fitValues[1][1]
+                    self.fitDiffs[2][1] = self.fitValues[1][0] + self.fitValues[1][1]
+                    self.fitDiffs[2][2] = self.fitValues[1][2] - self.fitValues[1][3]
+                    self.fitDiffs[2][3] = self.fitValues[1][2] + self.fitValues[1][3]
+                    print("self.fitDiffs[2][0] {}".format(self.fitDiffs[2][0]))
+                    self.bins = [self.dataAxis.FindBin(self.fitDiffs[2][0]), self.dataAxis.FindBin(self.fitDiffs[2][1]), self.mcAxis.FindBin(self.fitDiffs[2][2]), self.mcAxis.FindBin(self.fitDiffs[2][3]) ] # data low high, mc low high
+                    self.passPosttag = [self.histofAlldata.Integral(self.bins[0], self.bins[1]  ), self.histofAllMC.Integral(self.bins[2] , self.bins[3]  )] # data, mc
+                    self.passPosttagUncert = [ math.sqrt( self.passPosttag[0] ) , math.sqrt( self.passPosttag[1] ) ] # data, mc
+
+                    if mean_mc > 0. : 
+                        self.jms[0] = mean_data / mean_mc
+                        self.jms[1] = 0.
+                        if self.jms[0] > 0.1:
+                            self.jms[1] = self.jms[0] * math.sqrt( (emean_data/mean_data)**2 + (emean_mc/mean_mc)**2 )
+                    if width_mc > 0. :
+                        self.jmr[0] = width_data / width_mc
+                        self.jmr[1] = 0.
+                        if self.jmr[0] > 0.1:
+                            self.jmr[1] = self.jmr[0] * math.sqrt( (ewidth_data/width_data)**2 + (ewidth_mc/width_mc)**2 )
+                            
+                    
+                    self.hpeak.SetBinContent(ibin, self.jms[0] ) 
+                    self.hwidth.SetBinContent(ibin, self.jmr[0] )
+                    self.hpeak.SetBinError(ibin, self.jms[1])   
+                    self.hwidth.SetBinError(ibin,  self.jmr[1])
+                    
+                    ibin = self.hNpassDataPost.GetXaxis().FindBin(self.ptIs )
+                    self.hNpassDataPost.SetBinContent(ibin, self.passPosttag[0])
+                    print("self.hNpassDataPost {} in bin {}".format(self.passPosttag[0] , ibin ) )
+
+                    self.hNpassMCPost.SetBinContent(ibin, self.passPosttag[1])
+                    print("self.hNpassMCPost {} in bin {}".format(self.passPosttag[1] , ibin ) )
+
+                    self.hNpassDataPost.SetBinError(ibin, self.passPosttagUncert[0]) 
+                    self.hNpassMCPost.SetBinError(ibin, self.passPosttagUncert[1])
+                    
+                    if float(self.passPretag[1]) > 0.1 :
+                        self.MCeff = ( float(self.passPosttag[1]) / float(self.passPretag[1]) )
+                        #self.MCeff  = 1./self.MCeff 
+                    if (self.passPretag[0] > 0.1 and self.passPretag[1] > 0.1 and float(self.passPretag[0]) > 0.1 and  self.MCeff > 0.1) :
+                        print( "self.MCeff {} datapre {} datapost {}".format(self.MCeff, self.passPretag[0], self.passPosttag[0]))
+                        self.Dataeff = ( float(self.passPosttag[0]) / float(self.passPretag[0]) ) 
+                        #self.Dataeff = 1./self.Dataeff
+                        self.SF =  self.Dataeff/self.MCeff
+                        #self.SF_sd = self.SF * math.sqrt(   (+ float(self.passPosttag[0]) - float(self.passPretag[0]) ) / ( float(self.passPosttag[0]) * float(self.passPretag[0]) )  + (float(self.passPosttag[1]) - float(self.passPretag[1])) / (float(self.passPosttag[1]) * float(self.passPretag[1]))  )
+
+                        self.SF_sd = self.SF * math.sqrt(   (- float(self.passPosttag[0]) + float(self.passPretag[0]) ) / ( float(self.passPosttag[0]) * float(self.passPretag[0]) )  + (-float(self.passPosttag[1]) + float(self.passPretag[1])) / (float(self.passPosttag[1]) * float(self.passPretag[1]))  )
+                        print( "............................................")
+                        print( "             SCALE FACTOR                   ")
+                        print( "............................................")
+                        print( "pt Bin :  " + str(self.binIs))
+                        if self.isTopmass:
+                            print( "Preliminary Top tagging SF : {0:3.3f} #pm {1:3.3f}".format(  self.SF, self.SF_sd))
+                        else:
+                            print( "Preliminary W tagging SF from subjet w : {0:3.3f} #pm {1:3.3f}".format(  self.SF, self.SF_sd))
+                        print( "Data efficiency for this  bin {0:3.3f}".format(  self.Dataeff ))
+                        print( "MC efficiency for this  bin {0:3.3f}".format(self.MCeff))
+
+                        print( "............................................")
+                        ibin = self.hSFs.GetXaxis().FindBin(self.ptIs)
+                        self.hSFs.SetBinContent(ibin, self.SF )
+                        self.hSFs.SetBinError(ibin, self.SF_sd)
+                    else :
+                        ibin = self.hSFs.GetXaxis().FindBin(self.ptIs)
+                        self.hSFs.SetBinContent(ibin, 0.0 )
+                    
         self.words = ROOT.TLatex(0.14,0.916,"#font[62]{CMS} #font[52]{Preliminary}")
         self.words.SetNDC()
         self.words.SetTextFont(42)
@@ -386,7 +398,7 @@ class APlot () :
         self.words1.SetLineWidth(2)
         self.words1.Draw()
         
-        self.words2 = ROOT.TLatex(0.8, 0.34,"%s"%(self.cuttag))
+        self.words2 = ROOT.TLatex(0.92, 0.34,"%s"%(self.cuttag))
         self.words2.SetNDC()
         self.words2.SetTextAlign(31)
         self.words2.SetTextFont(42)
@@ -394,7 +406,7 @@ class APlot () :
         self.words2.SetLineWidth(1)
         self.words2.Draw()
                 
-        self.leg = ROOT.TLegend(0.63,0.4,0.78,0.84)
+        self.leg = ROOT.TLegend(0.68,0.4,0.80,0.84)
         self.leg.SetFillColor(0)
         self.leg.SetBorderSize(0)
         self.leg.SetTextSize(0.026)

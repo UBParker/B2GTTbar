@@ -58,7 +58,7 @@ class RunSemiLepTTbar() :
 
         parser.add_option('--tau32Cut', type='float', action='store',
                           dest='tau32Cut',
-                          default = 0.69,
+                          default = 0.75,
                           help='Tau 32 cut')
         
         parser.add_option('--bdiscmin', type='float', action='store',

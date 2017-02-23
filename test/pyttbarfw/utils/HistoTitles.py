@@ -42,22 +42,22 @@ HistoTitles =            {
                               "HTLepHist" : [  "Lepton P_{T} + Missing P_{T} (GeV)", 0.     ,   700. ],
                               #"Iso2DHist" : [ "Lepton 2D isolation (#Delta R vs p_{T}^{REL} )", 0.     ,   400. ],
                               "AK4BdiscHist" : [ "CSVv2 B Disc", 0. , 1. ],
-                              "AK8MSDSJ0Pt200To300Hist" : [ "(200<P_{t}<300) Subjet 0 SD Mass (GeV)", 45.    ,   251. ], # TO-DO : [ move pt label elsewhere on canvas
-                              "AK8MSDSJ0Pt300To400Hist" : [  "(300<P_{t}<400) Subjet 0 SD Mass (GeV)", 45.    ,   251. ], # TO-DO : [ move pt label elsewhere on canvas
-                              "AK8MSDSJ0Pt400To500Hist" : [  "(400<P_{t}<500) Subjet 0 SD Mass (GeV)", 45.    ,   251. ], # TO-DO : [ move pt label elsewhere on canvas
-                              "AK8MSDSJ0Pt500To800Hist" : [  "(500<P_{t}<800) Subjet 0 SD Mass (GeV)", 5.    ,   251. ], # TO-DO : [ move pt label elsewhere on canvas
-                              "AK8MSDSJ1Pt200To300Hist" : [ "(200<P_{t}<300) Subjet 1 SD Mass (GeV)", 5.    ,   251. ], # TO-DO : [ move pt label elsewhere on canvas
-                              "AK8MSDSJ1Pt300To400Hist" : [  "(300<P_{t}<400) Subjet 1 SD Mass (GeV)", 5.    ,   251. ], # TO-DO : [ move pt label elsewhere on canvas
-                              "AK8MSDSJ1Pt400To500Hist" : [  "(400<P_{t}<500) Subjet 1 SD Mass (GeV)", 5.    ,   251. ], # TO-DO : [ move pt label elsewhere on canvas
-                              "AK8MSDSJ1Pt500To800Hist" : [  "(500<P_{t}<800) Subjet 1 SD Mass (GeV)", 5.    ,   251. ], # TO-DO : [ move pt label elsewhere on canvas
-                              "0AK8MSDSJ0Pt200To300Hist" : [ "(200<P_{t}<300) Subjet 0 SD Mass (GeV)", 45.    ,   251. ], # TO-DO : [ move pt label elsewhere on canvas
-                              "0AK8MSDSJ0Pt300To400Hist" : [  "(300<P_{t}<400) Subjet 0 SD Mass (GeV)", 45.    ,   251. ], # TO-DO : [ move pt label elsewhere on canvas
-                              "0AK8MSDSJ0Pt400To500Hist" : [  "(400<P_{t}<500) Subjet 0 SD Mass (GeV)", 45.    ,   251. ], # TO-DO : [ move pt label elsewhere on canvas
-                              "0AK8MSDSJ0Pt500To800Hist" : [  "(500<P_{t}<800) Subjet 0 SD Mass (GeV)", 5.    ,   251. ], # TO-DO : [ move pt label elsewhere on canvas
-                              "0AK8MSDSJ1Pt200To300Hist" : [ "(200<P_{t}<300) Subjet 1 SD Mass (GeV)", 5.    ,   251. ], # TO-DO : [ move pt label elsewhere on canvas
-                              "0AK8MSDSJ1Pt300To400Hist" : [  "(300<P_{t}<400) Subjet 1 SD Mass (GeV)", 5.    ,   251. ], # TO-DO : [ move pt label elsewhere on canvas
-                              "0AK8MSDSJ1Pt400To500Hist" : [  "(400<P_{t}<500) Subjet 1 SD Mass (GeV)", 5.    ,   251. ], # TO-DO : [ move pt label elsewhere on canvas
-                              "0AK8MSDSJ1Pt500To800Hist" : [  "(500<P_{t}<800) Subjet 1 SD Mass (GeV)", 5.    ,   251. ], # TO-DO : [ move pt label elsewhere on canvas             
+                              "AK8MSDSJ0Pt200To300Hist" : [ "(200<P_{t}<300) Subjet 0 SD Mass (GeV)", 0.    ,   150. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "AK8MSDSJ0Pt300To400Hist" : [  "(300<P_{t}<400) Subjet 0 SD Mass (GeV)",  0.    ,   150. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "AK8MSDSJ0Pt400To500Hist" : [  "(400<P_{t}<500) Subjet 0 SD Mass (GeV)",  0.    ,   150. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "AK8MSDSJ0Pt500To800Hist" : [  "(500<P_{t}<800) Subjet 0 SD Mass (GeV)",  0.    ,   150.  ], # TO-DO : [ move pt label elsewhere on canvas
+                              "AK8MSDSJ1Pt200To300Hist" : [ "(200<P_{t}<300) Subjet 1 SD Mass (GeV)", 0.    ,   150. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "AK8MSDSJ1Pt300To400Hist" : [  "(300<P_{t}<400) Subjet 1 SD Mass (GeV)", 0.    ,   150. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "AK8MSDSJ1Pt400To500Hist" : [  "(400<P_{t}<500) Subjet 1 SD Mass (GeV)", 0.    ,   150. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "AK8MSDSJ1Pt500To800Hist" : [  "(500<P_{t}<800) Subjet 1 SD Mass (GeV)", 0.    ,   150. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "0AK8MSDSJ0Pt200To300Hist" : [ "(200<P_{t}<300) Subjet 0 SD Mass (GeV)", 0.    ,   150. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "0AK8MSDSJ0Pt300To400Hist" : [  "(300<P_{t}<400) Subjet 0 SD Mass (GeV)", 0.    ,   150. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "0AK8MSDSJ0Pt400To500Hist" : [  "(400<P_{t}<500) Subjet 0 SD Mass (GeV)", 0.    ,   150. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "0AK8MSDSJ0Pt500To800Hist" : [  "(500<P_{t}<800) Subjet 0 SD Mass (GeV)", 0.    ,   150. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "0AK8MSDSJ1Pt200To300Hist" : [ "(200<P_{t}<300) Subjet 1 SD Mass (GeV)", 0.    ,   150. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "0AK8MSDSJ1Pt300To400Hist" : [  "(300<P_{t}<400) Subjet 1 SD Mass (GeV)", 0.    ,   150. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "0AK8MSDSJ1Pt400To500Hist" : [  "(400<P_{t}<500) Subjet 1 SD Mass (GeV)", 0.    ,   150. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "0AK8MSDSJ1Pt500To800Hist" : [  "(500<P_{t}<800) Subjet 1 SD Mass (GeV)", 0.    ,   150. ], # TO-DO : [ move pt label elsewhere on canvas             
                               "AK8HTHist" : [ "AK8 Jet H_{T} (GeV)", 0.     ,  1000. ],
                               "AK8MPt200To300Hist" : [ "(200<P_{t}<300)  AK8 Jet Mass (GeV)", 0.    ,   400.   ], # TO-DO : [ move pt label elsewhere on canvas
                               "AK8MPt300To400Hist" : [ "(300<P_{t}<400)  AK8 Jet Mass (GeV)", 0.    ,   400.   ], # TO-DO : [ move pt label elsewhere on canvas

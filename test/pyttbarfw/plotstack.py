@@ -182,8 +182,8 @@ class plotstack() :
 
             
         instring = ''
-        if options.highmass: endstring1 =  'f271a16'
-        else: endstring1 =  '186b8ea'
+        if options.highmass: endstring1 = '3526d13'# 'f271a16'
+        else: endstring1 = '3526d13' # '186b8ea'
 
          # #'5db659f' #'605c442'
         endstring2 = 'Commit' + endstring1  # plotstack_Commite39827c
@@ -309,7 +309,7 @@ class plotstack() :
         objs = []
 
         ### Set the maximum y axis increment with respect to the maximum y axis value
-        y_max_scale = 4.9
+        y_max_scale = 1.618
 
         lepTag = None
         cutTag = None
@@ -318,7 +318,7 @@ class plotstack() :
             
             
         rangenum = 15
-        if options.highmass: rangenum = 17 #14
+        if options.highmass: rangenum = 18  #14
 
         ### Runs in stage 0 data selection
         actualRunsList = [] 
@@ -495,7 +495,7 @@ class plotstack() :
             zplot = APlot(istage , y_max_scale, hdata, hdata2, hmc,hmc2 , hstack, httbar, hwjets, hsingletop, hqcd, str(histName0), lumi/1000., lepTag, cutTag, options.fixFit, expectedRunsHist, self.otherttbar, fitValues, fitDiffs, passPretag, passPretagUncert, type2 )
    
             print("isWmass {} isTopmass {} istage {} type2 {} type1 {} ".format(isWmass,isTopmass, istage ,type2, type1))
-            if ( isWmass and istage == 14 and type2) or ( isWmass and istage == 16 and type1) or ( isTopmass and istage == 14 and type1 ):
+            if ( isWmass and istage == 14 and type2) or ( isWmass and istage == 17 and type1) or ( isTopmass and istage == 14 and type1 ):
                 hpeak = zplot.GetJMSHist()
                 hwidth = zplot.GetJMRHist()
                 hSFs = zplot.GetSFHist()
@@ -542,9 +542,9 @@ class plotstack() :
                 lenobj = len(keepers) - 5
             if ( isWmass and istage == 15 ) or ( isTopmass and istage == 13 ) :
                 lenobj = len(keepers) - 3
-            if ( isWmass and istage == 16 ) or ( isTopmass and istage == 14 ) :
+            if ( isWmass and istage == 17 ) or ( isTopmass and istage == 14 ) :
                 lenobj = len(keepers) 
-            if ( isWmass and istage > 16 ) or ( isTopmass and istage > 14 ) :
+            if ( isWmass and istage > 17 ) or ( isTopmass and istage > 14 ) :
                 lenobj = len(keepers) - 5
             for i in range(0, int(lenobj)):
                 print("obj {} is being saved to the root outfile".format(keepers[i]))
