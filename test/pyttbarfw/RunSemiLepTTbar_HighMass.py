@@ -333,10 +333,10 @@ class RunSemiLepTTbar_HighMass() :
                 for iptbin, ptbin in enumerate(b.ak8Jet_Ptbinsb) :
                     if iptbin < 4:
 
-                        self.AK8MPtBinnedHistList0b[iptbin][ilep].append( ROOT.TH1F("0AK8MPt%sTo%sHist"%(ptbin, b.ak8Jet_Ptbinsb[iptbin+1]) +  self.lepNames[ilep] + str(ival), "Jet Mass, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 500) )
-                        self.AK8MSDPtBinnedHistList0b[iptbin][ilep].append( ROOT.TH1F("0AK8MSDPt%sTo%sHist"%(ptbin, b.ak8Jet_Ptbinsb[iptbin+1]) +  self.lepNames[ilep] + str(ival), "Jet Soft Dropped Mass, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 500) )
-                        self.AK8MSDSJ0PtBinnedHistList0b[iptbin][ilep].append( ROOT.TH1F("0AK8MSDSJ0Pt%sTo%sHist"%(ptbin, b.ak8Jet_Ptbinsb[iptbin+1]) +  self.lepNames[ilep] + str(ival), "Leading Subjet Soft Dropped Mass, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 500) )
-                        self.AK8MSDSJ1PtBinnedHistList0b[iptbin][ilep].append( ROOT.TH1F("0AK8MSDSJ1Pt%sTo%sHist"%(ptbin, b.ak8Jet_Ptbinsb[iptbin+1]) +  self.lepNames[ilep] + str(ival), "Sub-Leading Subjet Soft Dropped Mass, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 500) )
+                        self.AK8MPtBinnedHistList0b[iptbin][ilep].append( ROOT.TH1F("b0AK8MPt%sTo%sHist"%(ptbin, b.ak8Jet_Ptbinsb[iptbin+1]) +  self.lepNames[ilep] + str(ival), "Jet Mass, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 500) )
+                        self.AK8MSDPtBinnedHistList0b[iptbin][ilep].append( ROOT.TH1F("b0AK8MSDPt%sTo%sHist"%(ptbin, b.ak8Jet_Ptbinsb[iptbin+1]) +  self.lepNames[ilep] + str(ival), "Jet Soft Dropped Mass, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 500) )
+                        self.AK8MSDSJ0PtBinnedHistList0b[iptbin][ilep].append( ROOT.TH1F("b0AK8MSDSJ0Pt%sTo%sHist"%(ptbin, b.ak8Jet_Ptbinsb[iptbin+1]) +  self.lepNames[ilep] + str(ival), "Leading Subjet Soft Dropped Mass, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 500) )
+                        self.AK8MSDSJ1PtBinnedHistList0b[iptbin][ilep].append( ROOT.TH1F("b0AK8MSDSJ1Pt%sTo%sHist"%(ptbin, b.ak8Jet_Ptbinsb[iptbin+1]) +  self.lepNames[ilep] + str(ival), "Sub-Leading Subjet Soft Dropped Mass, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 500) )
                 
 
 

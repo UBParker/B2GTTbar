@@ -63,7 +63,22 @@ python plotstack.py --highmass --hist AK8MSDRawHist
 python plotstack.py --highmass --hist AK8MSDPUPPIHist
 python plotstack.py --highmass --hist AK8MSDCHSHist
 python plotstack.py --highmass --hist AK8MSDHist
-
+python plotstack.py --highmass --hist b0AK8MPt200To300Hist
+python plotstack.py --highmass --hist b0AK8MSDSJ0Pt200To300Hist
+python plotstack.py --highmass --hist b0AK8MSDSJ0Pt200To300Hist
+python plotstack.py --highmass --hist b0AK8MSDSJ1Pt200To300Hist
+python plotstack.py --highmass --hist b0AK8MPt300To400Hist
+python plotstack.py --highmass --hist b0AK8MSDSJ0Pt300To600Hist
+python plotstack.py --highmass --hist b0AK8MSDSJ0Pt300To600Hist
+python plotstack.py --highmass --hist b0AK8MSDSJ1Pt300To600Hist
+python plotstack.py --highmass --hist b0AK8MPt600To900Hist
+python plotstack.py --highmass --hist b0AK8MSDPt600To900Hist
+python plotstack.py --highmass --hist b0AK8MSDSJ0Pt600To900Hist
+python plotstack.py --highmass --hist b0AK8MSDSJ1Pt600To900Hist
+python plotstack.py --highmass --hist b0AK8MPt900To1000Hist
+python plotstack.py --highmass --hist b0AK8MSDPt900To1000Hist
+python plotstack.py --highmass --hist b0AK8MSDSJ0Pt900To1000Hist
+python plotstack.py --highmass --hist b0AK8MSDSJ1Pt900To1000Hist
 
 python plotstack.py --highmass --el --hist AK8PtHist
 python plotstack.py --highmass --el --hist AK8HTHist
@@ -129,7 +144,22 @@ python plotstack.py --highmass --el --hist AK8MSDRawHist
 python plotstack.py --highmass --el --hist AK8MSDPUPPIHist
 python plotstack.py --highmass --el --hist AK8MSDCHSHist
 python plotstack.py --highmass --el --hist AK8MSDHist
-
+python plotstack.py --highmass --el --hist b0AK8MPt200To300Hist
+python plotstack.py --highmass --el --hist b0AK8MSDSJ0Pt200To300Hist
+python plotstack.py --highmass --el --hist b0AK8MSDSJ0Pt200To300Hist
+python plotstack.py --highmass --el --hist b0AK8MSDSJ1Pt200To300Hist
+python plotstack.py --highmass --el --hist b0AK8MPt300To400Hist
+python plotstack.py --highmass --el --hist b0AK8MSDSJ0Pt300To600Hist
+python plotstack.py --highmass --el --hist b0AK8MSDSJ0Pt300To600Hist
+python plotstack.py --highmass --el --hist b0AK8MSDSJ1Pt300To600Hist
+python plotstack.py --highmass --el --hist b0AK8MPt600To900Hist
+python plotstack.py --highmass --el --hist b0AK8MSDPt600To900Hist
+python plotstack.py --highmass --el --hist b0AK8MSDSJ0Pt600To900Hist
+python plotstack.py --highmass --el --hist b0AK8MSDSJ1Pt600To900Hist
+python plotstack.py --highmass --el --hist b0AK8MPt900To1000Hist
+python plotstack.py --highmass --el --hist b0AK8MSDPt900To1000Hist
+python plotstack.py --highmass --el --hist b0AK8MSDSJ0Pt900To1000Hist
+python plotstack.py --highmass --el --hist b0AK8MSDSJ1Pt900To1000Hist
 
 
 python plotstack.py --highmass --mu --hist AK8PtHist
@@ -196,3 +226,19 @@ python plotstack.py --highmass --mu --hist AK8MSDRawHist
 python plotstack.py --highmass --mu --hist AK8MSDPUPPIHist
 python plotstack.py --highmass --mu --hist AK8MSDCHSHist
 python plotstack.py --highmass --mu --hist AK8MSDHist
+python plotstack.py --highmass --mu --hist b0AK8MPt200To300Hist
+python plotstack.py --highmass --mu --hist b0AK8MSDSJ0Pt200To300Hist
+python plotstack.py --highmass --mu --hist b0AK8MSDSJ0Pt200To300Hist
+python plotstack.py --highmass --mu --hist b0AK8MSDSJ1Pt200To300Hist
+python plotstack.py --highmass --mu --hist b0AK8MPt300To400Hist
+python plotstack.py --highmass --mu --hist b0AK8MSDSJ0Pt300To600Hist
+python plotstack.py --highmass --mu --hist b0AK8MSDSJ0Pt300To600Hist
+python plotstack.py --highmass --mu --hist b0AK8MSDSJ1Pt300To600Hist
+python plotstack.py --highmass --mu --hist b0AK8MPt600To900Hist
+python plotstack.py --highmass --mu --hist b0AK8MSDPt600To900Hist
+python plotstack.py --highmass --mu --hist b0AK8MSDSJ0Pt600To900Hist
+python plotstack.py --highmass --mu --hist b0AK8MSDSJ1Pt600To900Hist
+python plotstack.py --highmass --mu --hist b0AK8MPt900To1000Hist
+python plotstack.py --highmass --mu --hist b0AK8MSDPt900To1000Hist
+python plotstack.py --highmass --mu --hist b0AK8MSDSJ0Pt900To1000Hist
+python plotstack.py --highmass --mu --hist b0AK8MSDSJ1Pt900To1000Hist
