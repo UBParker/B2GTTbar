@@ -119,6 +119,7 @@ class B2GSelectSemiLepTTbar_Type1( ) :
 
  
         self.ak8Jet_Ptbins = [200, 300, 400, 500, 800, 1000]
+        self.ak8Jet_Ptbinsb = [200, 300, 600, 900, 1000, 2000]
 
         ### These Histos are binned by AK8 jet Pt
         self.ak8PuppiJetP4_Binned = [ROOT.TLorentzVector()] * len(self.ak8Jet_Ptbins)
@@ -136,6 +137,13 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.ak8PuppiSDJetP4Subjet1_Binned0 = [ROOT.TLorentzVector()] * len(self.ak8Jet_Ptbins)
         self.ak8PuppiSDJetP4Subjet0PuppiCorrMass_Binned0 = [0.] * len(self.ak8Jet_Ptbins)
         self.ak8PuppiSDJetP4Subjet1PuppiCorrMass_Binned0 = [0.] * len(self.ak8Jet_Ptbins)
+        ### Alternate binning scheme
+        self.ak8PuppiJetP4_Binned0b = [ROOT.TLorentzVector()] * len(self.ak8Jet_Ptbinsb)
+        self.ak8PuppiSDJetP4_Binned0b = [ROOT.TLorentzVector()] * len(self.ak8Jet_Ptbinsb)
+        self.ak8PuppiSDJetP4Subjet0_Binned0b = [ROOT.TLorentzVector()] * len(self.ak8Jet_Ptbinsb)
+        self.ak8PuppiSDJetP4Subjet1_Binned0b = [ROOT.TLorentzVector()] * len(self.ak8Jet_Ptbinsb)
+        self.ak8PuppiSDJetP4Subjet0PuppiCorrMass_Binned0b = [0.] * len(self.ak8Jet_Ptbinsb)
+        self.ak8PuppiSDJetP4Subjet1PuppiCorrMass_Binned0b = [0.] * len(self.ak8Jet_Ptbinsb)
         
         ### PUPPI jet mass corrections
 

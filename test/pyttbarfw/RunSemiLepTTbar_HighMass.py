@@ -205,18 +205,24 @@ class RunSemiLepTTbar_HighMass() :
         self.AK8SDSJ0PtHist = []      
             
         self.lepNames = ['Electron', 'Muon' ]
-        
-        # Create histos for type 1 selection binned by pt of leading SD subjet
+        ### Create histos for type 1 selection binned by pt of AK8
+
         self.AK8MPtBinnedHistList = [[], [] ,[], [] , []]
         self.AK8MSDPtBinnedHistList = [[], [] ,[], [] , []]
         self.AK8MSDSJ0PtBinnedHistList = [[], [] ,[], [] , []]
         self.AK8MSDSJ1PtBinnedHistList = [[], [] ,[], [] , []]
-       
+        ### Create histos for type 1 selection binned by pt of leading SD subjet
+
         self.AK8MPtBinnedHistList0 = [[], [] ,[], [] , []]
         self.AK8MSDPtBinnedHistList0 = [[], [] ,[], [] , []]
         self.AK8MSDSJ0PtBinnedHistList0 = [[], [] ,[], [] , []]
         self.AK8MSDSJ1PtBinnedHistList0 = [[], [] ,[], [] , []]       
-       
+        ### Alternate binning scheme
+        self.AK8MPtBinnedHistList0b = [[], [] ,[], [] , []]
+        self.AK8MSDPtBinnedHistList0b = [[], [] ,[], [] , []]
+        self.AK8MSDSJ0PtBinnedHistList0b = [[], [] ,[], [] , []]
+        self.AK8MSDSJ1PtBinnedHistList0b = [[], [] ,[], [] , []]  
+        
         ### List of all histograms
         self.hists = []
         
@@ -266,8 +272,15 @@ class RunSemiLepTTbar_HighMass() :
                     self.AK8MPtBinnedHistList0[iptbin].append( [] )
                     self.AK8MSDPtBinnedHistList0[iptbin].append( [] )
                     self.AK8MSDSJ0PtBinnedHistList0[iptbin].append( [] )
-                    self.AK8MSDSJ1PtBinnedHistList0[iptbin].append( [] )                    
-            
+                    self.AK8MSDSJ1PtBinnedHistList0[iptbin].append( [] )  
+                                      
+            for iptbin, ptbin in enumerate(b.ak8Jet_Ptbinsb) :
+                if iptbin < 5:
+                    self.AK8MPtBinnedHistList0b[iptbin].append( [] )
+                    self.AK8MSDPtBinnedHistList0b[iptbin].append( [] )
+                    self.AK8MSDSJ0PtBinnedHistList0b[iptbin].append( [] )
+                    self.AK8MSDSJ1PtBinnedHistList0b[iptbin].append( [] ) 
+                    
             for ival in xrange(self.nstages):
                 self.RunNumberHist[ilep].append( ROOT.TH1F("RunNumberHist" + self.lepNames[ilep] + str(ival) , "Run Number for lepton "+self.lepNames[ilep] + str(ival), 286591, 0, 286591) )
                 self.WeightHist[ilep].append( ROOT.TH1F("WeightHist" +  self.lepNames[ilep] + str(ival), "Jet p_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000, -2, 2) )
@@ -317,6 +330,13 @@ class RunSemiLepTTbar_HighMass() :
                         self.AK8MSDPtBinnedHistList0[iptbin][ilep].append( ROOT.TH1F("0AK8MSDPt%sTo%sHist"%(ptbin, b.ak8Jet_Ptbins[iptbin+1]) +  self.lepNames[ilep] + str(ival), "Jet Soft Dropped Mass, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 500) )
                         self.AK8MSDSJ0PtBinnedHistList0[iptbin][ilep].append( ROOT.TH1F("0AK8MSDSJ0Pt%sTo%sHist"%(ptbin, b.ak8Jet_Ptbins[iptbin+1]) +  self.lepNames[ilep] + str(ival), "Leading Subjet Soft Dropped Mass, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 500) )
                         self.AK8MSDSJ1PtBinnedHistList0[iptbin][ilep].append( ROOT.TH1F("0AK8MSDSJ1Pt%sTo%sHist"%(ptbin, b.ak8Jet_Ptbins[iptbin+1]) +  self.lepNames[ilep] + str(ival), "Sub-Leading Subjet Soft Dropped Mass, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 500) )
+                for iptbin, ptbin in enumerate(b.ak8Jet_Ptbinsb) :
+                    if iptbin < 4:
+
+                        self.AK8MPtBinnedHistList0b[iptbin][ilep].append( ROOT.TH1F("0AK8MPt%sTo%sHist"%(ptbin, b.ak8Jet_Ptbinsb[iptbin+1]) +  self.lepNames[ilep] + str(ival), "Jet Mass, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 500) )
+                        self.AK8MSDPtBinnedHistList0b[iptbin][ilep].append( ROOT.TH1F("0AK8MSDPt%sTo%sHist"%(ptbin, b.ak8Jet_Ptbinsb[iptbin+1]) +  self.lepNames[ilep] + str(ival), "Jet Soft Dropped Mass, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 500) )
+                        self.AK8MSDSJ0PtBinnedHistList0b[iptbin][ilep].append( ROOT.TH1F("0AK8MSDSJ0Pt%sTo%sHist"%(ptbin, b.ak8Jet_Ptbinsb[iptbin+1]) +  self.lepNames[ilep] + str(ival), "Leading Subjet Soft Dropped Mass, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 500) )
+                        self.AK8MSDSJ1PtBinnedHistList0b[iptbin][ilep].append( ROOT.TH1F("0AK8MSDSJ1Pt%sTo%sHist"%(ptbin, b.ak8Jet_Ptbinsb[iptbin+1]) +  self.lepNames[ilep] + str(ival), "Sub-Leading Subjet Soft Dropped Mass, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 500) )
                 
 
 
@@ -460,6 +480,31 @@ class RunSemiLepTTbar_HighMass() :
                             self.theSDsj0Masshist0[ilep][index].Fill(  self.ak8SDsj0_m0  , self.theWeight )
                             self.theSDsj1Masshist0[ilep][index].Fill(  self.ak8SDsj1_m0  , self.theWeight )
 
+            for iptbin, ptbin in enumerate(b.ak8Jet_Ptbinsb) :
+                if ptbin <  1000.:
+                    if (  ptbin < b.ak8PuppiSDJetP4_Subjet0.Perp() < self.ak8Jet_Ptbinsb[iptbin+1] ) :
+                        if self.verbose : print"b.ak8PuppiSDJetP4_Subjet0.Perp() : {0:3.2f} pt bin[ {1:}, {2:}]".format( b.ak8PuppiSDJetP4_Subjet0.Perp(), ptbin, b.ak8Jet_Ptbinsb[iptbin+1] )
+                    
+                        self.ak8SDPuppiMass0 =  b.ak8PuppiSD_m_Pcorr
+                        self.ak8PuppiMass0 =  b.ak8Puppi_m_Pcorr
+                        #print"ak8 puppi mass0 from b.ak8Puppi_m_Pcorr is {0:2.2f}".format(b.ak8Puppi_m_Pcorr)
+                        self.ak8SDsj0_m0    =b.ak8SDsj0_m
+                        self.ak8SDsj1_m0    =b.ak8SDsj1_m
+                        self.theMassHist0 = self.AK8MPtBinnedHistList0b[iptbin]
+                        self.theSDMassHist0 = self.AK8MSDPtBinnedHistList0b[iptbin]
+                        self.theSDsj0Masshist0 = self.AK8MSDSJ0PtBinnedHistList0b[iptbin]
+                        self.theSDsj1Masshist0 = self.AK8MSDSJ1PtBinnedHistList0b[iptbin] 
+                      
+
+                        if  self.theMassHist0 != None and self.ak8PuppiMass0 != None :
+                            #if self.verbose: print"Filling Pt binned by SD subjet 0 pt arrays e.g. this one {0:} with the value of ak8puppimass0 {1:2.2f} for ipt {2:d} ptbin {3:d}".format(self.theMassHist0[ilep][index],float( self.ak8PuppiMass0 ), iptbin, ptbin)
+
+                            self.theMassHist0[ilep][index].Fill( self.ak8PuppiMass0  , self.theWeight )                       
+                            self.theSDMassHist0[ilep][index].Fill(  self.ak8SDPuppiMass0 , self.theWeight )
+
+                        if  self.theSDsj0Masshist0 != None :
+                            self.theSDsj0Masshist0[ilep][index].Fill(  self.ak8SDsj0_m0  , self.theWeight )
+                            self.theSDsj1Masshist0[ilep][index].Fill(  self.ak8SDsj1_m0  , self.theWeight )
         ### Fill the Lepton and AK4 histos
         if a.leptonP4 != None : 
             self.LeptonPtHist[ilep][index].Fill( a.leptonP4.Perp()  , self.theWeight )
