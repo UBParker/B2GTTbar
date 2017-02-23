@@ -450,7 +450,7 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.passedCount[2] += 1
         if self.verbose : print "Stage 12 :AK4 bdisc {0:2.2f}  > ( {1:2.2f} ) ".format(  self.ak4JetBdisc , self.bdiscmin )
         
-        if not ( self.minAK8Mass < self.ak8PuppiSD_m_Pcorr < self.maxAK8Mass ) : return self.passed
+        if not ( self.minAK8Mass < self.ak8PuppiSD_m < self.maxAK8Mass ) : return self.passed
         self.passed[3] = True
         self.passedCount[3] += 1
         if self.verbose : print "Stage 13: AK8 SD Puppi mass after Theas corrections  ({0:2.2f}) < {1:2.2f} GeV < ({2:2.2f})  [For comparison SD Puppi mass after puppi corr is  {2:2.2f} ]".format(  self.minAK8Mass , self.ak8SDJetP4.M() , self.maxAK8Mass, self.ak8PuppiSD_m)
@@ -466,7 +466,7 @@ class B2GSelectSemiLepTTbar_Type1( ) :
 
         #W tag the SD subjet 0 fix this: later see if bdisc is higher for subjet 0 or 1
         if self.verbose : print "Mass of SD subjet 0 before puppi corr is: {0:2.2f}".format( float(self.ak8PuppiSDJetP4_Subjet0.M()))
-        if not ( self.minAK8sjMass <  self.ak8SDsj0_m  <  self.maxAK8sjMass) : return self.passed
+        if not ( self.minAK8sjMass <  self.ak8PuppiSDJetP4_Subjet0.M()  <  self.maxAK8sjMass) : return self.passed
         self.passed[5] = True
         self.passedCount[5] += 1
         if self.verbose : print "Stage 15: AK8 SD subjet 0 mass  ({0}) < {1:2.2f} GeV < ({2})  [mass is after puppi mass corr]".format( self.minAK8sjMass ,  self.ak8PuppiSD_subjet0_m  , self.maxAK8sjMass)
