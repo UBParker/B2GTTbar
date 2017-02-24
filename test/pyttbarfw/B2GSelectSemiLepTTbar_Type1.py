@@ -39,7 +39,7 @@ class B2GSelectSemiLepTTbar_Type1( ) :
 
         # Stage 3 (13) -  AK8 SD Jet mass cut
         self.minAK8Mass = 110.
-        self.maxAK8Mass = 300. #250.
+        self.maxAK8Mass = 250.
 
 
         # Stage 4 (14) - 

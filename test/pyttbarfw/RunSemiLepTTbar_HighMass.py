@@ -59,7 +59,7 @@ class RunSemiLepTTbar_HighMass() :
 
         parser.add_option('--tau32Cut', type='float', action='store',
                           dest='tau32Cut',
-                          default = 0.75,
+                          default = 0.8,
                           help='Tau 32 cut')
         
         parser.add_option('--bdiscmin', type='float', action='store',
@@ -486,12 +486,12 @@ class RunSemiLepTTbar_HighMass() :
 
                         if  self.theSDsj0Masshist0 != None :
                             self.theSDsj0Masshist0[ilep][index].Fill(  self.ak8SDsj0_m0  , self.theWeight )
-                            self.theSDsj0Masshist0l2l3[ilep][index].Fill(  self.ak8PuppiSDJetP4_Subjet0.M()  , self.theWeight )
+                            self.theSDsj0Masshist0l2l3[ilep][index].Fill(  b.ak8PuppiSDJetP4_Subjet0.M()  , self.theWeight )
                             self.theSDsj1Masshist0[ilep][index].Fill(  self.ak8SDsj1_m0  , self.theWeight )
 
             for iptbin, ptbin in enumerate(b.ak8Jet_Ptbinsb) :
                 if ptbin <  1000.:
-                    if (  ptbin < b.ak8PuppiSDJetP4_Subjet0.Perp() < self.ak8Jet_Ptbinsb[iptbin+1] ) :
+                    if (  ptbin < b.ak8PuppiSDJetP4_Subjet0.Perp() < b.ak8Jet_Ptbinsb[iptbin+1] ) :
                         if self.verbose : print"b.ak8PuppiSDJetP4_Subjet0.Perp() : {0:3.2f} pt bin[ {1:}, {2:}]".format( b.ak8PuppiSDJetP4_Subjet0.Perp(), ptbin, b.ak8Jet_Ptbinsb[iptbin+1] )
                     
                         self.ak8SDPuppiMass0 =  b.ak8PuppiSD_m_Pcorr
@@ -514,7 +514,7 @@ class RunSemiLepTTbar_HighMass() :
 
                         if  self.theSDsj0Masshist0 != None :
                             self.theSDsj0Masshist0[ilep][index].Fill(  self.ak8SDsj0_m0  , self.theWeight )
-                            self.theSDsj0Masshist0l2l3[ilep][index].Fill(  self.ak8PuppiSDJetP4_Subjet0.M()  , self.theWeight )
+                            self.theSDsj0Masshist0l2l3[ilep][index].Fill(  b.ak8PuppiSDJetP4_Subjet0.M()  , self.theWeight )
 
                             self.theSDsj1Masshist0[ilep][index].Fill(  self.ak8SDsj1_m0  , self.theWeight )
         ### Fill the Lepton and AK4 histos
