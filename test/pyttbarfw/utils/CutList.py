@@ -22,7 +22,12 @@ CutsPerStage_Type1 =            {
                               "15" :  [ "Stage 15", "10 < M_{SD SJ0 AK8} < 120"],   
                               "16" :  [ "Stage 16" , "AK8 SDSJ0 FAIL #tau_{21} < 0.55"],    
                               "17" :  [ "Stage 17" , "AK8 SDSJ0 PASS #tau_{21} < 0.55"],                                                              
-                              "18" :  [ "Stage 18" , "AK8 SDSJ0 Btag CSVv2Med"]             }                              
+                              "18" :  [ "Stage 18" , "Unmerged W "],
+                              "19" :  [ "Stage 19" , "matchedGen MERGED W"],                                          
+                              "20" :  [ "Stage 20" , "matchedGen MERGED W DR<0.4"],                                         
+                              "21" :  [ "Stage 21" , "AK8 SDSJ0 Btag CSVv2Med"]             }                              
+
+
 
 ### low mass
 

@@ -75,6 +75,28 @@ HistoTitles =            {
                               "0AK8MSDPt300To400Hist" : [  "(300<P_{t}<400)  AK8 SD Jet Mass (GeV)", 0.    ,   400.   ],# TO-DO : [ move pt label elsewhere on canvas
                               "0AK8MSDPt400To500Hist" : [ "(400<P_{t}<500)  AK8 SD Jet Mass (GeV)", 0.    ,   400.   ],# TO-DO : [ move pt label elsewhere on canvas
                               "0AK8MSDPt500To800Hist" : [ "(500<P_{t}<800)  AK8 SD Jet Mass (GeV)", 0.    ,   400.   ],# TO-DO : [ move pt label elsewhere on canvas
+                              "l2l3b0AK8MSDSJ0Pt200To300Hist" : [  "(200<P_{t}<300) Subjet 0 SD Mass (GeV)", 0.    ,   150. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "l2l3b0AK8MSDSJ0Pt300To600Hist" : [  "(300<P_{t}<600) Subjet 0 SD Mass (GeV)", 0.    ,   150. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "l2l3b0AK8MSDSJ0Pt600To900Hist" : [  "(600<P_{t}<900) Subjet 0 SD Mass (GeV)", 0.    ,   150. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "l2l3b0AK8MSDSJ0Pt900To1000Hist" : [  "(900<P_{t}<1000) Subjet 0 SD Mass (GeV)", 0.    ,   150. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "l2l30AK8MSDSJ0Pt200To300Hist" : [  "(200<P_{t}<300) Subjet 0 SD Mass (GeV)", 0.    ,   150. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "l2l30AK8MSDSJ0Pt300To400Hist" : [  "(300<P_{t}<400) Subjet 0 SD Mass (GeV)", 0.    ,   150. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "l2l30AK8MSDSJ0Pt400To500Hist" : [  "(400<P_{t}<500) Subjet 0 SD Mass (GeV)", 0.    ,   150. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "l2l30AK8MSDSJ0Pt500To800Hist" : [  "(600<P_{t}<900) Subjet 0 SD Mass (GeV)", 0.    ,   150. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "b0AK8MSDSJ0Pt200To300Hist" : [  "(200<P_{t}<300) Subjet 0 SD Mass (GeV)", 0.    ,   150. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "b0AK8MSDSJ0Pt300To600Hist" : [  "(300<P_{t}<600) Subjet 0 SD Mass (GeV)", 0.    ,   150. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "b0AK8MSDSJ0Pt600To900Hist" : [  "(600<P_{t}<900) Subjet 0 SD Mass (GeV)", 0.    ,   150. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "b0AK8MSDSJ0Pt900To1000Hist" : [  "(900<P_{t}<1000) Subjet 0 SD Mass (GeV)", 0.    ,   150. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "b0AK8MSDSJ1Pt200To300Hist" : [  "(200<P_{t}<300) Subjet 0 SD Mass (GeV)", 0.    ,   150. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "b0AK8MSDSJ1Pt300To600Hist" : [  "(300<P_{t}<600) Subjet 0 SD Mass (GeV)", 0.    ,   150. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "b0AK8MSDSJ1Pt600To900Hist" : [  "(600<P_{t}<900) Subjet 0 SD Mass (GeV)", 0.    ,   150. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "b0AK8MSDSJ1Pt900To1000Hist" : [  "(900<P_{t}<1000) Subjet 0 SD Mass (GeV)", 0.    ,   150. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "b0AK8MPt200To300Hist" : [  "(200<P_{t}<300) Subjet 0 SD Mass (GeV)", 0.    ,   150. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "b0AK8MPt300To600Hist" : [  "(300<P_{t}<600) Subjet 0 SD Mass (GeV)", 0.    ,   150. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "b0AK8MPt600To900Hist" : [  "(600<P_{t}<900) Subjet 0 SD Mass (GeV)", 0.    ,   150. ], # TO-DO : [ move pt label elsewhere on canvas
+                              "b0AK8MPt900To1000Hist" : [  "(900<P_{t}<1000) Subjet 0 SD Mass (GeV)", 0.    ,   150. ], # TO-DO : [ move pt label elsewhere on canvas
+
+
                               }
 
                                  
