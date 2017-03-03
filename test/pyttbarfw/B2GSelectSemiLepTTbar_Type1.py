@@ -18,7 +18,7 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.infile = options.infile
         if self.verbose : print "The infile is : {}".format(self.infile)
 
-        self.nstages = 12
+        self.nstages = 11
         
         self.tree = tree
         self.lepsel = lepsel
@@ -498,57 +498,51 @@ class B2GSelectSemiLepTTbar_Type1( ) :
 
         #if self.verbose : print "mass of sd subjet 0 after puppi corr in bin 200-300 {0:2.3f}, 300-400 {1:2.3f}, 400-500 {2:2.3f}, 500-800 {3:2.3f}".format(self.ak8SDsj0_m200,self.ak8SDsj0_m300,self.ak8SDsj0_m400,self.ak8SDsj0_m500)
 
-
-        if self.verbose :print " tau21 of SD subjet 0 is: {0:2.2f}".format( float( self.ak8SDsubjet0tau21) )
-        if not ( self.ak8SDsubjet0tau21 < self.tau21Cut ) :
-            self.passed[6] = True
-            self.passedCount[6] += 1
-            if self.verbose : print "Stage 16: FAIL AK8 SD subjet 0 tau21  {0:2.2f}  < ( {1} ) ".format( self.ak8SDsubjet0tau21 , self.tau21Cut )
-            return self.passed
-        self.passed[7] = True
-        self.passedCount[7] += 1
-        if self.verbose : print "Stage 17: PASS AK8 SD subjet 0 tau21  {0:2.2f}  < ( {1} ) ".format( self.ak8SDsubjet0tau21 , self.tau21Cut )
-
         if self.itIsData :
             if  self.GenMatchDR_pup0_Wd1 > 0. : 
+                self.passed[6] = True
+                if self.verbose or self.matchverbose: print "Stage 16: Data has no Gen particles "
+                return self.passed
+            if  self.GenMatchDR_pup0_Wd1 > 0. :
+                self.passed[7] = True
+                if self.verbose or self.matchverbose: print "Stage 17: Data has no Gen particles "
+                return self.passed
+            if  self.GenMatchDR_pup0_Wd1 > 0. :
                 self.passed[8] = True
                 if self.verbose or self.matchverbose: print "Stage 18: Data has no Gen particles "
-                return self.passed
-            if  self.GenMatchDR_pup0_Wd1 > 0. :
-                self.passed[9] = True
-                if self.verbose or self.matchverbose: print "Stage 19: Data has no Gen particles "
-                return self.passed
-            if  self.GenMatchDR_pup0_Wd1 > 0. :
-                self.passed[10] = True
-                if self.verbose or self.matchverbose: print "Stage 20: Data has no Gen particles "
                 return self.passed
 
 
         else : ### Gen matching to find the REAL merged Ws 
-            print "PRE Stage 18:  DR btw subjet and quarks are {0:2.2f} and {1:2.2f} compared to DR with b {2:2.2f} ".format( self.GenMatchDR_pup0_Wd1, self.GenMatchDR_pup0_Wd2, self.GenMatchDR_pup0_b )
+            print "PRE Stage 16:  DR btw subjet and quarks are {0:2.2f} and {1:2.2f} compared to DR with b {2:2.2f} ".format( self.GenMatchDR_pup0_Wd1, self.GenMatchDR_pup0_Wd2, self.GenMatchDR_pup0_b )
             if  (self.GenMatchDR_pup0_Wd1 > 0.40) or (self.GenMatchDR_pup0_Wd2 > 0.4) or self.GenMatchDR_pup0_Wd1 >self.GenMatchDR_pup0_b  or  self.GenMatchDR_pup0_Wd2 > self.GenMatchDR_pup0_b  :
-                self.passed[8] = True
-                self.passedCount[8] += 1
+                self.passed[6] = True
+                self.passedCount[6] += 1
                 if self.verbose or self.matchverbose: 
-                    print "Stage 18: W is unmerged since DR btw subjet and quarks are {0:2.2f} and {1:2.2f} compared to DR with b {2:2.2f} ".format( self.GenMatchDR_pup0_Wd1, self.GenMatchDR_pup0_Wd2, self.GenMatchDR_pup0_b )
+                    print "Stage 16: W is unmerged since DR btw subjet and quarks are {0:2.2f} and {1:2.2f} compared to DR with b {2:2.2f} ".format( self.GenMatchDR_pup0_Wd1, self.GenMatchDR_pup0_Wd2, self.GenMatchDR_pup0_b )
                 return self.passed
-            self.passed[9] = True
-            self.passedCount[9] += 1
-            if self.verbose or self.matchverbose : print "Stage 19: W is MERGED since DR btw subjet and quarks are {0:2.2f} and {1:2.2f} compared to DR with b {2:2.2f} ".format( self.GenMatchDR_pup0_Wd1, self.GenMatchDR_pup0_Wd2, self.GenMatchDR_pup0_b )
+            self.passed[7] = True
+            self.passedCount[7] += 1
+            if self.verbose or self.matchverbose : print "Stage 17: W is MERGED since DR btw subjet and quarks are {0:2.2f} and {1:2.2f} compared to DR with b {2:2.2f} ".format( self.GenMatchDR_pup0_Wd1, self.GenMatchDR_pup0_Wd2, self.GenMatchDR_pup0_b )
 
-            if  (self.GenMatchDR_pup0_Wd1 < 0.4 ) and (self.GenMatchDR_pup0_Wd2 < 0.4) :  
-                self.passed[10] = True
-                self.passedCount[10] += 1
-                if self.verbose or self.matchverbose : print "Stage 20: W is MERGED since DR btw subjet and quarks are {0:2.2f} and {1:2.2f} (ALSO less than 0.4) compared to DR with b {2:2.2f} ".format( self.GenMatchDR_pup0_Wd1, self.GenMatchDR_pup0_Wd2, self.GenMatchDR_pup0_b )
+        if self.verbose :print " tau21 of SD subjet 0 is: {0:2.2f}".format( float( self.ak8SDsubjet0tau21) )
+        if not ( self.ak8SDsubjet0tau21 < self.tau21Cut ) :
+            self.passed[8] = True
+            self.passedCount[8] += 1
+            if self.verbose : print "Stage 18: FAIL AK8 SD subjet 0 tau21  {0:2.2f}  < ( {1} ) ".format( self.ak8SDsubjet0tau21 , self.tau21Cut )
+            return self.passed
+        self.passed[9] = True
+        self.passedCount[9] += 1
+        if self.verbose : print "Stage 19: PASS AK8 SD subjet 0 tau21  {0:2.2f}  < ( {1} ) ".format( self.ak8SDsubjet0tau21 , self.tau21Cut )
 
 
         if self.verbose :print "Bdisc of SD subjet 1 is: {0:2.2f}".format( float( self.ak8PuppiSDsubjet1Bdisc) )
-        if self.matchverbose: print "PRE Stage 21" 
+        if self.matchverbose: print "PRE Stage 20" 
         if not ( self.ak8PuppiSDsubjet1Bdisc >  self.bdiscmin ) : return self.passed
-        self.passed[11] = True
-        self.passedCount[11] += 1
+        self.passed[10] = True
+        self.passedCount[10] += 1
         if self.verbose : 
-            print "Stage 21: Bdisc of SD subjet 1 {0:2.2f}  < ( {1} ) ".format( float( self.ak8PuppiSDsubjet1Bdisc) ,   self.Subjettau21Cut )
+            print "Stage 20: Bdisc of SD subjet 1 {0:2.2f}  < ( {1} ) ".format( float( self.ak8PuppiSDsubjet1Bdisc) ,   self.Subjettau21Cut )
 
 
         return self.passed
