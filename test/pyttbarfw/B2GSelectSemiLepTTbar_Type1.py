@@ -545,6 +545,20 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.passedCount[9] += 1
         if self.verbose : print "Stage 19: PASS AK8 SD subjet 0 tau21  {0:2.2f}  < ( {1} ) ".format( self.ak8SDsubjet0tau21 , self.tau21Cut )
 
+            self.passed[7] = True
+            self.passedCount[7] += 1
+            if self.verbose or self.matchverbose : print "Stage 17: W is MERGED since DR btw subjet and quarks are {0:2.2f} and {1:2.2f} compared to DR with b {2:2.2f} ".format( self.GenMatchDR_pup0_Wd1, self.GenMatchDR_pup0_Wd2, self.GenMatchDR_pup0_b )
+
+        if self.verbose :print " tau21 of SD subjet 0 is: {0:2.2f}".format( float( self.ak8SDsubjet0tau21) )
+        if not ( self.ak8SDsubjet0tau21 < self.tau21Cut ) :
+            self.passed[8] = True
+            self.passedCount[8] += 1
+            if self.verbose : print "Stage 18: FAIL AK8 SD subjet 0 tau21  {0:2.2f}  < ( {1} ) ".format( self.ak8SDsubjet0tau21 , self.tau21Cut )
+            return self.passed
+        self.passed[9] = True
+        self.passedCount[9] += 1
+        if self.verbose : print "Stage 19: PASS AK8 SD subjet 0 tau21  {0:2.2f}  < ( {1} ) ".format( self.ak8SDsubjet0tau21 , self.tau21Cut )
+
         if self.verbose :print "Bdisc of SD subjet 1 is: {0:2.2f}".format( float( self.ak8PuppiSDsubjet1Bdisc) )
         if self.matchverbose: print "PRE Stage 20" 
         if not ( self.ak8PuppiSDsubjet1Bdisc >  self.bdiscmin ) : return self.passed
