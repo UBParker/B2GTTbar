@@ -534,12 +534,12 @@ class B2GSelectSemiLepTTbar_Type1( ) :
                 return self.passed
             self.passed[9] = True
             self.passedCount[9] += 1
-            if self.verbose or self.matchverbose : print "Stage 19: W is MERGED since DR btw subjet and quarks are {0:2.2f} and {1:2.2f} compared to DR with b {2:2.2f} ".format( self.GenMatchDR_pup0_Wd1, self.GenMatchDR_pup0_Wd2, self.GenMatchDR_pup0_b )
+            if self.verbose or self.matchverbose : print "Stage 19: W is MERGED since DR btw subjet and quarks are {0:2.2f} and {1:2.2f} (also less than 0.4) compared to DR with b {2:2.2f} ".format( self.GenMatchDR_pup0_Wd1, self.GenMatchDR_pup0_Wd2, self.GenMatchDR_pup0_b )
 
             if  (self.GenMatchDR_pup0_Wd1 < 0.4 ) and (self.GenMatchDR_pup0_Wd2 < 0.4) :  
                 self.passed[10] = True
                 self.passedCount[10] += 1
-                if self.verbose or self.matchverbose : print "Stage 20: W is MERGED since DR btw subjet and quarks are {0:2.2f} and {1:2.2f} (ALSO less than 0.4) compared to DR with b {2:2.2f} ".format( self.GenMatchDR_pup0_Wd1, self.GenMatchDR_pup0_Wd2, self.GenMatchDR_pup0_b )
+                if self.verbose or self.matchverbose : print "Stage 20: (same as 19) W is MERGED since DR btw subjet and quarks are {0:2.2f} and {1:2.2f} (ALSO less than 0.4) compared to DR with b {2:2.2f} ".format( self.GenMatchDR_pup0_Wd1, self.GenMatchDR_pup0_Wd2, self.GenMatchDR_pup0_b )
 
 
         if self.verbose :print "Bdisc of SD subjet 1 is: {0:2.2f}".format( float( self.ak8PuppiSDsubjet1Bdisc) )
