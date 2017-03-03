@@ -525,7 +525,8 @@ class B2GSelectSemiLepTTbar_Type1( ) :
 
 
         else : ### Gen matching to find the REAL merged Ws 
-            if  not  ( 0.< (self.GenMatchDR_pup0_Wd1 and self.GenMatchDR_pup0_Wd2) < ( self.GenMatchDR_pup0_b and 10000. ))  :
+            print "PRE Stage 18:  DR btw subjet and quarks are {0:2.2f} and {1:2.2f} compared to DR with b {2:2.2f} ".format( self.GenMatchDR_pup0_Wd1, self.GenMatchDR_pup0_Wd2, self.GenMatchDR_pup0_b )
+            if  (self.GenMatchDR_pup0_Wd1 > 0.40) or (self.GenMatchDR_pup0_Wd2 > 0.4) or self.GenMatchDR_pup0_Wd1 >self.GenMatchDR_pup0_b  or  self.GenMatchDR_pup0_Wd2 > self.GenMatchDR_pup0_b  :
                 self.passed[8] = True
                 self.passedCount[8] += 1
                 if self.verbose or self.matchverbose: 
@@ -535,7 +536,7 @@ class B2GSelectSemiLepTTbar_Type1( ) :
             self.passedCount[9] += 1
             if self.verbose or self.matchverbose : print "Stage 19: W is MERGED since DR btw subjet and quarks are {0:2.2f} and {1:2.2f} compared to DR with b {2:2.2f} ".format( self.GenMatchDR_pup0_Wd1, self.GenMatchDR_pup0_Wd2, self.GenMatchDR_pup0_b )
 
-            if  0. <  (self.GenMatchDR_pup0_Wd1 and self.GenMatchDR_pup0_Wd2) < 0.4 :  
+            if  (self.GenMatchDR_pup0_Wd1 < 0.4 ) and (self.GenMatchDR_pup0_Wd2 < 0.4) :  
                 self.passed[10] = True
                 self.passedCount[10] += 1
                 if self.verbose or self.matchverbose : print "Stage 20: W is MERGED since DR btw subjet and quarks are {0:2.2f} and {1:2.2f} (ALSO less than 0.4) compared to DR with b {2:2.2f} ".format( self.GenMatchDR_pup0_Wd1, self.GenMatchDR_pup0_Wd2, self.GenMatchDR_pup0_b )
