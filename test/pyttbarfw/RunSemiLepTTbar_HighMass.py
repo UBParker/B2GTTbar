@@ -47,6 +47,11 @@ class RunSemiLepTTbar_HighMass() :
                           default = '',
                           help='Input file string')
 
+        parser.add_option('--type', type='string', action='store',
+                          dest='dtype',
+                          default = '',
+                          help='type of files to combine: mudataB-H, eldataB-H , ttjets, wjets1-9  , st1-5') 
+
         parser.add_option('--outfile', type='string', action='store',
                           dest='outfile',
                           default = '',
@@ -94,6 +99,8 @@ class RunSemiLepTTbar_HighMass() :
         ### Also saved are some nontrivial variables that involve combinations
         ### of things from the tree
         self.treeobj = B2GTTreeSemiLep( options )
+        self.treeout = B2GTTreeSemiLepOut( options, options.dtype )
+
 
         self.options = options
         self.verbose = options.verbose
@@ -526,13 +533,55 @@ class RunSemiLepTTbar_HighMass() :
             if a.ak4Jet != None : 
                 self.Iso2DHist[ilep][index].Fill( a.leptonP4.Perp( a.ak4Jet.Vect() ), a.leptonP4.DeltaR( a.ak4Jet )  , self.theWeight  )
                 self.AK4BdiscHist[ilep][index].Fill(b.ak4JetBdisc , self.theWeight)
+        ### Fill the ttree
+        if index == 15 :
+            varsToFill = [a.EventWeight ,
+                          a.PUWeight,
+                          b.ak8JetP4.M(),
+                          b.ak8JetP4.Perp()* b.PtSmear,
+                          b.ak8PuppiSDJetP4.M(),
+                          b.ak8PuppiSDJetP4.Perp(),
+                          b.puppitau1,
+                          b.puppitau2,
+                          b.puppitau3,
+                          b.puppitau32,
+                          b.puppitau21,
+                          b.ak8PuppiSDsubjet0Bdisc,
+                          b.ak8PuppiSDJetP4_Subjet0.Perp(),
+                          b.ak8PuppiSDJetP4_Subjet0.Eta(),
+                          b.ak8PuppiSDJetP4_Subjet0.Phi(),
+                          b.ak8PuppiSDJetP4_Subjet0.M(),
+                          b.ak8SDsubjet0tau1,
+                          b.ak8SDsubjet0tau2,
+                          b.ak8SDsubjet0tau3,
+                          b.ak8SDsubjet0tau21,
+                          b.realW,
+                          b.fakeW,
+                          b.ak8PuppiSDJetP4_Subjet1.Perp(),
+                          b.ak8PuppiSDJetP4_Subjet1.M(),
+                          b.ak8PuppiSDsubjet1Bdisc,
+                          a.lepIsMu,
+                          a.leptonP4.Eta(),
+                          a.lepIso,
+                          a.leptonP4.Phi(),
+                          a.leptonP4.Pt(),
+                          a.ak4Jet.Perp(),
+                          b.ak4JetBdisc,
+                          a.nuP4.Perp(),
+                          a.RunNumber,
+                          a.lumiBlock,
+                          a.eventNumber
+            ]
 
+            self.filltreeout = self.treeout.fillTTree( options, varsToFill )
 
 
     def close( self ) :
         '''
         Wrap it up. 
         '''
+        self.treeout.WriteTTree( options)
+        
         self.outfile.cd() 
         self.outfile.Write()
         self.outfile.Close()
