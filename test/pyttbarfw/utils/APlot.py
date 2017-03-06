@@ -6,7 +6,7 @@ import tdrstyle
 
 class APlot () :
     
-    def __init__(self, isstage = None , y_max = None, histofAlldata = None, histofAlldata2 = None, histofAllMC = None, histofAllMC2 = None, mcStack = None, httbar = None, hwjets = None, hST = None, hQCD = None, histoName = None, lumi = None, tagg = None, cuttag = None, fixFit = None, expectedRuns = None, otherttbar = None, fitValues = None, fitDiffs = None, passPretag = None, passPretagUncert = None, typeis = None) :
+    def __init__(self, isstage = None , y_max = None, histofAlldata = None, histofAlldata2 = None, histofAllMC = None, histofAllMC2 = None, mcStack = None,  ttbarUnmerged = None, ttbarMerged= None, hwjets = None, hST = None, hQCD = None, histoName = None, lumi = None, tagg = None, cuttag = None, fixFit = None, expectedRuns = None, otherttbar = None, fitValues = None, fitDiffs = None, passPretag = None, passPretagUncert = None, typeis = None) :
         self.isstage = isstage
         self.y_max = y_max
         self.histofAlldata = histofAlldata
@@ -15,7 +15,11 @@ class APlot () :
         self.histofAllMC = histofAllMC
         self.histofAllMC2 = histofAllMC2
         self.mcStack = mcStack
-        self.httbar = httbar
+        self.ttbarUnmerged = ttbarUnmerged
+        self.ttbarMerged = ttbarMerged
+        self.httbar = None
+        if isstage != 17:
+            self.httbar = self.ttbarUnmerged
         self.hwjets = hwjets
         self.hST = hST
         self.hQCD = hQCD
@@ -95,39 +99,76 @@ class APlot () :
         rangeMin = HistoTitles[self.histoName][1]
         rangeMax = HistoTitles[self.histoName][2]
         print("X axis range is {} to {}".format(rangeMin, rangeMax))
-        self.histofAlldata.GetXaxis().SetRangeUser( rangeMin, rangeMax )
-        self.histofAlldata.SetMaximum(self.y_max * self.histofAlldata.GetMaximum() )
-        self.histofAlldata.SetMinimum(0.0001 )
-        self.histofAlldata.GetYaxis().SetTitle("Events")
-        self.histofAlldata.GetYaxis().SetTitleSize(0.065)
-        self.histofAlldata.GetYaxis().SetTitleOffset(0.9) ## 0.7)
-        self.histofAlldata.GetYaxis().SetLabelSize(0.04)
-        self.histofAlldata.SetLineColor(1)
-        self.histofAlldata.SetFillColor(1)
-        self.histofAlldata.SetFillStyle(0)
-        self.histofAlldata.SetLineWidth(2)
-        self.histofAlldata.SetMarkerStyle(20)
-        self.histofAlldata.SetMarkerSize(0.8)
-        self.histofAlldata.SetMarkerColor(1)
+        if self.isstage < 18 :
+            self.histofAlldata.GetXaxis().SetRangeUser( rangeMin, rangeMax )
+            if self.isstage == 17:
+                self.histofAlldata.SetMaximum(3.2 * self.histofAlldata.GetMaximum() )
+            else:
+                self.histofAlldata.SetMaximum(self.y_max * self.histofAlldata.GetMaximum() )
+    
+            self.histofAlldata.SetMinimum(0.0001 )
+            self.histofAlldata.GetYaxis().SetTitle("Events")
+            self.histofAlldata.GetYaxis().SetTitleSize(0.065)
+            self.histofAlldata.GetYaxis().SetTitleOffset(0.9) ## 0.7)
+            self.histofAlldata.GetYaxis().SetLabelSize(0.04)
+            self.histofAlldata.SetLineColor(1)
+            self.histofAlldata.SetFillColor(1)
+            self.histofAlldata.SetFillStyle(0)
+            self.histofAlldata.SetLineWidth(2)
+            self.histofAlldata.SetMarkerStyle(20)
+            self.histofAlldata.SetMarkerSize(0.8)
+            self.histofAlldata.SetMarkerColor(1)
 
 
-        self.histofAlldata.GetXaxis().SetNdivisions(506)
-        self.histofAlldata.GetXaxis().SetLabelFont(42)
-        self.histofAlldata.GetXaxis().SetLabelSize(0.5)
-        self.histofAlldata.GetXaxis().SetTitleSize(0.0475)
-        self.histofAlldata.GetXaxis().SetTickLength(0.045)
-        self.histofAlldata.GetXaxis().SetTitleOffset(1.15)
-        self.histofAlldata.GetXaxis().SetTitleFont(42)
-        self.histofAlldata.GetXaxis().SetTitle("")
+            self.histofAlldata.GetXaxis().SetNdivisions(506)
+            self.histofAlldata.GetXaxis().SetLabelFont(42)
+            self.histofAlldata.GetXaxis().SetLabelSize(0.5)
+            self.histofAlldata.GetXaxis().SetTitleSize(0.0475)
+            self.histofAlldata.GetXaxis().SetTickLength(0.045)
+            self.histofAlldata.GetXaxis().SetTitleOffset(1.15)
+            self.histofAlldata.GetXaxis().SetTitleFont(42)
+            self.histofAlldata.GetXaxis().SetTitle("")
 
-        self.histofAlldata.GetYaxis().SetTitle("Events")
-        self.histofAlldata.GetYaxis().SetNdivisions(506)
-        self.histofAlldata.GetYaxis().SetLabelFont(42)
-        self.histofAlldata.GetYaxis().SetLabelSize(0.06375)
-        self.histofAlldata.GetYaxis().SetTitleSize(0.06225)
-        self.histofAlldata.GetYaxis().SetTitleOffset(0.9)
-        self.histofAlldata.GetYaxis().SetTitleFont(42)
-        #self.histofAlldata.SetXTitle(HistoTitle +" , Stage "+str(self.isstage))
+            self.histofAlldata.GetYaxis().SetTitle("Events")
+            self.histofAlldata.GetYaxis().SetNdivisions(506)
+            self.histofAlldata.GetYaxis().SetLabelFont(42)
+            self.histofAlldata.GetYaxis().SetLabelSize(0.06375)
+            self.histofAlldata.GetYaxis().SetTitleSize(0.06225)
+            self.histofAlldata.GetYaxis().SetTitleOffset(0.9)
+            self.histofAlldata.GetYaxis().SetTitleFont(42)
+        else:
+            self.histofAllMC.GetXaxis().SetRangeUser( rangeMin, rangeMax )
+            self.histofAllMC.SetMaximum(self.y_max * self.mcStack.GetMaximum() )
+            self.histofAllMC.SetMinimum(0.0001 )
+            self.histofAllMC.GetYaxis().SetTitle("Events")
+            self.histofAllMC.GetYaxis().SetTitleSize(0.065)
+            self.histofAllMC.GetYaxis().SetTitleOffset(0.9) ## 0.7)
+            self.histofAllMC.GetYaxis().SetLabelSize(0.04)
+            self.histofAllMC.SetLineColor(1)
+            self.histofAllMC.SetFillColor(1)
+            self.histofAllMC.SetFillStyle(0)
+            self.histofAllMC.SetLineWidth(2)
+            self.histofAllMC.SetMarkerStyle(20)
+            self.histofAllMC.SetMarkerSize(0.8)
+            self.histofAllMC.SetMarkerColor(1)
+
+
+            self.histofAllMC.GetXaxis().SetNdivisions(506)
+            self.histofAllMC.GetXaxis().SetLabelFont(42)
+            self.histofAllMC.GetXaxis().SetLabelSize(0.5)
+            self.histofAllMC.GetXaxis().SetTitleSize(0.0475)
+            self.histofAllMC.GetXaxis().SetTickLength(0.045)
+            self.histofAllMC.GetXaxis().SetTitleOffset(1.15)
+            self.histofAllMC.GetXaxis().SetTitleFont(42)
+            self.histofAllMC.GetXaxis().SetTitle("")
+
+            self.histofAllMC.GetYaxis().SetTitle("Events")
+            self.histofAllMC.GetYaxis().SetNdivisions(506)
+            self.histofAllMC.GetYaxis().SetLabelFont(42)
+            self.histofAllMC.GetYaxis().SetLabelSize(0.06375)
+            self.histofAllMC.GetYaxis().SetTitleSize(0.06225)
+            self.histofAllMC.GetYaxis().SetTitleOffset(0.9)
+            self.histofAllMC.GetYaxis().SetTitleFont(42)    
 
         self.fitter_mc = None
         self.fitter_data = None
@@ -149,7 +190,7 @@ class APlot () :
             self.histofAlldata.Draw("e x0 same")
         self.minn = 0.
         self.maxx = 0.     
-        rangenum = 17
+        rangenum = 21
         if self.typeis: rangenum = 15
         #fittingLimits = [ [minAvg, minAvg, minAvg, minAvg, minAvg, minAvg, minAvg ] , [maxAvg, maxAvg, maxAvg, maxAvg, maxAvg, maxAvg, maxAvg ] ]
         self.ipt = None  
@@ -405,7 +446,22 @@ class APlot () :
         self.words2.SetTextSize(0.03725)
         self.words2.SetLineWidth(1)
         self.words2.Draw()
-                
+        
+        ttTune = None
+        if self.otherttbar == True :
+            ttTune = '#scale[0.6]{(80X Powheg + Pythia 8) Tune CUETP8M2T4}'
+        else: ttTune = '#scale[0.6]{(80X Powheg + Pythia 8) Tune CUETP8M1} '
+            
+        printttTune = True
+        if printttTune :
+            self.words3 = ROOT.TLatex(0.62, 0.8,"%s"%(ttTune))
+            self.words3.SetNDC()
+            self.words3.SetTextAlign(31)
+            self.words3.SetTextFont(42)
+            self.words3.SetTextSize(0.03725)
+            self.words3.SetLineWidth(1)
+            self.words3.Draw()
+        
         self.leg = ROOT.TLegend(0.68,0.4,0.80,0.84)
         self.leg.SetFillColor(0)
         self.leg.SetBorderSize(0)
@@ -415,10 +471,15 @@ class APlot () :
             self.leg.AddEntry( self.histofAlldata, str(self.tagg), 'p')
             self.leg.AddEntry( self.expectedRuns  , 'Expected Data', 'p')
         else :
-            if self.otherttbar == True :
-                self.leg.AddEntry( self.httbar, 't#bar{t} #scale[0.6]{(80X Powheg + Pythia 8) Tune CUETP8M2T4}', 'f')
-            else:
-                self.leg.AddEntry( self.httbar, 't#bar{t} #scale[0.6]{(80X Powheg + Pythia 8) Tune CUETP8M1}', 'f')
+            if self.httbar == None:
+                self.leg.AddEntry( self.ttbarUnmerged, 'Unmatched   t#bar{t} ', 'f')
+                self.leg.AddEntry( self.ttbarMerged,   'Gen-Matched t#bar{t} ', 'f')
+
+            else:   
+                if self.otherttbar == True :
+                    self.leg.AddEntry( self.httbar, 't#bar{t} ', 'f')
+                else:
+                    self.leg.AddEntry( self.httbar, 't#bar{t} ', 'f')
             #if options.allMC :
             self.leg.SetTextSize(0.036)
             self.leg.AddEntry( self.hST, 'Single Top', 'f')

@@ -1,0 +1,687 @@
+#! /usr/bin/env python
+
+
+## _________                _____.__                            __  .__               
+## \_   ___ \  ____   _____/ ____\__| ____  __ ______________ _/  |_|__| ____   ____  
+## /    \  \/ /  _ \ /    \   __\|  |/ ___\|  |  \_  __ \__  \\   __\  |/  _ \ /    \ 
+## \     \___(  <_> )   |  \  |  |  / /_/  >  |  /|  | \// __ \|  | |  (  <_> )   |  \
+##  \______  /\____/|___|  /__|  |__\___  /|____/ |__|  (____  /__| |__|\____/|___|  /
+##         \/            \/        /_____/                   \/                    \/ 
+
+
+# This script reads multiples TTrees and does a semileptonic T Tbar selection then writes all results to a single TTree
+
+
+import sys
+import math
+import array
+from optparse import OptionParser
+
+
+def treeCombiner(argv) : 
+    parser = OptionParser()
+
+
+    parser = OptionParser()
+
+    parser.add_option('--type', type='string', action='store',
+                      dest='dtype',
+                      default = '',
+                      help='type of files to combine: data , ttjets, wjets  , st and pseudodata (all MC combined)') 
+
+    parser.add_option('--maxEvents', type='int', action='store',
+                      dest='maxEvents',
+                      default = None,
+                      help='Max events')
+                      
+    parser.add_option('--otherttbar', action='store_true',
+                      dest='otherttbar',
+                      default = False,
+                      help='plot ttbarTuneCUETP8M2T4?')   
+
+    parser.add_option('--verbose', action='store_true',
+                      default=False,
+                      dest='verbose',
+                      help='Do you want to print values of key variables?')
+
+        
+    (options, args) = parser.parse_args(argv)
+    argv = []
+
+
+    #   ____  _    _ _______ _____  _    _ _______   _____   ____   ____ _______ 
+    #  / __ \| |  | |__   __|  __ \| |  | |__   __| |  __ \ / __ \ / __ \__   __|
+    # | |  | | |  | |  | |  | |__) | |  | |  | |    | |__) | |  | | |  | | | |   
+    # | |  | | |  | |  | |  |  ___/| |  | |  | |    |  _  /| |  | | |  | | | |   
+    # | |__| | |__| |  | |  | |    | |__| |  | |    | | \ \| |__| | |__| | | |   
+    #  \____/ \____/   |_|  |_|     \____/   |_|    |_|  \_\\____/ \____/  |_|   
+                                                                                
+
+    # @@@ Create output root file
+    import ROOT
+    fout = ROOT.TFile.Open( './combinedTTrees80x/'+ options.dtype +'_combinedttree_80x_B2GTTreeV4_puppi.root', 'RECREATE')
+
+    fout.cd()
+
+    TTreeSemiLept = ROOT.TTree("TreeSemiLept", "TreeSemiLept")
+
+    SemiLeptEventWeight_      = array.array('f', [-1.])
+    SemiLeptPUweight_         = array.array('f', [-1.])
+
+    FatJetRhoRatio_      = array.array('f', [-1.])
+    FatJetMass_          = array.array('f', [-1.])
+    FatJetPt_          = array.array('f', [-1.])
+    FatJetMassSoftDrop_  = array.array('f', [-1.])
+    FatJetPtSoftDrop_  = array.array('f', [-1.])
+    FatJetTau1_          = array.array('f', [-1.]) 
+    FatJetTau2_          = array.array('f', [-1.]) 
+    FatJetTau3_          = array.array('f', [-1.]) 
+    FatJetTau32_         = array.array('f', [-1.])
+    FatJetTau21_         = array.array('f', [-1.]) 
+
+    FatJetSDbdiscW_      = array.array('f', [-1.])
+    FatJetSDsubjetWpt_   = array.array('f', [-1.])
+    FatJetSDsubjetWptRaw_   = array.array('f', [-1.])
+    FatJetSDsubjetWmassRaw_   = array.array('f', [-1.])
+    FatJetSDsubjetWEta_   = array.array('f', [-1.])
+    FatJetSDsubjetWPhi_   = array.array('f', [-1.])
+    FatJetSDsubjetWmass_ = array.array('f', [-1.])
+    FatJetSDsubjetWtau1_ = array.array('f', [-1.])
+    FatJetSDsubjetWtau2_ = array.array('f', [-1.])
+    FatJetSDsubjetWtau3_ = array.array('f', [-1.])
+    FatJetSDsubjetWtau21_ = array.array('f', [-1.])
+
+    FatJetSDsubjet_isRealW_ = array.array('f', [-1.])
+    FatJetSDsubjet_isFakeW_ = array.array('f', [-1.])
+
+    FatJetSDsubjetBpt_   = array.array('f', [-1.])
+    FatJetSDsubjetBmass_ = array.array('f', [-1.])
+    FatJetSDbdiscB_      = array.array('f', [-1.])
+
+    LeptonType_          = array.array('i', [-1])
+    LeptonPt_            = array.array('f', [-1.])
+    LeptonEta_           = array.array('f', [-1.])
+    LeptonPhi_           = array.array('f', [-1.])
+    LeptonPx_            = array.array('f', [-1.])
+    LeptonPy_            = array.array('f', [-1.])
+    LeptonPz_            = array.array('f', [-1.])
+    LeptonEnergy_        = array.array('f', [-1.])
+    LeptonIso_           = array.array('f', [-1.])
+    LeptonPtRel_         = array.array('f', [-1.])
+    LeptonDRMin_         = array.array('f', [-1.])
+
+    LeptonPtRel_           = array.array('f', [-1.])
+    LeptonDRMin_           = array.array('f', [-1.])
+    DeltaPhiLepFat_        = array.array('f', [-1.])
+    NearestAK4JetPt_       = array.array('f', [-1.])
+
+    SemiLepMETpt_          = array.array('f', [-1.])
+    AK4bDisc_              = array.array('f', [-1.])    
+    SemiLeptRunNum_        = array.array('f', [-1.])   
+    SemiLeptLumiBlock_     = array.array('f', [-1.])   
+    SemiLeptEventNum_      = array.array('f', [-1.])   
+
+
+    TTreeSemiLept.Branch('SemiLeptWeight'      , SemiLeptEventWeight_     ,  'SemiLeptWeight/F'      )
+    TTreeSemiLept.Branch('SemiLeptPUweight'      , SemiLeptPUweight_     ,  'SemiLeptWeight/F'      )
+
+
+    TTreeSemiLept.Branch('FatJetRhoRatio'      , FatJetRhoRatio_      ,  'FatJetRhoRatio/F'      )
+    TTreeSemiLept.Branch('FatJetMass'          , FatJetMass_          ,  'FatJetMass/F'          )
+    TTreeSemiLept.Branch('FatJetPt'          , FatJetPt_          ,  'FatJetPt/F'          )
+    TTreeSemiLept.Branch('FatJetMassSoftDrop'  , FatJetMassSoftDrop_  ,  'FatJetMassSoftDrop/F'  )
+    TTreeSemiLept.Branch('FatJetPtSoftDrop'  , FatJetPtSoftDrop_  ,  'FatJetPtSoftDrop/F'  )
+    TTreeSemiLept.Branch('FatJetTau1'          , FatJetTau1_          ,  'FatJetTau1/F'          )
+    TTreeSemiLept.Branch('FatJetTau2'          , FatJetTau2_          ,  'FatJetTau2/F'          )
+    TTreeSemiLept.Branch('FatJetTau3'          , FatJetTau3_          ,  'FatJetTau3/F'          )
+    TTreeSemiLept.Branch('FatJetTau21'         , FatJetTau21_         ,  'FatJetTau21/F'         )
+    TTreeSemiLept.Branch('FatJetTau32'         , FatJetTau32_         ,  'FatJetTau32/F'         )
+
+    TTreeSemiLept.Branch('FatJetSDbdiscW'   , FatJetSDbdiscW_   ,  'FatJetSDbdiscW/F'   )
+    TTreeSemiLept.Branch('FatJetSDsubjetWpt'   , FatJetSDsubjetWpt_   ,  'FatJetSDsubjetWpt/F'   )
+    TTreeSemiLept.Branch('FatJetSDsubjetWptRaw'   , FatJetSDsubjetWptRaw_   ,  'FatJetSDsubjetWptRaw/F'   )
+    TTreeSemiLept.Branch('FatJetSDsubjetWEta'   , FatJetSDsubjetWEta_   ,  'FatJetSDsubjetWEta/F'   )
+    TTreeSemiLept.Branch('FatJetSDsubjetWPhi'   , FatJetSDsubjetWPhi_   ,  'FatJetSDsubjetWPhi/F'   )
+    TTreeSemiLept.Branch('FatJetSDsubjetWmass' , FatJetSDsubjetWmass_ ,  'FatJetSDsubjetWmass/F' )
+    TTreeSemiLept.Branch('FatJetSDsubjetWmassRaw' , FatJetSDsubjetWmassRaw_ ,  'FatJetSDsubjetWmassRaw/F' )
+    TTreeSemiLept.Branch('FatJetSDsubjetWtau1'   , FatJetSDsubjetWtau1_   ,  'FatJetSDsubjetWtau1/F'   )
+    TTreeSemiLept.Branch('FatJetSDsubjetWtau2'   , FatJetSDsubjetWtau2_   ,  'FatJetSDsubjetWtau2/F'   )
+    TTreeSemiLept.Branch('FatJetSDsubjetWtau3'   , FatJetSDsubjetWtau3_   ,  'FatJetSDsubjetWtau3/F'   )
+    TTreeSemiLept.Branch('FatJetSDsubjetWtau21'   , FatJetSDsubjetWtau21_   ,  'FatJetSDsubjetWtau21/F'   )
+
+    
+    TTreeSemiLept.Branch('FatJetSDsubjet_isRealW'   , FatJetSDsubjet_isRealW_   ,  'FatJetSDsubjet_isRealW/F'   )
+    TTreeSemiLept.Branch('FatJetSDsubjet_isFakeW'   , FatJetSDsubjet_isFakeW_   ,  'FatJetSDsubjet_isFakeW/F'   )
+
+    TTreeSemiLept.Branch('FatJetSDsubjetBpt'   , FatJetSDsubjetBpt_   ,  'FatJetSDsubjetBpt/F'   )
+    TTreeSemiLept.Branch('FatJetSDsubjetBmass' , FatJetSDsubjetBmass_ ,  'FatJetSDsubjetBmass/F' )
+    TTreeSemiLept.Branch('FatJetSDbdiscB' , FatJetSDbdiscB_ ,  'FatJetSDbdiscB/F' )
+
+    TTreeSemiLept.Branch('LeptonType'          , LeptonType_          ,  'LeptonType/I'          )
+    TTreeSemiLept.Branch('LeptonPt'            , LeptonPt_            ,  'LeptonPt/F'            )
+    TTreeSemiLept.Branch('LeptonEta'           , LeptonEta_           ,  'LeptonEta/F'           )
+    TTreeSemiLept.Branch('LeptonPhi'           , LeptonPhi_           ,  'LeptonPhi/F'           )
+    TTreeSemiLept.Branch('LeptonPx'            , LeptonPx_            ,  'LeptonPx/F'            )
+    TTreeSemiLept.Branch('LeptonPy'            , LeptonPy_            ,  'LeptonPy/F'            )
+    TTreeSemiLept.Branch('LeptonPz'            , LeptonPz_            ,  'LeptonPz/F'            )
+    TTreeSemiLept.Branch('LeptonEnergy'        , LeptonEnergy_        ,  'LeptonEnergy/F'        )
+    TTreeSemiLept.Branch('LeptonIso'           , LeptonIso_           ,  'LeptonIso/F'           )
+    TTreeSemiLept.Branch('LeptonPtRel'         , LeptonPtRel_         ,  'LeptonPtRel/F'         )
+    TTreeSemiLept.Branch('LeptonDRMin'         , LeptonDRMin_         ,  'LeptonDRMin/F'         )  
+
+    TTreeSemiLept.Branch('LeptonPtRel'         , LeptonPtRel_         ,  'LeptonPtRel/F'         )
+    TTreeSemiLept.Branch('LeptonDRMin'         , LeptonDRMin_         ,  'LeptonDRMin/F'         ) 
+
+    TTreeSemiLept.Branch('DeltaPhiLepFat'      , DeltaPhiLepFat_      ,  'DeltaPhiLepFat/F'      ) 
+    TTreeSemiLept.Branch('NearestAK4JetPt'     , NearestAK4JetPt_     ,  'NearestAK4JetPt/F'     )
+
+    TTreeSemiLept.Branch('SemiLepMETpt'        , SemiLepMETpt_        ,  'SemiLepMETpt/F'        )
+
+    TTreeSemiLept.Branch('AK4bDisc'            , AK4bDisc_            ,  'AK4bDisc/F'            )
+
+    TTreeSemiLept.Branch('SemiLeptRunNum'         ,  SemiLeptRunNum_       ,  'SemiLeptRunNum/F'          )
+    TTreeSemiLept.Branch('SemiLeptLumiBlock'      ,  SemiLeptLumiBlock_    ,  'SemiLeptLumiBlock/F'       )
+    TTreeSemiLept.Branch('SemiLeptEventNum'       ,  SemiLeptEventNum_     ,  'SemiLeptEventNum/F'        )
+
+    # _____ _   _ _____  _    _ _______   _____   ____   ____ _______ 
+    #|_   _| \ | |  __ \| |  | |__   __| |  __ \ / __ \ / __ \__   __|
+    #  | | |  \| | |__) | |  | |  | |    | |__) | |  | | |  | | | | 
+    #  | | | . ` |  ___/| |  | |  | |    |  _  /| |  | | |  | | | |   
+    # _| |_| |\  | |    | |__| |  | |    | | \ \| |__| | |__| | | | 
+    #|_____|_| \_|_|     \____/   |_|    |_|  \_\\____/ \____/  |_|    
+
+    # Input the existing trees to read them in and comine them into 1 tree
+
+       
+    if options.dtype == 'data' :
+        filesin = [ ROOT.TFile.Open('root://cmsxrootd.fnal.gov//store/user/rappocc/B2GAnaFWFiles16Dec2016/singlemu_run2016B.root'),
+                    ROOT.TFile.Open('root://cmsxrootd.fnal.gov//store/user/rappocc/B2GAnaFWFiles16Dec2016/singlemu_run2016C.root'),
+                    ROOT.TFile.Open('root://cmsxrootd.fnal.gov//store/user/rappocc/B2GAnaFWFiles16Dec2016/singlemu_run2016D.root'),
+                    ROOT.TFile.Open('root://cmsxrootd.fnal.gov//store/user/rappocc/B2GAnaFWFiles16Dec2016/singlemu_run2016E.root'),
+                    ROOT.TFile.Open('root://cmsxrootd.fnal.gov//store/user/aparker/B2G2016/V4Trees/b2gtree_mudata_Run2016F-23Sep_all_V4.root'),
+                    ROOT.TFile.Open('root://cmsxrootd.fnal.gov//store/user/aparker/B2G2016/V4Trees/b2gtree_mudata_Run2016G-23Sep_all_V4.root'),
+                    ROOT.TFile.Open('root://cmsxrootd.fnal.gov//store/user/aparker/B2G2016/V4Trees/SingleMuon_Run2016H-Prompt-all.root'),
+                    ROOT.TFile.Open('root://cmsxrootd.fnal.gov//store/user/aparker/B2G2016/V4Trees/b2gtree_eldata_Run2016B-23Sep_all_V4.root'),
+                    ROOT.TFile.Open('root://cmsxrootd.fnal.gov//store/user/aparker/B2G2016/V4Trees/b2gtree_eldata_Run2016C-23Sep_all_V4.root'),
+                    ROOT.TFile.Open('root://cmsxrootd.fnal.gov//store/user/aparker/B2G2016/V4Trees/b2gtree_eldata_Run2016D-23Sep_all_V4.root'),
+                    ROOT.TFile.Open('root://cmsxrootd.fnal.gov//store/user/aparker/B2G2016/V4Trees/b2gtree_eldata_Run2016E-23Sep_allb2_V4.root'),
+                    ROOT.TFile.Open('root://cmsxrootd.fnal.gov//store/user/aparker/B2G2016/V4Trees/b2gtree_eldata_Run2016F-23Sep_all_V4.root'),
+                    ROOT.TFile.Open('root://cmsxrootd.fnal.gov//store/user/aparker/B2G2016/V4Trees/b2gtree_eldata_Run2016G-23Sep_all_V4.root'),
+                    ROOT.TFile.Open('root://cmsxrootd.fnal.gov//store/user/aparker/B2G2016/V4Trees/b2gtree_eldata_Run2016H-PromptReco_all_V4.root')]
+
+    if options.dtype == 'ttjets' :
+        if options.otherttbar : 
+            filesin = [ ROOT.TFile.Open('root://cmsxrootd.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ttbarTuneCUETP8M2T4_all_V4.root')]   
+        else : 
+            filesin = [ ROOT.TFile.Open('root://cmsxrootd.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ttbar_all_V4.root')]   
+
+
+    if options.dtype == 'wjets1' :
+            filesin = [ ROOT.TFile.Open('root://cmsxrootd.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_100_V4.root')]
+    if options.dtype == 'wjets2' :
+            filesin = [ ROOT.TFile.Open('root://cmsxrootd.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_200_V4.root')]
+    if options.dtype == 'wjets3' :
+            filesin = [ ROOT.TFile.Open('root://cmsxrootd.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_400_V4.root')]
+    if options.dtype == 'wjets4' :
+            filesin = [ ROOT.TFile.Open('root://cmsxrootd.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_600_V4.root')]
+    if options.dtype == 'wjets5' :
+            filesin = [ ROOT.TFile.Open('root://cmsxrootd.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_800_V4.root')]
+    if options.dtype == 'wjets6' :
+            filesin = [ ROOT.TFile.Open('root://cmsxrootd.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_1200_V4.root')]
+    if options.dtype == 'wjets7' :
+            filesin = [ ROOT.TFile.Open('root://cmsxrootd.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_2500_V4.root')]
+
+
+    if options.dtype == 'st1' :
+            filesin = [ ROOT.TFile.Open('root://cmsxrootd.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ST_schannel_V4.root')]
+
+    if options.dtype == 'st2' :
+            filesin = [ ROOT.TFile.Open('root://cmsxrootd.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ST_tW-top_V4.root')]
+
+    if options.dtype == 'st3' :
+            filesin = [ ROOT.TFile.Open('root://cmsxrootd.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ST_tchannel-antitop_V4.root')]
+
+    if options.dtype == 'st4' :
+            filesin = [ ROOT.TFile.Open('root://cmsxrootd.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ST_tW-antitop_V4.root')]
+
+    if options.dtype == 'st5' :
+            filesin = [ ROOT.TFile.Open('/uscms_data/d2/rappocc/analysis/B2G/CMSSW_8_0_22/src/Analysis/B2GTTbar/test/pyttbarfw/b2gtree_MC_ST_tchannel-top_V4.root')]
+
+
+    if options.dtype == 'qcd1' :
+            filesin = [ ROOT.TFile.Open('root://cmsxrootd.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht100_V4.root')]
+    if options.dtype == 'qcd2' :
+            filesin = [ ROOT.TFile.Open('root://cmsxrootd.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht200_V4.root')]
+    if options.dtype == 'qcd3' :
+            filesin = [ ROOT.TFile.Open('root://cmsxrootd.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht300_V4.root')]
+    if options.dtype == 'qcd4' :
+            filesin = [ ROOT.TFile.Open('root://cmsxrootd.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht500_V4.root')]
+    if options.dtype == 'qcd5' :
+            filesin = [ ROOT.TFile.Open('root://cmsxrootd.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht700_V4.root')]
+    if options.dtype == 'qcd6' :
+            filesin = [ ROOT.TFile.Open('root://cmsxrootd.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht1000_V4.root')]
+    if options.dtype == 'qcd7' :
+            filesin = [ ROOT.TFile.Open('root://cmsxrootd.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht1500_V4.root')]
+    if options.dtype == 'qcd8' :
+            filesin = [ ROOT.TFile.Open('root://cmsxrootd.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht2000_V4.root')]
+
+    if options.dtype == 'pseudodata' :
+        if options.otherttbar:
+            filesin = [ ROOT.TFile.Open('root://cmsxrootd.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ttbarTuneCUETP8M2T4_all_V4.root'),
+                        ROOT.TFile.Open('root://cmsxrootd.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_100_V4.root'),
+                        ROOT.TFile.Open('root://cmsxrootd.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_200_V4.root'),
+                        ROOT.TFile.Open('root://cmsxrootd.fnal.gov//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_400_V4.root'),
+                        ROOT.TFile.Open('root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_600_V4.root'),
+                        ROOT.TFile.Open('root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_800_V4.root'),
+                        ROOT.TFile.Open('root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_1200_V4.root'),
+                        ROOT.TFile.Open('root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_2500_V4.root'),
+                        ROOT.TFile.Open('root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ST_schannel_V4.root'),
+                        ROOT.TFile.Open('root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ST_tW-top_V4.root'),
+                        ROOT.TFile.Open('root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ST_tchannel-antitop_V4.root'),
+                        ROOT.TFile.Open('root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ST_tW-antitop_V4.root'),
+                        ROOT.TFile.Open('/uscms_data/d2/rappocc/analysis/B2G/CMSSW_8_0_22/src/Analysis/B2GTTbar/test/pyttbarfw/b2gtree_MC_ST_tchannel-top_V4.root'),
+                        ROOT.TFile.Open('root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht100_V4.root'),
+                        ROOT.TFile.Open('root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht200_V4.root'),
+                        ROOT.TFile.Open('root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht300_V4.root'),
+                        ROOT.TFile.Open('root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht500_V4.root'),
+                        ROOT.TFile.Open('root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht700_V4.root'),
+                        ROOT.TFile.Open('root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht1000_V4.root'),
+                        ROOT.TFile.Open('root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht1500_V4.root'),
+                        ROOT.TFile.Open('root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht2000_V4.root') ]
+
+        else :  
+            filesin = [ ROOT.TFile.Open('root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ttbar_all_V4.root'),    
+                        ROOT.TFile.Open('root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_100_V4.root'),                       
+                        ROOT.TFile.Open('root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_200_V4.root'),
+                        ROOT.TFile.Open('root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_400_V4.root'),
+                        ROOT.TFile.Open('root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_600_V4.root'),
+                        ROOT.TFile.Open('root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_800_V4.root'),
+                        ROOT.TFile.Open('root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_1200_V4.root'),
+                        ROOT.TFile.Open('root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_2500_V4.root'),
+                        ROOT.TFile.Open('root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ST_schannel_V4.root'),
+                        ROOT.TFile.Open('root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ST_tW-top_V4.root'),
+                        ROOT.TFile.Open('root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ST_tchannel-antitop_V4.root'),
+                        ROOT.TFile.Open('root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ST_tW-antitop_V4.root'),
+                        ROOT.TFile.Open('/uscms_data/d2/rappocc/analysis/B2G/CMSSW_8_0_22/src/Analysis/B2GTTbar/test/pyttbarfw/b2gtree_MC_ST_tchannel-top_V4.root'),
+                        ROOT.TFile.Open('root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht100_V4.root'),
+                        ROOT.TFile.Open('root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht200_V4.root'),
+                        ROOT.TFile.Open('root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht300_V4.root'),
+                        ROOT.TFile.Open('root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht500_V4.root'),
+                        ROOT.TFile.Open('root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht700_V4.root'),
+                        ROOT.TFile.Open('root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht1000_V4.root'),
+                        ROOT.TFile.Open('root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht1500_V4.root'),
+                        ROOT.TFile.Open('root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht2000_V4.root') ]
+
+    # create list of trees to be combined
+    alltrees = []
+
+    for ji in filesin:
+        if options.verbose: print "File is " + str(ji)
+        alltrees.append(ji.Get("ana/TreeSemiLept"))
+
+    for ittree, ttree in enumerate(alltrees) :
+        if options.verbose: print "Opening File {0:2.2f} ".format( filesin[ ittree] )
+        tempevnum = 0.
+        # create arrays to store the data
+        SemiLeptWeight        = array.array('f', [-1.])
+        SemiLeptPUweight      = array.array('f', [-1.])
+
+        FatJetPt            = array.array('f', [-1.])
+        FatJetRhoRatio      = array.array('f', [-1.])
+        FatJetMass          = array.array('f', [-1.])
+        FatJetMassSoftDrop  = array.array('f', [-1.])
+        FatJetPtSoftDrop    = array.array('f', [-1.])
+        FatJetTau1          = array.array('f', [-1.]) 
+        FatJetTau2          = array.array('f', [-1.]) 
+        FatJetTau3          = array.array('f', [-1.]) 
+        FatJetTau32         = array.array('f', [-1.])
+        FatJetTau21         = array.array('f', [-1.]) 
+
+        FatJetSDbdiscW      = array.array('f', [-1.])
+        FatJetSDsubjetWpt   = array.array('f', [-1.])
+        FatJetSDsubjetWEta   = array.array('f', [-1.])
+        FatJetSDsubjetWPhi   = array.array('f', [-1.])
+        FatJetSDsubjetWptRaw   = array.array('f', [-1.])
+        FatJetSDsubjetWmass = array.array('f', [-1.])
+        FatJetSDsubjetWmassRaw = array.array('f', [-1.])
+        FatJetSDsubjetWtau1 = array.array('f', [-1.])
+        FatJetSDsubjetWtau2 = array.array('f', [-1.])
+        FatJetSDsubjetWtau3 = array.array('f', [-1.])
+        FatJetSDsubjetWtau21 = array.array('f', [-1.])
+
+        FatJetSDbdiscB      = array.array('f', [-1.])
+        FatJetSDsubjetBpt   = array.array('f', [-1.])
+        FatJetSDsubjetBmass = array.array('f', [-1.])
+        FatJetSDsubjetBtau1 = array.array('f', [-1.])
+        FatJetSDsubjetBtau2 = array.array('f', [-1.])
+        FatJetSDsubjetBtau3 = array.array('f', [-1.])
+
+        #FatJetSDsubjet_isRealW = array.array('f', [-1.])
+        #FatJetSDsubjet_isFakeW = array.array('f', [-1.])
+
+        LeptonType          = array.array('i', [-1])
+        LeptonPt            = array.array('f', [-1.])
+        LeptonEta           = array.array('f', [-1.])
+        LeptonPhi           = array.array('f', [-1.])
+        LeptonPx            = array.array('f', [-1.])
+        LeptonPy            = array.array('f', [-1.])
+        LeptonPz            = array.array('f', [-1.])
+        LeptonEnergy        = array.array('f', [-1.])
+        LeptonIso           = array.array('f', [-1.])
+        LeptonPtRel         = array.array('f', [-1.])
+        LeptonDRMin         = array.array('f', [-1.])
+
+        LeptonPtRel         = array.array('f', [-1.])
+        LeptonDRMin         = array.array('f', [-1.])
+
+        DeltaPhiLepFat        = array.array('f', [-1.])
+        NearestAK4JetPt       = array.array('f', [-1.])
+      
+        SemiLepMETpt        = array.array('f', [-1.])
+
+        AK4bDisc            = array.array('f', [-1.])
+
+        SemiLeptRunNum        = array.array('f', [-1.])   
+        SemiLeptLumiBlock     = array.array('f', [-1.])   
+        SemiLeptEventNum      = array.array('f', [-1.])
+
+        GenMatched_DeltaR_pup0_b      = array.array('f', [-1.])
+        GenMatched_DeltaR_pup0_Wd1      = array.array('f', [-1.])
+        GenMatched_DeltaR_pup0_Wd2      = array.array('f', [-1.])
+
+        ttree.SetBranchAddress('SemiLeptEventWeight'      , SemiLeptWeight      )
+        ttree.SetBranchAddress('SemiLeptPUweight'      , SemiLeptPUweight      )
+
+        ttree.SetBranchAddress('JetPt'            , FatJetPt            )
+        #ttree.SetBranchAddress('FatJetRhoRatio'      , FatJetRhoRatio      )
+        ttree.SetBranchAddress('JetMass'          , FatJetMass          )
+        ttree.SetBranchAddress('JetPuppiSDmass'  , FatJetMassSoftDrop  )
+        ttree.SetBranchAddress('JetPuppiSDpt'  , FatJetPtSoftDrop  )
+
+        ttree.SetBranchAddress('JetPuppiTau1'         , FatJetTau1           )
+        ttree.SetBranchAddress('JetPuppiTau2'         , FatJetTau2           )
+        ttree.SetBranchAddress('JetPuppiTau3'         , FatJetTau3           )
+        ttree.SetBranchAddress('JetPuppiTau32'         , FatJetTau32         )
+        ttree.SetBranchAddress('JetPuppiTau21'         , FatJetTau21         )
+
+        ttree.SetBranchAddress('JetPuppiSDsubjet0bdisc'      , FatJetSDbdiscW      )
+        ttree.SetBranchAddress('JetPuppiSDsubjet0pt'   , FatJetSDsubjetWpt   )
+        ttree.SetBranchAddress('JetPuppiSDsubjet0eta'   , FatJetSDsubjetWEta  )
+        ttree.SetBranchAddress('JetPuppiSDsubjet0phi'   , FatJetSDsubjetWPhi   )
+        #ttree.SetBranchAddress('FatJetSDsubjetWptRaw'   , FatJetSDsubjetWptRaw   )
+        ttree.SetBranchAddress('JetPuppiSDsubjet0mass' , FatJetSDsubjetWmass )
+        #ttree.SetBranchAddress('FatJetSDsubjetWmassRaw' , FatJetSDsubjetWmassRaw )
+        ttree.SetBranchAddress('JetPuppiSDsubjet0tau1' , FatJetSDsubjetWtau1 )
+        ttree.SetBranchAddress('JetPuppiSDsubjet0tau2' , FatJetSDsubjetWtau2 )
+        ttree.SetBranchAddress('JetPuppiSDsubjet0tau3' , FatJetSDsubjetWtau3 )
+        #ttree.SetBranchAddress('FatJetSDsubjetWtau21' , FatJetSDsubjetWtau21 )
+
+        ttree.SetBranchAddress('JetPuppiSDsubjet1bdisc'      , FatJetSDbdiscB      )
+        ttree.SetBranchAddress('JetPuppiSDsubjet1pt'   , FatJetSDsubjetBpt   )
+        ttree.SetBranchAddress('JetPuppiSDsubjet1mass' , FatJetSDsubjetBmass )
+        ttree.SetBranchAddress('JetPuppiSDsubjet1tau1' , FatJetSDsubjetBtau1 )
+        ttree.SetBranchAddress('JetPuppiSDsubjet1tau2' , FatJetSDsubjetBtau2 )
+        ttree.SetBranchAddress('JetPuppiSDsubjet1tau3' , FatJetSDsubjetBtau3 )
+
+        #ttree.SetBranchAddress('FatJetSDsubjet_isRealW'   , FatJetSDsubjet_isRealW ) 
+        #ttree.SetBranchAddress('FatJetSDsubjet_isFakeW'   , FatJetSDsubjet_isFakeW )
+
+        ttree.SetBranchAddress('LeptonIsMu'          , LeptonType          )
+        ttree.SetBranchAddress('LeptonPt'            , LeptonPt            )
+        ttree.SetBranchAddress('LeptonEta'           , LeptonEta           )
+        ttree.SetBranchAddress('LeptonPhi'           , LeptonPhi           )
+        #ttree.SetBranchAddress('LeptonPx'            , LeptonPx            )
+        #ttree.SetBranchAddress('LeptonPy'            , LeptonPy            )
+        #ttree.SetBranchAddress('LeptonPz'            , LeptonPz            )
+        #ttree.SetBranchAddress('LeptonEnergy'        , LeptonEnergy        )
+        ttree.SetBranchAddress('LeptonIso'           , LeptonIso           )
+        #ttree.SetBranchAddress('LeptonPtRel'         , LeptonPtRel         )
+        #ttree.SetBranchAddress('LeptonDRMin'         , LeptonDRMin         )  
+
+
+        #ttree.SetBranchAddress('LeptonPtRel'         , LeptonPtRel         )
+        #ttree.SetBranchAddress('LeptonDRMin'         , LeptonDRMin         )
+        #ttree.SetBranchAddress('DeltaRJetLep'         , DeltaPhiLepFat   )
+
+        ttree.SetBranchAddress('AK4_dRminLep_Pt'         , NearestAK4JetPt   )
+
+        ttree.SetBranchAddress('SemiLeptMETpt'        , SemiLepMETpt        )
+        ttree.SetBranchAddress('AK4_dRminLep_Bdisc'            , AK4bDisc        )
+
+        ttree.SetBranchAddress('SemiLeptRunNum'         ,  SemiLeptRunNum       )
+        ttree.SetBranchAddress('SemiLeptLumiBlock'      ,  SemiLeptLumiBlock    )
+        ttree.SetBranchAddress('SemiLeptEventNum'       ,  SemiLeptEventNum     )
+
+
+        ttree.SetBranchAddress('JetGenMatched_DeltaR_pup0_b'  , GenMatched_DeltaR_pup0_b )
+        ttree.SetBranchAddress('JetGenMatched_DeltaR_pup0_Wd1',   GenMatched_DeltaR_pup0_Wd1 )
+        ttree.SetBranchAddress('JetGenMatched_DeltaR_pup0_Wd2',  GenMatched_DeltaR_pup0_Wd2 )
+
+
+        ttree.SetBranchStatus ('*', 0)
+
+        ttree.SetBranchStatus ('SemiLeptEventWeight', 1)
+        ttree.SetBranchStatus ('SemiLeptPUweight', 1)
+
+        ttree.SetBranchStatus ('JetPt', 1)
+        #ttree.SetBranchStatus ('FatJetRhoRatio', 1)
+        ttree.SetBranchStatus ('JetMass', 1)
+        ttree.SetBranchStatus ('JetPuppiSDmass', 1)
+        ttree.SetBranchStatus ('JetPuppiSDpt' , 1)
+
+        ttree.SetBranchStatus ('JetPuppiTau1', 1)
+        ttree.SetBranchStatus ('JetPuppiTau2', 1)
+        ttree.SetBranchStatus ('JetPuppiTau3', 1)
+        ttree.SetBranchStatus ('JetPuppiTau32', 1)
+        ttree.SetBranchStatus ('JetPuppiTau21', 1)
+
+        ttree.SetBranchStatus('JetPuppiSDsubjet0bdisc',1)
+        ttree.SetBranchStatus('JetPuppiSDsubjet0pt',1)
+        ttree.SetBranchStatus('JetPuppiSDsubjet0eta',1)
+        ttree.SetBranchStatus('JetPuppiSDsubjet0phi',1)
+        #ttree.SetBranchStatus('FatJetSDsubjetWptRaw',1)
+        ttree.SetBranchStatus('JetPuppiSDsubjet0mass',1)
+        #ttree.SetBranchStatus('FatJetSDsubjetWmassRaw',1)
+        ttree.SetBranchStatus('JetPuppiSDsubjet0tau1',1)
+        ttree.SetBranchStatus('JetPuppiSDsubjet0tau2',1)
+        ttree.SetBranchStatus('JetPuppiSDsubjet0tau3',1)
+        #ttree.SetBranchStatus('FatJetSDsubjetWtau21',1)
+
+        ttree.SetBranchStatus('JetPuppiSDsubjet1bdisc',1)
+        ttree.SetBranchStatus('JetPuppiSDsubjet1pt',1)
+        ttree.SetBranchStatus('JetPuppiSDsubjet1mass',1)
+        ttree.SetBranchStatus('JetPuppiSDsubjet1tau1',1)
+        ttree.SetBranchStatus('JetPuppiSDsubjet1tau2',1)
+        ttree.SetBranchStatus('JetPuppiSDsubjet1tau3',1)
+
+        #ttree.SetBranchStatus('FatJetSDsubjet_isRealW',1)
+        #ttree.SetBranchStatus('FatJetSDsubjet_isFakeW',1)
+
+        ttree.SetBranchStatus('LeptonIsMu'          , 1    )
+        ttree.SetBranchStatus('LeptonPt'            , 1    )
+        ttree.SetBranchStatus('LeptonEta'           , 1    )
+        ttree.SetBranchStatus('LeptonPhi'           , 1    )
+        #ttree.SetBranchStatus('LeptonPx'            , 1    )
+        #ttree.SetBranchStatus('LeptonPy'            , 1    )
+        #ttree.SetBranchStatus('LeptonPz'            , 1    )
+        #ttree.SetBranchStatus('LeptonEnergy'        , 1    )
+        ttree.SetBranchStatus('LeptonIso'           , 1    )
+        #ttree.SetBranchStatus('LeptonPtRel'         , 1    )
+        #ttree.SetBranchStatus('LeptonDRMin'         , 1    )  
+
+        #ttree.SetBranchStatus ('LeptonPtRel'         , 1)
+        #ttree.SetBranchStatus ('LeptonDRMin'         , 1)
+        #ttree.SetBranchStatus ('DeltaPhiLepFat'      , 1)
+        ttree.SetBranchStatus ('AK4_dRminLep_Pt'     , 1)
+        ttree.SetBranchStatus ('SemiLeptMETpt'        , 1)
+        ttree.SetBranchStatus ('AK4_dRminLep_Bdisc'            , 1)
+
+        ttree.SetBranchStatus ('SemiLeptRunNum'      , 1)
+        ttree.SetBranchStatus ('SemiLeptLumiBlock'   , 1)
+        ttree.SetBranchStatus ('SemiLeptEventNum'    , 1)
+
+        ttree.SetBranchStatus ('JetGenMatched_DeltaR_pup0_b'     , 1)
+        ttree.SetBranchStatus ('JetGenMatched_DeltaR_pup0_Wd1'   , 1)
+        ttree.SetBranchStatus ('JetGenMatched_DeltaR_pup0_Wd2'   , 1)
+
+        entries = ttree.GetEntriesFast()
+        if options.maxEvents != None :
+            eventsToRun = options.maxEvents
+        else :
+            eventsToRun = entries
+
+
+        for jentry in xrange( eventsToRun ):
+            if jentry % 100000 == 0 :
+                print 'processing ' + str(jentry)
+        # get the next tree in the chain and verify
+            ientry = ttree.GetEntry( jentry )
+            if ientry < 0:
+                break
+
+            fatmass_sd = FatJetMassSoftDrop[0]
+            if ( fatmass_sd == -1. ) :
+                continue
+                print "skipping event, Fatmass is -1"
+
+            #if fatmass_sd > 110. : print "Fat Jet mass SD  {0:6.3} in ttree number {1}".format(fatmass_sd, ittree)
+            fatmass = FatJetMass[0]
+            fatpt = FatJetPt[0]
+            fatpt_sd = FatJetPtSoftDrop[0]
+            tau32 = FatJetTau32[0]
+            #print "Fat Jet tau 32 :" + str(tau32)
+            tau21 = FatJetTau21[0]
+            #print "Fat Jet tau 21 :" + str(tau21)
+
+
+            tau1 = FatJetTau1[0]
+            #print "Fat Jet tau 1 :" + str(tau1)
+            tau2 = FatJetTau2[0]
+            #print "Fat Jet tau 2 :" + str(tau2)
+            tau3 = FatJetTau3[0]
+
+
+            W_m = FatJetSDsubjetWmass[0]
+            W_pt = FatJetSDsubjetWpt[0]
+            W_eta = FatJetSDsubjetWEta[0]
+            W_phi = FatJetSDsubjetWPhi[0]
+            #W_mRaw = FatJetSDsubjetWmassRaw[0]
+            #W_ptRaw = FatJetSDsubjetWptRaw[0]
+            W_tau1 = FatJetSDsubjetWtau1[0]
+            W_tau2 = FatJetSDsubjetWtau2[0]
+            W_tau3 = FatJetSDsubjetWtau3[0]
+            W_bdisc = FatJetSDbdiscW[0]
+
+            if abs(W_tau1) > 0.01 :
+                W_tau21 = W_tau2 / W_tau1
+            else :
+                W_tau21 = 1.
+
+
+            if options.dtype == 'ttjets':
+                if (GenMatched_DeltaR_pup0_Wd1 < 0.4) and (GenMatched_DeltaR_pup0_Wd2 < 0.4) and (GenMatched_DeltaR_pup0_Wd2 < GenMatched_DeltaR_pup0_b) and (GenMatched_DeltaR_pup0_Wd1 < GenMatched_DeltaR_pup0_b) :
+                    realw = 1
+                    fakew = 0
+                else:  
+                    realw = 0
+                    fakew = 1
+            else:
+                realw = 0
+                fakew = 0
+            B_pt = FatJetSDsubjetBpt[0]
+            B_m = FatJetSDsubjetBmass[0]
+            B_bdisc = FatJetSDbdiscB[0]
+            ak4_bdisc = AK4bDisc[0]
+
+            MET_pt = SemiLepMETpt[0]
+
+            W_pt2 = FatJetPt[0]
+ 
+            #typE = BoosttypE[0]
+
+
+            lepton_Type = LeptonType[0]
+            lepton_Eta = LeptonEta[0]
+            #lepton_Phi = LeptonPhi[0]
+            lepton_Iso = LeptonIso[0]
+            lepton_pt = LeptonPt[0]
+            #lepton_ptRel = LeptonPtRel[0]
+            #lepton_DRmin = LeptonDRMin[0] 
+
+            #dphi =  DeltaPhiLepFat[0]
+            ak4pt = NearestAK4JetPt[0]
+
+            runNum = SemiLeptRunNum[0]
+            lumiBlock = SemiLeptLumiBlock[0]
+            eventNum = SemiLeptEventNum[0]
+            
+            if (options.verbose): # and fatpt_sd > 350. 
+                print ">>>>>>>>>>>>>>treeCombiner>>>>>>>>>>"
+                print "Event Number : " + str(eventNum)
+                print "Fat Jet Pt SD : " + str(fatpt_sd)
+                print "Fat Jet mass SD : " + str(fatmass_sd)
+                #print "Fat Jet Rho Ratio : " + str(Rhorat)
+                if eventNum == tempevnum :
+                    print "Repeated event: tree index in list "+str(ittree) 
+                print "-------------------------------------"
+            tempevnum = eventNum
+
+            SemiLeptEventWeight_      [0] = SemiLeptWeight[0] 
+            SemiLeptPUweight_      [0] =  SemiLeptPUweight[0]
+
+            #FatJetRhoRatio_      [0] = Rhorat
+            FatJetMass_          [0] = fatmass
+            FatJetPt_            [0] = fatpt
+            FatJetMassSoftDrop_  [0] = fatmass_sd 
+            FatJetPtSoftDrop_    [0] = fatpt_sd
+
+            FatJetTau1_          [0] = tau1
+            FatJetTau2_          [0] = tau2
+            FatJetTau3_          [0] = tau3
+            FatJetTau32_         [0] = tau32
+            FatJetTau21_         [0] = tau21
+
+            FatJetSDbdiscW_       [0] = W_bdisc
+            FatJetSDsubjetWpt_    [0] = W_pt
+            #FatJetSDsubjetWptRaw_    [0] = W_ptRaw
+            FatJetSDsubjetWEta_    [0] = W_eta
+            FatJetSDsubjetWPhi_    [0] = W_phi
+            FatJetSDsubjetWmass_  [0] = W_m
+            #FatJetSDsubjetWmassRaw_  [0] = W_mRaw
+            FatJetSDsubjetWtau1_  [0] = W_tau1
+            FatJetSDsubjetWtau2_  [0] = W_tau2
+            FatJetSDsubjetWtau3_  [0] = W_tau3
+            FatJetSDsubjetWtau21_ [0] = W_tau21
+
+            FatJetSDsubjet_isRealW_ [0] = realw 
+            FatJetSDsubjet_isFakeW_ [0] = fakew 
+
+            FatJetSDsubjetBpt_   [0] = B_pt 
+            FatJetSDsubjetBmass_ [0] = B_m
+            FatJetSDbdiscB_      [0] = B_bdisc
+
+            LeptonType_          [0] = lepton_Type
+            LeptonEta_          [0] = lepton_Eta
+            #LeptonIso_          [0] = lepton_Iso
+            #LeptonPhi_          [0] = lepton_Phi
+            LeptonPt_            [0] = lepton_pt
+            #LeptonPtRel_         [0] = lepton_ptRel
+            #LeptonDRMin_         [0] = lepton_DRmin
+            #DeltaPhiLepFat_      [0] = dphi
+            NearestAK4JetPt_     [0] = ak4pt
+
+            SemiLepMETpt_        [0] = MET_pt
+            AK4bDisc_            [0] = ak4_bdisc
+            SemiLeptRunNum_      [0] = runNum
+            SemiLeptLumiBlock_   [0] = lumiBlock 
+            SemiLeptEventNum_    [0] = eventNum
+
+            TTreeSemiLept.Fill()
+
+    fout.cd() 
+    fout.Write()
+    fout.Close()
+    print "All Done. The "+ options.dtype +" TTrees were successfully combined!"
+    print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+if __name__ == "__main__" :
+    treeCombiner(sys.argv)

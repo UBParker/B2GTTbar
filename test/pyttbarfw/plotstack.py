@@ -100,7 +100,7 @@ class plotstack() :
             nev_ttbar = 70452080.
             tune = 'CUETP8M2T4'
 
-        lumi = 36494. # pb-1
+        lumi = 35867. #36494. # pb-1
         expectedRunsHist = None
         expectedRunsList = None
         if (options.hist.find("RunNumberHist")!= -1)  : 
@@ -182,6 +182,7 @@ class plotstack() :
 
             
         instring = ''
+        '''
         if options.highmass: endstring1 = '3526d13'# 'f271a16'
         else: endstring1 = '3526d13' # '186b8ea'
 
@@ -190,6 +191,19 @@ class plotstack() :
         endstring3 = 'Commit' + endstring1  # plotstack_Commite39827c
 
         endstrings = endstring2
+        '''
+        if options.highmass: endstring1 = 'tau3208top110to250Matchedtry3'#'tau3208top110to250Matchedtry2' 
+        else: endstring1 = 'tau3208' # '186b8ea'
+
+         # #'5db659f' #'605c442'
+        endstring2 = None 
+        if  options.highmass: endstring2 = '_' + endstring1 
+        else: endstring2 = '_outfile_' + endstring1  # plotstack_Commite39827c
+        endstring3 = '_' + endstring1  # plotstack_Commite39827c
+
+        endstrings = endstring2
+        
+        
         
         lepName0 = 'Electron'
         lepName1 = 'Muon'
@@ -211,7 +225,7 @@ class plotstack() :
         #  \____/ \____/   |_|  |_|     \____/   |_|    |_|  \_\\____/ \____/  |_|   
 
 
-        theOutfile = ROOT.TFile( "./plotstack_"+ str(endstring2)+ '/plotstack_outfile_'+ str(options.hist)+'_' +lep+ str(endstrings)+ '.root' , "RECREATE") 
+        theOutfile = ROOT.TFile( "./plotstack"+ str(endstring2)+ '/plotstack_outfile_'+ str(options.hist)+'_' +lep+ str(endstrings)+ '.root' , "RECREATE") 
 
         theOutfile.cd()
         
@@ -239,71 +253,71 @@ class plotstack() :
         else: endstring2 = ''
         
         #ttbarfile = ROOT.TFile('ttbar' + instring + '_outfile'+ endstring3 +'.root') #ttbarTuneCUETP8M2T4 or ttbarTuneCUETP8M1 currently the latter
-        print('Opening file ttbarTuneCUETP8M1' + instring + '_outfile'+ endstring3 +'.root')
-        ttbarfile = ROOT.TFile('ttbarTuneCUETP8M1' + instring + '_outfile'+ endstring3 +'.root') #ttbarTuneCUETP8M2T4 or ttbarTuneCUETP8M1 currently the latter
+        print('Opening file ttbarTuneCUETP8M1' + instring +  endstring3 +'.root')
+        ttbarfile = ROOT.TFile('ttbarTuneCUETP8M1' + instring +  endstring3 +'.root') #ttbarTuneCUETP8M2T4 or ttbarTuneCUETP8M1 currently the latter
         if options.otherttbar : 
             self.otherttbar = options.otherttbar
-            print('Opening file ttbarTuneCUETP8M2T4' + instring + '_outfile'+ endstring3 +'.root')
+            print('Opening file ttbarTuneCUETP8M2T4' + instring +  endstring3 +'.root')
 
-            ttbarfile = ROOT.TFile('ttbarTuneCUETP8M2T4' + instring + '_outfile'+ endstring3 +'.root')
+            ttbarfile = ROOT.TFile('ttbarTuneCUETP8M2T4' + instring +  endstring3 +'.root')
         datafile = None
         datafile1 = None
         if isEl :  
             if highmass:
-                datafile = ROOT.TFile('singleel' + instring + '_outfile'+ endstring1 +'.root')
+                datafile = ROOT.TFile('singleel' + instring +  endstring3 +'.root')
             else:
-                datafile = ROOT.TFile('singleel' + instring + '_outfile'+ endstring3 +'.root')
-            print('Opening file singleel' + instring + '_outfile'+ endstring1 +'.root')
+                datafile = ROOT.TFile('singleel' + instring +  endstring3 +'.root')
+            print('Opening file singleel' + instring +  endstring3 +'.root')
         if isMu :  
             if highmass:
-                datafile = ROOT.TFile('singlemu' + instring + '_outfile'+ endstring1 +'.root')
+                datafile = ROOT.TFile('singlemu' + instring +  endstring3 +'.root')
             else:
-                datafile = ROOT.TFile('singlemu' + instring + '_outfile'+ endstring3 +'.root')            
-            print('Opening file singlemu' + instring + '_outfile'+ endstring1 +'.root')
+                datafile = ROOT.TFile('singlemu' + instring +  endstring3 +'.root')            
+            print('Opening file singlemu' + instring +  endstring3 +'.root')
         if isBoth:
             if  highmass:
-                datafile = ROOT.TFile('singleel' + instring + '_outfile'+ endstring1 +'.root')
-                print('Opening file singleel' + instring + '_outfile'+ endstring1 +'.root')
+                datafile = ROOT.TFile('singleel' + instring +  endstring3 +'.root')
+                print('Opening file singleel' + instring +  endstring3 +'.root')
             else:
-                datafile = ROOT.TFile('singleel' + instring + '_outfile'+ endstring3 +'.root')  
-                print('Opening file singleel' + instring + '_outfile'+ endstring3 +'.root')          
+                datafile = ROOT.TFile('singleel' + instring +  endstring3 +'.root')  
+                print('Opening file singleel' + instring +  endstring3 +'.root')          
             if options.highmass:
-                datafile1 = ROOT.TFile('singlemu' + instring + '_outfile'+ endstring1 +'.root')
-                print('Opening file singlemu' + instring + '_outfile'+ endstring1 +'.root')
+                datafile1 = ROOT.TFile('singlemu' + instring +  endstring3 +'.root')
+                print('Opening file singlemu' + instring +  endstring3 +'.root')
             else:
-                datafile1 = ROOT.TFile('singlemu' + instring + '_outfile'+ endstring3 +'.root')
-                print('Opening file singlemu' + instring + '_outfile'+ endstring3 +'.root')
+                datafile1 = ROOT.TFile('singlemu' + instring +  endstring3 +'.root')
+                print('Opening file singlemu' + instring +  endstring3 +'.root')
                 
         wjetsfiles = [
-            ROOT.TFile('wjets100to200' + instring + '_outfile'+ endstring2 +'.root'),
-            ROOT.TFile('wjets200to400' + instring + '_outfile'+ endstring2 +'.root'),
-            ROOT.TFile('wjets400to600' + instring + '_outfile'+ endstring2 +'.root'),
-            ROOT.TFile('wjets600to800' + instring + '_outfile'+ endstring2 +'.root'),
-            ROOT.TFile('wjets800to1200' + instring + '_outfile'+ endstring2 +'.root'),
-            ROOT.TFile('wjets1200to2500' + instring + '_outfile'+ endstring2 +'.root'),
-            ROOT.TFile('wjets2500toinf' + instring + '_outfile'+ endstring2 +'.root'),
+            ROOT.TFile('wjets100to200' + instring +  endstring2 +'.root'),
+            ROOT.TFile('wjets200to400' + instring +  endstring2 +'.root'),
+            ROOT.TFile('wjets400to600' + instring +  endstring2 +'.root'),
+            ROOT.TFile('wjets600to800' + instring +  endstring2 +'.root'),
+            ROOT.TFile('wjets800to1200' + instring +  endstring2 +'.root'),
+            ROOT.TFile('wjets1200to2500' + instring +  endstring2 +'.root'),
+            ROOT.TFile('wjets2500toinf' + instring +  endstring2 +'.root'),
             ]
 
         wjets_colors = [ 
             ROOT.kWhite,ROOT.kRed - 9, ROOT.kRed - 7, ROOT.kRed - 4, ROOT.kRed, ROOT.kRed +1, ROOT.kRed +2   ]
 
         qcdfiles = [
-            ROOT.TFile('qcd100' + instring + '_outfile'+ endstring2 +'.root'),
-            ROOT.TFile('qcd200' + instring + '_outfile'+ endstring2 +'.root'),
-            ROOT.TFile('qcd300' + instring + '_outfile'+ endstring2 +'.root'),
-            ROOT.TFile('qcd500' + instring + '_outfile'+ endstring2 +'.root'),
-            ROOT.TFile('qcd700' + instring + '_outfile'+ endstring2 +'.root'),
-            ROOT.TFile('qcd1000' + instring + '_outfile'+ endstring2 +'.root'),
-            ROOT.TFile('qcd1500' + instring + '_outfile'+ endstring2 +'.root'),
-            ROOT.TFile('qcd2000' + instring + '_outfile'+ endstring2 +'.root'),
+            ROOT.TFile('qcd100' + instring +  endstring2 +'.root'),
+            ROOT.TFile('qcd200' + instring +  endstring2 +'.root'),
+            ROOT.TFile('qcd300' + instring +  endstring2 +'.root'),
+            ROOT.TFile('qcd500' + instring +  endstring2 +'.root'),
+            ROOT.TFile('qcd700' + instring +  endstring2 +'.root'),
+            ROOT.TFile('qcd1000' + instring +  endstring2 +'.root'),
+            ROOT.TFile('qcd1500' + instring +  endstring2 +'.root'),
+            ROOT.TFile('qcd2000' + instring +  endstring2 +'.root'),
             ]
 
         singletopfiles = [
-            ROOT.TFile('singletop_tchanneltop' + instring + '_outfile'+ endstring2 +'.root'),
-            ROOT.TFile('singletop_tchannel' + instring + '_outfile'+ endstring2 +'.root'),
-            ROOT.TFile('singletop_tW' + instring + '_outfile'+ endstring2 +'.root'),
-            ROOT.TFile('singletop_tWantitop' + instring + '_outfile'+ endstring2 +'.root'),
-            ROOT.TFile('singletop_schannel' + instring + '_outfile'+ endstring2 +'.root'),
+            ROOT.TFile('singletop_tchanneltop' + instring +  endstring2 +'.root'),
+            ROOT.TFile('singletop_tchannel' + instring +  endstring2 +'.root'),
+            ROOT.TFile('singletop_tW' + instring +  endstring2 +'.root'),
+            ROOT.TFile('singletop_tWantitop' + instring +  endstring2 +'.root'),
+            ROOT.TFile('singletop_schannel' + instring +  endstring2 +'.root'),
             ]
             
         objs = []
@@ -318,13 +332,24 @@ class plotstack() :
             
             
         rangenum = 15
-        if options.highmass: rangenum = 18  #14
+        if options.highmass: rangenum = 21  #14
 
         ### Runs in stage 0 data selection
         actualRunsList = [] 
         
         hdata1 = None
         hdata = None  
+        ttbarMerged = None
+        ttbarUnmerged = None
+        ttbarMerged1 = None
+        ttbarUnmerged1 = None
+        ttbarMerged2 = None
+        ttbarUnmerged2 = None
+        histNameM1 =None
+        histNameM2 = None
+        histNameU1 = None
+        histNameU2 = None
+        
         for istage in range(rangenum) : 
 
             print("The Stage is : {}".format(istage))
@@ -333,32 +358,78 @@ class plotstack() :
             
             if isEl : 
                 histName = options.hist + lepName0 + str(istage)
+                if istage == 17:
+                    histNameM1 = options.hist + lepName0 + str(istage+2)
+                    histNameU1 = options.hist + lepName0 + str(istage+1)
                 lepTag = 'Electron Data'
                 print("Data is Electrons!")
             if isMu : 
                 histName = options.hist + lepName1 + str(istage)
+                if istage == 17:
+                    histNameM1 = options.hist + lepName1 + str(istage+2)
+                    histNameU1 = options.hist + lepName1 + str(istage+1)
                 lepTag = 'Muon Data'
                 print("Data is Muons!")
 
 
+                
             if isBoth: 
                 print("Data is for Electrons and Muons!")
                 histName = options.hist + lepName0 + str(istage)
                 histName1 = options.hist + lepName1 + str(istage)
                 lepTag = 'Electron and Muon Data'
+                if istage == 17:
+                    histNameM1 = options.hist + lepName0 + str(istage+2)
+                    histNameU1 = options.hist + lepName0 + str(istage+1)
+                    histNameM2 = options.hist + lepName1 + str(istage+2)
+                    histNameU2 = options.hist + lepName1 + str(istage+1)
+                    ttbarMerged1 = ttbarfile.Get(histNameM1)
+                    ttbarMerged1.SetFillColor(ROOT.kGreen + 2)
+                    ttbarUnmerged1 = ttbarfile.Get(histNameU1)
+                    ttbarUnmerged1.SetFillColor(ROOT.kGreen - 6)
+                    
+                    ttbarMerged2 = ttbarfile.Get(histNameM2)
+                    ttbarMerged2.SetFillColor(ROOT.kGreen + 2)
+                    ttbarUnmerged2 = ttbarfile.Get(histNameU2)
+                    ttbarUnmerged2.SetFillColor(ROOT.kGreen - 6)
+                    
+                    ttbarMerged = ttbarMerged1.Clone("ttbarMerged")
+                    print("{}: adding 2 merged ttbar histos".format(lepTag ))
+                    ttbarMerged.Add(ttbarMerged2)
+                    ttbarMerged.SetName("ttbarMerged"+histName)
+                    ttbarMerged.SetFillColor(ROOT.kGreen + 2)
+                    
+                    ttbarUnmerged = ttbarUnmerged1.Clone("ttbarUnmerged")
+                    print("{}: adding 2 unmerged ttbar histos".format(lepTag ))
+                    ttbarUnmerged.Add(ttbarUnmerged2)
+                    ttbarUnmerged.SetFillColor(ROOT.kGreen - 6)
+                    ttbarUnmerged.SetName("ttbarUnmerged"+histName)
+
+                    #httbar = ttbarMerged.Clone("httbar"+histName)
+                    #httbar.Add(ttbarUnmerged)
+
                 httbar = ttbarfile.Get(histName) 
                 httbar1 = ttbarfile.Get(histName1)
                 httbar1.Sumw2()
+                print("{}: adding ttbar histos".format(lepTag ))
                 httbar.Add(httbar1)
-                httbar.SetName("httbar"+histName )
+                httbar.SetFillColor(ROOT.kGreen + 2)
+                    
             else:    
-                httbar = ttbarfile.Get(histName)
-                
-            httbar.Sumw2()
-            httbar.Scale( xs_ttbar / nev_ttbar* lumi ) 
-            httbar.SetFillColor(ROOT.kGreen + 2)
-            httbar.SetName("httbar"+histName )
+                if istage == 17:
+                    ttbarMerged = ttbarfile.Get(histNameM1)
+                    ttbarMerged.SetFillColor(ROOT.kGreen + 2)
+                    ttbarUnmerged = ttbarfile.Get(histNameU1)
+                    ttbarUnmerged.SetFillColor(ROOT.kGreen - 6)
 
+            httbar.Sumw2()
+            httbar.SetName("httbar"+histName )
+            if istage == 17 and ttbarMerged != None and ttbarUnmerged != None :
+                ttbarMerged.Scale( xs_ttbar / nev_ttbar* lumi )
+                ttbarUnmerged.Scale(xs_ttbar / nev_ttbar* lumi )
+
+            else:
+                httbar.Scale( xs_ttbar / nev_ttbar* lumi ) 
 
             ROOT.gStyle.SetOptStat(000000)
             print ("Extracting histo titled {} from file {}".format(histName, datafile))
@@ -369,6 +440,7 @@ class plotstack() :
                 hdata1.Sumw2()
                 hdata1.SetTitle("")
                 hdata1.GetXaxis().SetTitle("")
+                print("{}: adding 2 data histos".format(lepTag ))
                 hdata.Add(hdata1)
                 hdata.SetName("hdata"+histName )
                 print ("Extracting histo titled {} from file {}".format(histName1, datafile1))
@@ -466,6 +538,8 @@ class plotstack() :
             hsingletop.Rebin(10)
             hwjets.Rebin(10)
             httbar.Rebin(10)
+            if ttbarUnmerged != None : ttbarUnmerged.Rebin(10)
+            if ttbarMerged != None : ttbarMerged.Rebin(10)
             if options.hist != "RunNumberHist" :
                 hdata.Rebin(10)
             hdata2 = hdata.Clone('hdata2')
@@ -474,14 +548,22 @@ class plotstack() :
             hstack.Add( hqcd )
             hstack.Add( hsingletop )
             hstack.Add( hwjets )
-            hstack.Add( httbar )
+            if istage == 17:
+                hstack.Add(ttbarUnmerged)
+                hstack.Add(ttbarMerged )
+            else:    
+                hstack.Add( httbar )
             hstack.SetName("hstack" +histName )
 
 
             hmc = hqcd.Clone('hmc'+ str(istage))
             hmc.Add(hsingletop )
             hmc.Add( hwjets )
-            hmc.Add( httbar )
+            if istage == 17:
+                hmc.Add(ttbarMerged)
+                hmc.Add(ttbarUnmerged)
+            else:    
+                hmc.Add( httbar )
             hmc.SetName("hmc" +histName )
 
             hmc2 = hmc.Clone('hmc2')
@@ -492,7 +574,9 @@ class plotstack() :
             else: cutTag =  CutsPerStage_Type2[str(istage)][1]
             
             print("passPretag {}".format(passPretag))
-            zplot = APlot(istage , y_max_scale, hdata, hdata2, hmc,hmc2 , hstack, httbar, hwjets, hsingletop, hqcd, str(histName0), lumi/1000., lepTag, cutTag, options.fixFit, expectedRunsHist, self.otherttbar, fitValues, fitDiffs, passPretag, passPretagUncert, type2 )
+            if istage != 17:
+                ttbarUnmerged =  httbar
+            zplot = APlot(istage , y_max_scale, hdata, hdata2, hmc,hmc2 , hstack, ttbarUnmerged, ttbarMerged, hwjets, hsingletop, hqcd, str(histName0), lumi/1000., lepTag, cutTag, options.fixFit, expectedRunsHist, self.otherttbar, fitValues, fitDiffs, passPretag, passPretagUncert, type2 )
    
             print("isWmass {} isTopmass {} istage {} type2 {} type1 {} ".format(isWmass,isTopmass, istage ,type2, type1))
             if ( isWmass and istage == 14 and type2) or ( isWmass and istage == 17 and type1) or ( isTopmass and istage == 14 and type1 ):
@@ -529,8 +613,8 @@ class plotstack() :
                 zplot.ResetHists()
             theCanvas = zplot.GetPlotCanvas()
             
-            theCanvas.Print("./plotstack_"+ str(endstring3)+ "/" + histName0 + lep + str(istage)  + instring + endstring2+tune+".pdf", "pdf")
-            theCanvas.Print("./plotstack_"+ str(endstring3)+ "/" + histName0 + lep + str(istage)  + instring + endstring2+tune+".png", "png")
+            theCanvas.Print("./plotstack"+ str(endstring3)+ "/" + histName0 + lep + str(istage)  + instring + endstring2+tune+".pdf", "pdf")
+            theCanvas.Print("./plotstack"+ str(endstring3)+ "/" + histName0 + lep + str(istage)  + instring + endstring2+tune+".png", "png")
 
             theOutfile.cd()
                             

@@ -81,8 +81,12 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
 
         ### Cached class member variables for plotting
         self.RunNumber = None
+        self.lumiBlock = None
+        self.eventNumber = None
         self.theWeight = None
         self.leptonP4 = None
+        self.lepIsMu = None #self.tree.LeptonIsMu[0]
+        self.lepIso = None
         self.nuP4 = None
         self.ak4Jet = None
         self.ak8Jet = None
@@ -267,9 +271,14 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
     """
     def select( self ) :
         self.RunNumber = None
+        self.lumiBlock = None
+        self.eventNumber = None
+
         self.theWeight = None
 
         self.leptonP4 = None
+        self.lepIsMu = None
+        self.lepIso = None
         self.nuP4 = None
         self.ak4Jet = None
         self.ak8SDJetP4 = None
@@ -278,6 +287,10 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         
         ### Get Run Number of data event
         self.RunNumber =  self.tree.SemiLeptRunNum[0]
+        self.lumiBlock =  self.tree.SemiLeptLumiBlock[0]
+        self.eventNumber = self.tree.SemiLeptEventNum[0]
+        
+
         #if self.verbose : print"run number in Iso2D is self.runNum {} from tree value is  {}".format(self.RunNumber, self.tree.SemiLeptRunNum[0])
 
         ### Define the 4 vectors of the leptonic top system
@@ -288,6 +301,9 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
                                    self.tree.LeptonEta[0],
                                    self.tree.LeptonPhi[0],
                                                        0. )
+        self.lepIsMu = self.tree.LeptonIsMu[0]
+        self.lepIso = self.tree.MuIso[0]
+
         #if self.verbose : print"lepton pt from iso2D is {0:2.2f}".format(self.tree.LeptonPt[0])
 
         self.nuP4 = ROOT.TLorentzVector()

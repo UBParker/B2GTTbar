@@ -79,14 +79,10 @@ python plotstack.py --highmass --hist b0AK8MPt900To1000Hist
 python plotstack.py --highmass --hist b0AK8MSDPt900To1000Hist
 python plotstack.py --highmass --hist b0AK8MSDSJ0Pt900To1000Hist
 python plotstack.py --highmass --hist b0AK8MSDSJ1Pt900To1000Hist
-python plotstack.py   --highmass --hist l2l3b0AK8MSDSJ0Pt200To300Hist
-python plotstack.py   --highmass --hist l2l3b0AK8MSDSJ0Pt300To600Hist
-python plotstack.py   --highmass --hist l2l3b0AK8MSDSJ0Pt600To900Hist
-python plotstack.py   --highmass --hist l2l3b0AK8MSDSJ0Pt900To1000Hist
-python plotstack.py   --highmass --hist l2l30AK8MSDSJ0Pt200To300Hist
-python plotstack.py   --highmass --hist l2l30AK8MSDSJ0Pt300To600Hist
-python plotstack.py   --highmass --hist l2l30AK8MSDSJ0Pt600To900Hist
-python plotstack.py   --highmass --hist l2l30AK8MSDSJ0Pt900To1000Hist
+python plotstack.py --highmass --hist l2l3b0AK8MSDSJ0Pt200To300Hist
+python plotstack.py --highmass --hist l2l3b0AK8MSDSJ0Pt300To600Hist
+python plotstack.py --highmass --hist l2l3b0AK8MSDSJ0Pt600To900Hist
+python plotstack.py --highmass --hist l2l3b0AK8MSDSJ0Pt900To1000Hist
 
 
 python plotstack.py --highmass --el --hist AK8PtHist
@@ -169,14 +165,10 @@ python plotstack.py --highmass --el --hist b0AK8MPt900To1000Hist
 python plotstack.py --highmass --el --hist b0AK8MSDPt900To1000Hist
 python plotstack.py --highmass --el --hist b0AK8MSDSJ0Pt900To1000Hist
 python plotstack.py --highmass --el --hist b0AK8MSDSJ1Pt900To1000Hist
-python plotstack.py   --highmass --el --hist  l2l3b0AK8MSDSJ0Pt200To300Hist
-python plotstack.py   --highmass --el --hist  l2l3b0AK8MSDSJ0Pt300To600Hist
-python plotstack.py   --highmass --el --hist  l2l3b0AK8MSDSJ0Pt600To900Hist
-python plotstack.py   --highmass --el --hist  l2l3b0AK8MSDSJ0Pt900To1000Hist
-python plotstack.py   --highmass --el --hist  l2l30AK8MSDSJ0Pt200To300Hist
-python plotstack.py   --highmass --el --hist  l2l30AK8MSDSJ0Pt300To600Hist
-python plotstack.py   --highmass --el --hist  l2l30AK8MSDSJ0Pt600To900Hist
-python plotstack.py   --highmass --el --hist  l2l30AK8MSDSJ0Pt900To1000Hist
+python plotstack.py --highmass --el --hist  l2l3b0AK8MSDSJ0Pt200To300Hist
+python plotstack.py --highmass --el --hist  l2l3b0AK8MSDSJ0Pt300To600Hist
+python plotstack.py --highmass --el --hist  l2l3b0AK8MSDSJ0Pt600To900Hist
+python plotstack.py --highmass --el --hist  l2l3b0AK8MSDSJ0Pt900To1000Hist
 
 python plotstack.py --highmass --mu --hist AK8PtHist
 python plotstack.py --highmass --mu --hist AK8HTHist
@@ -258,11 +250,7 @@ python plotstack.py --highmass --mu --hist b0AK8MPt900To1000Hist
 python plotstack.py --highmass --mu --hist b0AK8MSDPt900To1000Hist
 python plotstack.py --highmass --mu --hist b0AK8MSDSJ0Pt900To1000Hist
 python plotstack.py --highmass --mu --hist b0AK8MSDSJ1Pt900To1000Hist
-python plotstack.py   --highmass --mu --hist  l2l3b0AK8MSDSJ0Pt200To300Hist
-python plotstack.py   --highmass --mu --hist  l2l3b0AK8MSDSJ0Pt300To600Hist
-python plotstack.py   --highmass --mu --hist  l2l3b0AK8MSDSJ0Pt600To900Hist
-python plotstack.py   --highmass --mu --hist  l2l3b0AK8MSDSJ0Pt900To1000Hist
-python plotstack.py   --highmass --mu --hist  l2l30AK8MSDSJ0Pt200To300Hist
-python plotstack.py   --highmass --mu --hist  l2l30AK8MSDSJ0Pt300To600Hist
-python plotstack.py   --highmass --mu --hist  l2l30AK8MSDSJ0Pt600To900Hist
-python plotstack.py   --highmass --mu --hist  l2l30AK8MSDSJ0Pt900To1000Hist
+python plotstack.py --highmass --mu --hist  l2l3b0AK8MSDSJ0Pt200To300Hist
+python plotstack.py --highmass --mu --hist  l2l3b0AK8MSDSJ0Pt300To600Hist
+python plotstack.py --highmass --mu --hist  l2l3b0AK8MSDSJ0Pt600To900Hist
+python plotstack.py --highmass --mu --hist  l2l3b0AK8MSDSJ0Pt900To1000Hist

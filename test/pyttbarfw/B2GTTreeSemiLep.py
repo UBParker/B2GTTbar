@@ -235,7 +235,7 @@ class B2GTTreeSemiLep( ) :
             ## 'SemiLeptNNPDF3weight_CorrUp':'f',
             'SemiLeptRunNum':'i',
             'SemiLeptLumiBlock':'f',
-            'SemiLeptEventNum':'f',
+            'SemiLeptEventNum':'i',
             'SemiLeptPassMETFilters':'i',
             'AK4_dRminLep_Pt':'f',
             'AK4_dRminLep_Eta':'f',
@@ -258,7 +258,7 @@ class B2GTTreeSemiLep( ) :
             'MuIso':'f',
             'DeltaRJetLep':'f',
             'DeltaPhiJetLep':'f',
-	    'Electron_iso_passHEEP' : 'i',
+            'Electron_iso_passHEEP' : 'i',
             'Electron_noiso_passLoose' : 'i',
             'Electron_noiso_passMedium' : 'i',
             'Electron_noiso_passTight' : 'i'
@@ -279,9 +279,3 @@ class B2GTTreeSemiLep( ) :
             
 
 
-        #self.SemiLeptTrigNames     = ROOT.std.vector('std::string')();
-        #self.SemiLeptTrigPrescales     = ROOT.std.vector('std::string')();
-        #self.tree.SetBranchAddress( 'SemiLeptTrigNames', self.SemiLeptTrigNames )
-        #self.tree.SetBranchAddress( 'SemiLeptTrigPrescales', self.SemiLeptTrigPrescales )
-        #self.tree.SetBranchStatus( 'SemiLeptTrigNames', 1 )
-        #self.tree.SetBranchStatus( 'SemiLeptTrigPrescales', 1 )
