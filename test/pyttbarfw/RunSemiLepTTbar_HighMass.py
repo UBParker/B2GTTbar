@@ -93,7 +93,10 @@ class RunSemiLepTTbar_HighMass() :
         #self.startTime = time.time()
 
         self.outfile = ROOT.TFile(options.outfile, "RECREATE")
-
+        
+        self.TTreeSemiLeptSkim = self.TTreeSemiLept.Clone("TTreeSemiLeptSkim")
+        self.TTreeSemiLeptSkim.SetDirectory(self.outfile)
+        
         ### Create the tree class. This will make simple class members for each
         ### of the branches that we want to read from the Tree to save time.
         ### Also saved are some nontrivial variables that involve combinations
@@ -166,6 +169,7 @@ class RunSemiLepTTbar_HighMass() :
         b = self.hadSelection 
                 
         self.outfile.cd()
+        
         
         '''
         Book histograms, one for each stage of the selection. 
@@ -534,6 +538,9 @@ class RunSemiLepTTbar_HighMass() :
                 self.Iso2DHist[ilep][index].Fill( a.leptonP4.Perp( a.ak4Jet.Vect() ), a.leptonP4.DeltaR( a.ak4Jet )  , self.theWeight  )
                 self.AK4BdiscHist[ilep][index].Fill(b.ak4JetBdisc , self.theWeight)
         ### Fill the ttree
+        if index == 12:
+            self.TTreeSemiLeptSkim.Fill()
+        ''' 
         if index == 15 :
             varsToFill = [a.EventWeight ,
                           a.PUWeight,
@@ -574,13 +581,13 @@ class RunSemiLepTTbar_HighMass() :
             ]
 
             self.filltreeout = self.treeout.fillTTree( options, varsToFill )
-
+    '''
 
     def close( self ) :
         '''
         Wrap it up. 
         '''
-        self.treeout.WriteTTree( options)
+        #self.treeout.WriteTTree( options)
         
         self.outfile.cd() 
         self.outfile.Write()
