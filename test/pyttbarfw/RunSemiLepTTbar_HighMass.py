@@ -94,16 +94,15 @@ class RunSemiLepTTbar_HighMass() :
 
         self.outfile = ROOT.TFile(options.outfile, "RECREATE")
         
-        self.TTreeSemiLeptSkim = self.TTreeSemiLept.Clone("TTreeSemiLeptSkim")
-        self.TTreeSemiLeptSkim.SetDirectory(self.outfile)
-        
         ### Create the tree class. This will make simple class members for each
         ### of the branches that we want to read from the Tree to save time.
         ### Also saved are some nontrivial variables that involve combinations
         ### of things from the tree
         self.treeobj = B2GTTreeSemiLep( options )
-        self.treeout = B2GTTreeSemiLepOut( options, options.dtype )
-
+        #self.treeout = B2GTTreeSemiLepOut( options, options.dtype )
+        self.TTreeSemiLeptSkim = self.treeobj.tree.Clone("TTreeSemiLeptSkim")
+        self.TTreeSemiLeptSkim.SetName("TTreeSemiLeptSkim") 
+        self.TTreeSemiLeptSkim.SetDirectory(self.outfile)
 
         self.options = options
         self.verbose = options.verbose
