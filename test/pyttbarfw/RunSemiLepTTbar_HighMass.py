@@ -13,6 +13,8 @@ import array as array
 from optparse import OptionParser
 
 from B2GTTreeSemiLep import B2GTTreeSemiLep
+from B2GTTreeSemiLepOut import B2GTTreeSemiLepOut
+
 import B2GSelectSemiLepTTbar_Type1, B2GSelectSemiLepTTbar_Iso2D
 
 
@@ -91,7 +93,7 @@ class RunSemiLepTTbar_HighMass() :
         argv = []
 
         #self.startTime = time.time()
-
+        self.infile = options.infile
         self.outfile = ROOT.TFile(options.outfile, "RECREATE")
         
         ### Create the tree class. This will make simple class members for each
@@ -99,10 +101,24 @@ class RunSemiLepTTbar_HighMass() :
         ### Also saved are some nontrivial variables that involve combinations
         ### of things from the tree
         self.treeobj = B2GTTreeSemiLep( options )
-        #self.treeout = B2GTTreeSemiLepOut( options, options.dtype )
         self.TTreeSemiLeptSkim = self.treeobj.tree.Clone("TTreeSemiLeptSkim")
         self.TTreeSemiLeptSkim.SetName("TTreeSemiLeptSkim") 
         self.TTreeSemiLeptSkim.SetDirectory(self.outfile)
+        
+        self.TTreeWeights = ROOT.TTree("TTreeWeights", "TTreeWeights")
+        
+        self.weights = {
+            'SemiLeptLumiweight':'f',
+            'SemiLeptAllotherweights':'f',
+          }
+        self.branchesArray = []
+        self.i = 0
+        for var in self.weights.iteritems() :
+            self.branchesArray.append(array.array(var[1], [-1] ))
+            self.TTreeWeights.Branch(var[0]  , self.branchesArray[self.i]     ,  str(var[0])+'/F'      )
+            self.i +=1
+            
+        self.TTreeSemiLeptSkim.AddFriend("TTreeWeights", options.outfile)
 
         self.options = options
         self.verbose = options.verbose
@@ -537,50 +553,78 @@ class RunSemiLepTTbar_HighMass() :
                 self.Iso2DHist[ilep][index].Fill( a.leptonP4.Perp( a.ak4Jet.Vect() ), a.leptonP4.DeltaR( a.ak4Jet )  , self.theWeight  )
                 self.AK4BdiscHist[ilep][index].Fill(b.ak4JetBdisc , self.theWeight)
         ### Fill the ttree
-        if index == 12:
+        if index == 12:            
+            
+            ### Define lumi weight
+            
+            self.infiles = ['root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ttbar_all_V4.root',
+                            'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ttbarTuneCUETP8M2T4_all_V4.root',
+                            'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_100_V4.root',
+                            'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_200_V4.root',
+                            'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_400_V4.root',
+                            'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_600_V4.root',
+                            'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_800_V4.root',
+                            'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_1200_V4.root',
+                            'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_2500_V4.root',
+                            '/uscms_data/d2/rappocc/analysis/B2G/CMSSW_8_0_22/src/Analysis/B2GTTbar/test/pyttbarfw/b2gtree_MC_ST_tchannel-top_V4.root'
+                            'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ST_tchannel-antitop_V4.root',
+                            'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ST_tW-top_V4.root',
+                            'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtreeV4_ST_tW_antitop_1of1.root',
+                            'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ST_schannel_V4.root',
+                            ]
+                            
+            self.nEvents = [  92925926., # original ttbar
+                              70452080., # Otherttbar  - different tune, same MC generator
+                              10231928., #100To200   W + jets
+                              4963240.,  #200To400 
+                              1963464.,  #400To600 
+                              3722395.,  #600To800
+                              1540477.,  #800To1200 
+                              246737.,   #1200To2500 
+                              253561.,   #2500ToInf 
+                            32808300.,   #singletop_tchanneltop_outfile.root
+                            19825855.,   #singletop_tchannel_outfile.root
+                              998400.,   #singletop_tW_outfile.root
+                              985000.,   #singletop_tWantitop_outfile.root
+                              1000000.   #singletop_schannel_outfile.root 
+                           ]
+                           
+            self.xSections = [  831.,
+                                831.,
+                                1345.,     #100To200  W + jets
+                                359.7,     #200To400  
+                                48.91,     #400To600  
+                                12.05,     #600To800  
+                                5.501,     #800To1200 
+                                1.329,     #1200To2500
+                                0.03216,   #2500ToInf 
+                                136.02 * 0.322,#singletop_tchanneltop_outfile.root
+                                80.95 * 0.322, #singletop_tchannel_outfile.root
+                                35.6,          #singletop_tW_outfile.root
+                                35.6,          #singletop_tWantitop_outfile.root
+                                3.36           #singletop_schannel_outfile.root 
+                             ]
+                             
+                             
+            self.lumiWeight = 1.0               
+            for afile, ifile in enumerate(self.infiles):
+                if afile == self.infile:
+                    self.lumiWeight = self.xSections[ifile] / self.nEvents[ifile] 
+                    
+            self.i = 0
+            '''
+            self.weights = {
+                             'SemiLeptLumiweight':'f',
+                             'SemiLeptAllotherweights':'f',
+                            } 
+            '''
+            self.fillVars = [self.lumiWeight , self.theWeight ]
+            for var in self.weights.iteritems() :            
+                self.branchesArray[self.i] = self.fillVars[self.i]
+                self.i +=1
+                
+            self.TTreeWeights.Fill()
             self.TTreeSemiLeptSkim.Fill()
-        ''' 
-        if index == 15 :
-            varsToFill = [a.EventWeight ,
-                          a.PUWeight,
-                          b.ak8JetP4.M(),
-                          b.ak8JetP4.Perp()* b.PtSmear,
-                          b.ak8PuppiSDJetP4.M(),
-                          b.ak8PuppiSDJetP4.Perp(),
-                          b.puppitau1,
-                          b.puppitau2,
-                          b.puppitau3,
-                          b.puppitau32,
-                          b.puppitau21,
-                          b.ak8PuppiSDsubjet0Bdisc,
-                          b.ak8PuppiSDJetP4_Subjet0.Perp(),
-                          b.ak8PuppiSDJetP4_Subjet0.Eta(),
-                          b.ak8PuppiSDJetP4_Subjet0.Phi(),
-                          b.ak8PuppiSDJetP4_Subjet0.M(),
-                          b.ak8SDsubjet0tau1,
-                          b.ak8SDsubjet0tau2,
-                          b.ak8SDsubjet0tau3,
-                          b.ak8SDsubjet0tau21,
-                          b.realW,
-                          b.fakeW,
-                          b.ak8PuppiSDJetP4_Subjet1.Perp(),
-                          b.ak8PuppiSDJetP4_Subjet1.M(),
-                          b.ak8PuppiSDsubjet1Bdisc,
-                          a.lepIsMu,
-                          a.leptonP4.Eta(),
-                          a.lepIso,
-                          a.leptonP4.Phi(),
-                          a.leptonP4.Pt(),
-                          a.ak4Jet.Perp(),
-                          b.ak4JetBdisc,
-                          a.nuP4.Perp(),
-                          a.RunNumber,
-                          a.lumiBlock,
-                          a.eventNumber
-            ]
-
-            self.filltreeout = self.treeout.fillTTree( options, varsToFill )
-    '''
 
     def close( self ) :
         '''
@@ -599,3 +643,4 @@ class RunSemiLepTTbar_HighMass() :
 if __name__ == "__main__" :
     r = RunSemiLepTTbar_HighMass(sys.argv)
     r.run()
+
