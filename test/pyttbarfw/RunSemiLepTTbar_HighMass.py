@@ -121,7 +121,7 @@ class RunSemiLepTTbar_HighMass() :
             self.TTreeWeights.Branch(var[0]  , self.branchesArray[self.i]     ,  str(var[0])+'/F'      )
             self.i +=1
         print"self.branchesArray {}".format(self.branchesArray)    
-        self.TTreeSemiLeptSkim.AddFriend("TTreeWeights", options.outfile)
+        #self.TTreeSemiLeptSkim.AddFriend("TTreeWeights", options.outfile)
 
         self.options = options
         self.verbose = options.verbose
