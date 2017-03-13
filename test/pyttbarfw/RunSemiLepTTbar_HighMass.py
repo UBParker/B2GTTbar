@@ -106,6 +106,9 @@ class RunSemiLepTTbar_HighMass() :
         self.TTreeSemiLeptSkim.SetDirectory(self.outfile)
         
         self.TTreeWeights = ROOT.TTree("TTreeWeights", "TTreeWeights")
+        self.TTreeWeights.SetName("TTreeWeights") 
+        self.TTreeWeights.SetDirectory(self.outfile)
+        
         
         self.weights = {
             'SemiLeptLumiweight':'f',
@@ -117,7 +120,7 @@ class RunSemiLepTTbar_HighMass() :
             self.branchesArray.append(array.array(var[1], [-1] ))
             self.TTreeWeights.Branch(var[0]  , self.branchesArray[self.i]     ,  str(var[0])+'/F'      )
             self.i +=1
-            
+        print"self.branchesArray {}".format(self.branchesArray)    
         self.TTreeSemiLeptSkim.AddFriend("TTreeWeights", options.outfile)
 
         self.options = options
@@ -622,7 +625,8 @@ class RunSemiLepTTbar_HighMass() :
             for var in self.weights.iteritems() :            
                 self.branchesArray[self.i] = self.fillVars[self.i]
                 self.i +=1
-                
+
+            print"FILLLLL self.branchesArray {} self.fillVars {}".format(self.branchesArray, self.fillVars)    
             self.TTreeWeights.Fill()
             self.TTreeSemiLeptSkim.Fill()
 
@@ -630,7 +634,9 @@ class RunSemiLepTTbar_HighMass() :
         '''
         Wrap it up. 
         '''
-        #self.treeout.WriteTTree( options)
+
+        self.TTreeWeights.Write()
+        self.TTreeSemiLeptSkim.Write()
         
         self.outfile.cd() 
         self.outfile.Write()
