@@ -404,7 +404,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
                 self.TriggEffIs = self.MuonTriggEff( self.leptonP4.Perp() , abs(self.leptonP4.Eta())   , self.tree.SemiLeptRunNum[0] )
 
         if self.tree.LeptonIsMu[0] == 0 and not self.itIsData and self.leptonP4 != None  :
-            print"WARNING: Electron trigger SF and eff not yet applied" 
+            if self.verbose: print"WARNING: Electron trigger SF and eff not yet applied" 
               
         ### Trigger efficiency for morind MC + ReReco data Mu50 PR TRKMu50                                               
         ### we are using Mu50, switching with v5 ttrees                                                                  
@@ -504,7 +504,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
 
         if self.tree.LeptonIsMu[0] == 0 and not self.itIsData and self.leptonP4 != None  :
             self.HEEPSFIs = self.ElectronHEEPEff(self.leptonP4.Eta() )
-            print"ElectronHEEPEff: {0:2.3f} for eta {1:2.3f}".format(self.HEEPSFIs,  self.leptonP4.Eta() )
+            if self.verbose: print"ElectronHEEPEff: {0:2.3f} for eta {1:2.3f}".format(self.HEEPSFIs,  self.leptonP4.Eta() )
 
 
         self.theWeight =  self.EventWeight * self.PUWeight * self.CutIDScaleFIs * self.recoSFIs * self.TriggEffIs * self.MuHighPtScaleFIs * self.HEEPSFIs
@@ -638,7 +638,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
 
     def MuonCutIDScaleFTight(self, muonpt, muoneta, runNum) :
         if muonpt > 120.:
-            print "MuonCutIDScaleFTight is for pt 0-120 GeV, this pt is {0:2.2f}".format(muonpt)
+            if self.verbose: print "MuonCutIDScaleFTight is for pt 0-120 GeV, this pt is {0:2.2f}".format(muonpt)
             return 1.
         if runNum < 278808. : #run2106B-F
             PtetaCutIDMuScaleFTight = self.PtetaCutIDMuScaleFTightBtoF
@@ -669,7 +669,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
     def MuonCutIDScaleFLoose(self, muonpt, muoneta, runNum) :
         PtetaCutIDMuScaleFLoose = None
         if muonpt > 120.:
-            print "MuonCutIDScaleFLoose is for pt 0-120 GeV, this pt is {}".format(muonpt) 
+            if self.verbose: print "MuonCutIDScaleFLoose is for pt 0-120 GeV, this pt is {}".format(muonpt) 
             return 1. 
         if runNum < 278808. : #run2106B-F
             PtetaCutIDMuScaleFLoose = self.PtetaCutIDMuScaleFLooseBtoF

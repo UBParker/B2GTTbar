@@ -95,32 +95,40 @@ class RunSemiLepTTbar_HighMass() :
         #self.startTime = time.time()
         self.infile = options.infile
         self.outfile = ROOT.TFile(options.outfile, "RECREATE")
-        
+
+        self.verboseW = True        
         ### Create the tree class. This will make simple class members for each
         ### of the branches that we want to read from the Tree to save time.
         ### Also saved are some nontrivial variables that involve combinations
         ### of things from the tree
         self.treeobj = B2GTTreeSemiLep( options )
-        self.TTreeSemiLeptSkim = self.treeobj.tree.Clone("TTreeSemiLeptSkim")
+        self.TTreeSemiLeptSkim = self.treeobj.tree.CloneTree(0)
         self.TTreeSemiLeptSkim.SetName("TTreeSemiLeptSkim") 
         self.TTreeSemiLeptSkim.SetDirectory(self.outfile)
-        
+        self.TTreeSemiLept  = self.TTreeSemiLeptSkim.GetTree()        
+
         self.TTreeWeights = ROOT.TTree("TTreeWeights", "TTreeWeights")
         self.TTreeWeights.SetName("TTreeWeights") 
         self.TTreeWeights.SetDirectory(self.outfile)
         
-        
+        self.theCount = 0
+        self.lumiWeight = None
+        self.theWeight = None
         self.weights = {
             'SemiLeptLumiweight':'f',
             'SemiLeptAllotherweights':'f',
           }
         self.branchesArray = []
-        self.i = 0
-        for var in self.weights.iteritems() :
-            self.branchesArray.append(array.array(var[1], [-1] ))
-            self.TTreeWeights.Branch(var[0]  , self.branchesArray[self.i]     ,  str(var[0])+'/F'      )
-            self.i +=1
-        print"self.branchesArray {}".format(self.branchesArray)    
+        # self.i = 0
+        self.weightVal = -3.14159
+        #for var in self.weights.iteritems() :
+        self.SemiLeptLumiweight = (array.array( 'f', [self.weightVal] ))
+        self.SemiLeptAllotherweights = (array.array( 'f', [self.weightVal] ))
+
+        self.TTreeWeights.Branch('SemiLeptLumiweight'  , self.SemiLeptLumiweight     ,  'SemiLeptLumiweight/F'      )
+        self.TTreeWeights.Branch( 'SemiLeptAllotherweights' ,  self.SemiLeptAllotherweights     ,  'SemiLeptAllotherweights/F'      )
+
+        #print"self.branchesArray {}".format(self.branchesArray)    
         #self.TTreeSemiLeptSkim.AddFriend("TTreeWeights", options.outfile)
 
         self.options = options
@@ -560,61 +568,66 @@ class RunSemiLepTTbar_HighMass() :
             
             ### Define lumi weight
             
-            self.infiles = ['root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ttbar_all_V4.root',
-                            'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ttbarTuneCUETP8M2T4_all_V4.root',
-                            'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_100_V4.root',
-                            'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_200_V4.root',
-                            'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_400_V4.root',
-                            'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_600_V4.root',
-                            'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_800_V4.root',
-                            'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_1200_V4.root',
-                            'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_2500_V4.root',
-                            '/uscms_data/d2/rappocc/analysis/B2G/CMSSW_8_0_22/src/Analysis/B2GTTbar/test/pyttbarfw/b2gtree_MC_ST_tchannel-top_V4.root'
-                            'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ST_tchannel-antitop_V4.root',
-                            'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ST_tW-top_V4.root',
-                            'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtreeV4_ST_tW_antitop_1of1.root',
-                            'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ST_schannel_V4.root',
-                            ]
-                            
-            self.nEvents = [  92925926., # original ttbar
-                              70452080., # Otherttbar  - different tune, same MC generator
-                              10231928., #100To200   W + jets
-                              4963240.,  #200To400 
-                              1963464.,  #400To600 
-                              3722395.,  #600To800
-                              1540477.,  #800To1200 
-                              246737.,   #1200To2500 
-                              253561.,   #2500ToInf 
-                            32808300.,   #singletop_tchanneltop_outfile.root
-                            19825855.,   #singletop_tchannel_outfile.root
-                              998400.,   #singletop_tW_outfile.root
-                              985000.,   #singletop_tWantitop_outfile.root
-                              1000000.   #singletop_schannel_outfile.root 
-                           ]
-                           
-            self.xSections = [  831.,
-                                831.,
-                                1345.,     #100To200  W + jets
-                                359.7,     #200To400  
-                                48.91,     #400To600  
-                                12.05,     #600To800  
-                                5.501,     #800To1200 
-                                1.329,     #1200To2500
-                                0.03216,   #2500ToInf 
-                                136.02 * 0.322,#singletop_tchanneltop_outfile.root
-                                80.95 * 0.322, #singletop_tchannel_outfile.root
-                                35.6,          #singletop_tW_outfile.root
-                                35.6,          #singletop_tWantitop_outfile.root
-                                3.36           #singletop_schannel_outfile.root 
-                             ]
-                             
-                             
-            self.lumiWeight = 1.0               
-            for afile, ifile in enumerate(self.infiles):
-                if afile == self.infile:
-                    self.lumiWeight = self.xSections[ifile] / self.nEvents[ifile] 
-                    
-            self.i = 0
+            if self.theCount < 1 :
+                self.lumiWeight = 1.0
+                self.theCount +=1
+                self.infiles = ['root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ttbar_all_V4.root',
+                                'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ttbarTuneCUETP8M2T4_all_V4.root',
+                                'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_100_V4.root',
+                                'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_200_V4.root',
+                                'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_400_V4.root',
+                                'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_600_V4.root',
+                                'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_800_V4.root',
+                                'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_1200_V4.root',
+                                'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_2500_V4.root',
+                                '/uscms_data/d2/rappocc/analysis/B2G/CMSSW_8_0_22/src/Analysis/B2GTTbar/test/pyttbarfw/b2gtree_MC_ST_tchannel-top_V4.root'
+                                'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ST_tchannel-antitop_V4.root',
+                                'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ST_tW-top_V4.root',
+                                'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtreeV4_ST_tW_antitop_1of1.root',
+                                'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ST_schannel_V4.root',
+                                ]
+                                
+                self.nEvents = [  92925926., # original ttbar
+                                  70452080., # Otherttbar  - different tune, same MC generator
+                                  10231928., #100To200   W + jets
+                                  4963240.,  #200To400 
+                                  1963464.,  #400To600 
+                                  3722395.,  #600To800
+                                  1540477.,  #800To1200 
+                                  246737.,   #1200To2500 
+                                  253561.,   #2500ToInf 
+                                32808300.,   #singletop_tchanneltop_outfile.root
+                                19825855.,   #singletop_tchannel_outfile.root
+                                  998400.,   #singletop_tW_outfile.root
+                                  985000.,   #singletop_tWantitop_outfile.root
+                                  1000000.   #singletop_schannel_outfile.root 
+                               ]
+                               
+                self.xSections = [  831.,
+                                    831.,
+                                    1345.,     #100To200  W + jets
+                                    359.7,     #200To400  
+                                    48.91,     #400To600  
+                                    12.05,     #600To800  
+                                    5.501,     #800To1200 
+                                    1.329,     #1200To2500
+                                    0.03216,   #2500ToInf 
+                                    136.02 * 0.322,#singletop_tchanneltop_outfile.root
+                                    80.95 * 0.322, #singletop_tchannel_outfile.root
+                                    35.6,          #singletop_tW_outfile.root
+                                    35.6,          #singletop_tWantitop_outfile.root
+                                    3.36           #singletop_schannel_outfile.root 
+                                 ]
+                                 
+                self.lumi = 35867.0 # /pb                 
+                               
+                for ifile, afile in enumerate(self.infiles):
+                    if self.verboseW : print"infile is  {}   Afile is {}".format(self.infile, afile)
+                    if afile == self.infile:
+                        self.lumiWeight =  self.xSections[ifile] / self.nEvents[ifile] * self.lumi
+
+                        if self.verboseW : print"lumiweight is {}".format(self.lumiWeight)
+            
             '''
             self.weights = {
                              'SemiLeptLumiweight':'f',
@@ -622,21 +635,25 @@ class RunSemiLepTTbar_HighMass() :
                             } 
             '''
             self.fillVars = [self.lumiWeight , self.theWeight ]
-            for var in self.weights.iteritems() :            
-                self.branchesArray[self.i] = self.fillVars[self.i]
-                self.i +=1
+            #for ivar, var in enumerate(self.branchesArray) :            
+            self.SemiLeptLumiweight[0] =  float( self.fillVars[0])
+            self.SemiLeptAllotherweights[0] =  float( self.fillVars[1])
 
-            print"FILLLLL self.branchesArray {} self.fillVars {}".format(self.branchesArray, self.fillVars)    
+                #print"*******************var  {}= float( self.fillVars[ivar])  {}".format(var , float( self.fillVars[ivar]))
+                #self.weightVal = float( self.fillVars[ivar])
+                
+
+            if self.verboseW : print"FILLLLL-------- self.branchesArray {} self.fillVars {}  float( self.fillVars[0])  {}   , float( self.fillVars[1])  {}".format(self.branchesArray, self.fillVars, float( self.fillVars[0]) , float( self.fillVars[1]) )    
             self.TTreeWeights.Fill()
-            self.TTreeSemiLeptSkim.Fill()
+            self.TTreeSemiLept.Fill()
 
     def close( self ) :
         '''
         Wrap it up. 
         '''
 
-        self.TTreeWeights.Write()
-        self.TTreeSemiLeptSkim.Write()
+        #self.TTreeWeights.Write()
+        #self.TTreeSemiLeptSkim.Write()
         
         self.outfile.cd() 
         self.outfile.Write()
