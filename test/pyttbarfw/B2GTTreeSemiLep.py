@@ -9,6 +9,8 @@ class B2GTTreeSemiLep( ) :
         ### Get ONE chain for each species we are interested in.
         ### Add the files for this species to this TTree
         self.tree = ROOT.TChain("ana/TreeSemiLept", "ana/TreeSemiLept")
+        #self.tree2 = ROOT.TChain("TTreeWeights", "TTreeWeights")
+
         self.tree.AddFile( options.infile )
 
         self.branches = {}
@@ -146,7 +148,7 @@ class B2GTTreeSemiLep( ) :
             'JetCEF':'f',
             'JetMF':'f',
             'JetMult':'f',
-            ## 'JetMassCorrFactor':'f',
+            'JetMassCorrFactor':'f',
             ## 'JetMassCorrFactorUp':'f',
             ## 'JetMassCorrFactorDn':'f',
             'JetCorrFactor':'f',
@@ -234,7 +236,7 @@ class B2GTTreeSemiLep( ) :
             ## 'SemiLeptNNPDF3weight_CorrDn':'f',
             ## 'SemiLeptNNPDF3weight_CorrUp':'f',
             'SemiLeptRunNum':'i',
-            'SemiLeptLumiBlock':'f',
+            'SemiLeptLumiBlock':'i',
             'SemiLeptEventNum':'i',
             'SemiLeptPassMETFilters':'i',
             'AK4_dRminLep_Pt':'f',
