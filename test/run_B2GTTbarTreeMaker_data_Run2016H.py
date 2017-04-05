@@ -25,69 +25,9 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 5000
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/002429F8-A586-E611-ACF3-6C3BE5B5C0C0.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/0085E379-F887-E611-AF46-047D7B881D72.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/00BF76A7-8686-E611-8747-20CF305B04DA.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/00C3F2C5-E885-E611-8A2B-3417EBE64BF7.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/020197DC-6987-E611-8BCB-008CFA197C38.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/023A19A6-D389-E611-A37E-0025907DC9CC.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/02F956D3-CE87-E611-BCE0-008CFA56D764.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/04061D6B-B886-E611-B88B-0090FAA575B0.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/0443C5BF-3287-E611-AD2D-008CFA06477C.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/0474DFA7-448D-E611-B7A3-001E67E6F7D3.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/04A5B76D-3E8D-E611-8E96-001E677925CC.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/04C06977-2C87-E611-9782-001E67792592.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/04D48C09-0388-E611-851D-0CC47A4DEE92.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/04F1451E-368D-E611-BDA2-001E677926FC.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/06414B75-DA85-E611-9D27-E41D2D08DFF0.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/0673346B-9A87-E611-922A-44A842CF05E6.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/067E2666-9F85-E611-95B8-008CFAFBFCA8.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/069594B8-F38B-E611-B1BC-001E67E6F76A.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/06B9B731-AC86-E611-87E3-00259073E4E6.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/06E1FC5B-DC87-E611-B84F-848F69FD2931.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/06E8BFF3-E486-E611-9593-44A842CF057E.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/08003690-E987-E611-B679-7845C4F932B1.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/0A4DC605-188C-E611-A38D-002590A4FFA2.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/0A54CCAC-6387-E611-A17C-0CC47A7FC34E.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/0A5AF4FD-A287-E611-BD3C-0025907B501C.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/0AEA46FD-F787-E611-8AE4-008CFA1983E0.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/0C1548BB-A287-E611-A7B6-0CC47A1E0482.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/0C74F139-A887-E611-8254-44A842CF05D9.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/0CBFE4F7-0A88-E611-9977-002590A3711C.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/0CC863C3-1188-E611-8131-7845C4FC3635.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/0E465D97-328D-E611-BF5A-001E67E6F7CE.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/0E4E30FC-F886-E611-AB42-A0369F7F9DE0.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/0EB1F211-4087-E611-BE91-008CFA1660F8.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/102FF3D5-F68B-E611-ACD5-001E67E6F8B4.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/107FCA41-D385-E611-8EC2-D8D385B0EE2E.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/10942A81-BD87-E611-9ABF-001E67E7195C.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/10A82C33-4F88-E611-A017-001E67E5E8B6.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/10EE5725-068C-E611-A82F-002590A80DEA.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/10F252E9-4C87-E611-A1AF-008CFA05E898.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/125D7D89-DE86-E611-B368-001E67E6F819.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/12B5097E-7986-E611-A762-0CC47A1E0748.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/144736EE-3887-E611-8A02-001E67792494.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/1470AA12-308D-E611-A47B-001E67792888.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/147F7C9C-108D-E611-A4F6-001E67792496.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/14982D58-0E8C-E611-A4A8-001E67E6F52B.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/14D17A90-EA8C-E611-9C9D-001E67E71BFF.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/1638CEDD-7787-E611-A695-44A842CFD5F2.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/16699FDA-D88B-E611-ADA7-001E67E71BAA.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/16DE7F1B-7E87-E611-8344-A0369F7FCBA0.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/1AE1E47E-2C87-E611-B3FB-0CC47A1E0472.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/1C01A3F2-278D-E611-96CA-002590A371AA.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/1C08022C-7087-E611-96B7-7845C4F9CF06.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/1C1A05FA-8D86-E611-AE0C-44A842CFD65A.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/1C6AC0B2-5A87-E611-8254-008CFA06470C.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/1C8E9056-4087-E611-9F79-008CFA05E8F0.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/1CBD427B-7187-E611-905B-008CFA06477C.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/1CCCA25B-1387-E611-97CE-B499BAAC064E.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/1CD4410D-4787-E611-A437-008CFA197A5C.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/1CD497F6-8487-E611-AF41-008CFA1983E0.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/1E905E57-4087-E611-9D92-00266CFFBF80.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/1E947C5D-1387-E611-9000-0CC47A1E047C.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/1EC866E1-8487-E611-8A6F-F452149391B0.root',
-      'file:root://cmsxrootd.fnal.gov////store/data/Run2016G/JetHT/MINIAOD/23Sep2016-v1/100000/20002919-A687-E611-B1FD-44A842CF05E6.root'     
+      'file:root://cmsxrootd.fnal.gov///store/data/Run2016H/SingleMuon/MINIAOD/03Feb2017_ver2-v1/110000/008BE852-89EA-E611-A265-001E67396AEA.root',
+      'file:root://cmsxrootd.fnal.gov////store/data/Run2016H/SingleMuon/MINIAOD/03Feb2017_ver2-v1/110000/009A586B-A6EA-E611-B612-001E674FD1DD.root',
+
     )
 )
 
@@ -344,13 +284,13 @@ process.ana = cms.EDAnalyzer('B2GTTbarTreeMaker',
 #     )
 # process.endpath = cms.EndPath(process.out) 
 
-# process.SimpleMemoryCheck=cms.Service("SimpleMemoryCheck",
-#                                    ignoreTotal=cms.untracked.int32(1), #->start logging event N
-#                                    oncePerEventMode=cms.untracked.bool(False), # true->report every event, false->report only high memory events 
-#                                    moduleMemorySummary=cms.untracked.bool(True),
-#                                    monitorPssAndPrivate=cms.untracked.bool(False)
+process.SimpleMemoryCheck=cms.Service("SimpleMemoryCheck",
+                                   ignoreTotal=cms.untracked.int32(1), #->start logging event N
+                                   oncePerEventMode=cms.untracked.bool(False), # true->report every event, false->report only high memory events 
+                                   moduleMemorySummary=cms.untracked.bool(True),
+                                   monitorPssAndPrivate=cms.untracked.bool(False)
 
-# )
+)
 
 process.TFileService = cms.Service("TFileService",
       fileName = cms.string("b2gtreeV5_dataH.root"),
