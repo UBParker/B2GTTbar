@@ -1,3 +1,4 @@
+
 #! /usr/bin/env python
 
 
@@ -124,9 +125,11 @@ class RunSemiLepTTbar_HighMass() :
         #for var in self.weights.iteritems() :
         self.SemiLeptLumiweight = (array.array( 'f', [self.weightVal] ))
         self.SemiLeptAllotherweights = (array.array( 'f', [self.weightVal] ))
+        self.SubjetTau21 = (array.array( 'f', [self.weightVal] ))
 
         self.TTreeWeights.Branch('SemiLeptLumiweight'  , self.SemiLeptLumiweight     ,  'SemiLeptLumiweight/F'      )
         self.TTreeWeights.Branch( 'SemiLeptAllotherweights' ,  self.SemiLeptAllotherweights     ,  'SemiLeptAllotherweights/F'      )
+        self.TTreeWeights.Branch( 'SubjetTau21' ,  self.SubjetTau21    ,  'SubjetTau21/F'      )
 
         #print"self.branchesArray {}".format(self.branchesArray)    
         #self.TTreeSemiLeptSkim.AddFriend("TTreeWeights", options.outfile)
@@ -580,11 +583,20 @@ class RunSemiLepTTbar_HighMass() :
                                 'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_800_V4.root',
                                 'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_1200_V4.root',
                                 'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_2500_V4.root',
-                                '/uscms_data/d2/rappocc/analysis/B2G/CMSSW_8_0_22/src/Analysis/B2GTTbar/test/pyttbarfw/b2gtree_MC_ST_tchannel-top_V4.root'
+                                '/uscms_data/d2/rappocc/analysis/B2G/CMSSW_8_0_22/src/Analysis/B2GTTbar/test/pyttbarfw/b2gtree_MC_ST_tchannel-top_V4.root',
                                 'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ST_tchannel-antitop_V4.root',
                                 'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ST_tW-top_V4.root',
                                 'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtreeV4_ST_tW_antitop_1of1.root',
                                 'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ST_schannel_V4.root',
+                                'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht100_V4.root',
+                                'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht200_V4.root',
+                                'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht300_V4.root',
+                                'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht500_V4.root',
+                                'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht700_V4.root',
+                                'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht1000_V4.root',
+                                'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht1500_V4.root',
+                                'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht2000_V4.root'
+
                                 ]
                                 
                 self.nEvents = [  92925926., # original ttbar
@@ -600,7 +612,15 @@ class RunSemiLepTTbar_HighMass() :
                                 19825855.,   #singletop_tchannel_outfile.root
                                   998400.,   #singletop_tW_outfile.root
                                   985000.,   #singletop_tWantitop_outfile.root
-                                  1000000.   #singletop_schannel_outfile.root 
+                                  1000000.,   #singletop_schannel_outfile.root 
+                                 82073090., # 100To200  
+                                18523829., # 200To300  
+                                16830696., # 300To500  
+                                19199088., # 500To700  
+                                15621634., # 700To1000 
+                                4980387.,  # 1000To1500
+                                3846616.,  # 1500To2000
+                                1960245.   # 2000ToInf 
                                ]
                                
                 self.xSections = [  831.,
@@ -616,13 +636,21 @@ class RunSemiLepTTbar_HighMass() :
                                     80.95 * 0.322, #singletop_tchannel_outfile.root
                                     35.6,          #singletop_tW_outfile.root
                                     35.6,          #singletop_tWantitop_outfile.root
-                                    3.36           #singletop_schannel_outfile.root 
+                                    3.36,           #singletop_schannel_outfile.root 
+                                    27990000., # 100To200
+                                    1712000.,  # 200To300
+                                    347700.,   # 300To500
+                                    32100.,    # 500To700
+                                    6831.,     # 700To1000
+                                    1207.,     # 1000To1500
+                                    119.9,     # 1500To2000
+                                    25.24      # 2000ToInf 
                                  ]
                                  
                 self.lumi = 35867.0 # /pb                 
                                
                 for ifile, afile in enumerate(self.infiles):
-                    if self.verboseW : print"infile is  {}   Afile is {}".format(self.infile, afile)
+                    if self.verboseW  : print"infile is  {}   Afile is {}".format(self.infile, afile)
                     if afile == self.infile:
                         self.lumiWeight =  self.xSections[ifile] / self.nEvents[ifile] * self.lumi
 
@@ -638,12 +666,12 @@ class RunSemiLepTTbar_HighMass() :
             #for ivar, var in enumerate(self.branchesArray) :            
             self.SemiLeptLumiweight[0] =  float( self.fillVars[0])
             self.SemiLeptAllotherweights[0] =  float( self.fillVars[1])
-
+            self.SubjetTau21[0] = float( b.ak8SDsubjet0tau21 )  
                 #print"*******************var  {}= float( self.fillVars[ivar])  {}".format(var , float( self.fillVars[ivar]))
                 #self.weightVal = float( self.fillVars[ivar])
                 
 
-            if self.verboseW : print"FILLLLL-------- self.branchesArray {} self.fillVars {}  float( self.fillVars[0])  {}   , float( self.fillVars[1])  {}".format(self.branchesArray, self.fillVars, float( self.fillVars[0]) , float( self.fillVars[1]) )    
+            if self.verboseW : print"FILLLLL--------   self.fillVars {}  float( self.fillVars[0])  {}   , float( self.fillVars[1])  {}, subjet tau21 {}".format( self.fillVars, float( self.fillVars[0]) , float( self.fillVars[1]), float( b.ak8SDsubjet0tau21 ) )    
             self.TTreeWeights.Fill()
             self.TTreeSemiLept.Fill()
 
