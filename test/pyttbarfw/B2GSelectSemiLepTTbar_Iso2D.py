@@ -35,10 +35,10 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
 
         # Stage 2 : Lepton kinematic selection
 
-        self.muonPtCut = 55.
+        self.muonPtCut = 53.
         self.muonEtaCut = 2.1
 
-        self.electronPtCut = 50.
+        self.electronPtCut = 53.
         self.electronEtaCut = 2.5
 
         #self.passMuon_Pt = self.tree.LeptonIsMu[0] == 1 and self.leptonP4.Perp() > self.muonPtCut
@@ -59,8 +59,8 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         # Stage 4 : Muon High Pt ID selection
 
         # Stage 5 : MET selection
-        self.muonMETPtCut = 50.
-        self.electronMETPtCut = 120.
+        self.muonMETPtCut = 40.
+        self.electronMETPtCut = 80.
 
 
         # Stage 6 : Leptonic-side AK4 jet selection
@@ -69,7 +69,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
 
         # Stage 7 : 2D cut (decrease QCD contamination)
         self.DrAK4Lep = 0.4
-        self.PtRel = 40.
+        self.PtRel = 30.
 
 
         # Stage 8 : Hemisphere cut (keep leptons far from AK8 Jet)
@@ -289,7 +289,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         self.RunNumber =  self.tree.SemiLeptRunNum[0]
         self.lumiBlock =  self.tree.SemiLeptLumiBlock[0]
         self.eventNumber = self.tree.SemiLeptEventNum[0]
-        
+        #print"self.eventNumber: {0}".format(self.eventNumber)
 
         #if self.verbose : print"run number in Iso2D is self.runNum {} from tree value is  {}".format(self.RunNumber, self.tree.SemiLeptRunNum[0])
 

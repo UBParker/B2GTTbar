@@ -47,7 +47,7 @@ class B2GSelectSemiLepTTbar_Type1( ) :
 
         # Stage 5 (15) - AK8 SD Subjet 0 mass cut
         self.minAK8sjMass = 10.
-        self.maxAK8sjMass = 120.
+        self.maxAK8sjMass = 1000.
 
         #Stage 6 (16) - AK8 SD Subjt 0 tau21 cut
         # see options.tau21Cut 
@@ -72,9 +72,9 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.ak8JetP4 = None
         self.ak8JetP4Raw = None
         self.ak8_m_raw = None
-        self.ak8_m = None          # JECs applied, currently Spring 2016
-        self.ak8_m_Pcorr = None    # PUPPI corrections from Thea applied
-        self.ak8_m_PcorrSmear = None    # PUPPI corrections from Thea applied and Pt smearing applied to mass
+        self.ak8_m = None               # JECs applied, currently Spring 2016
+        self.ak8_m_Pcorr = None         # PUPPI corrections from Thea 
+        self.ak8_m_PcorrSmear = None    # PUPPI corrections from Thea  and Pt smearing applied to mass
         self.ak8JetHT = None
         self.tau32      = None
         self.tau21      = None
@@ -107,8 +107,8 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.ak8PuppiSD_m_Pcorr = None    
         self.ak8PuppiSD_m_PcorrSmear = None 
 
-        self.akCHSSD_m = None         # JetSDmassCorrL23
-        self.akSDRaw_m = None         # Jet0SDmassRaw
+        self.akCHSSD_m = None         
+        self.akSDRaw_m = None     
 
         self.ak8PuppiSDJetP4_Subjet0 = None
         self.ak8PuppiSDJetP4_Subjet0Raw = None     
@@ -129,8 +129,8 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.GenMatchDR_pup0_Wd2 = None
         self.GenMatchDR_pup1_Wd2 = None
 
-        self.ak8Jet_Ptbins = [200, 300, 400, 500, 800, 1000]
-        self.ak8Jet_Ptbinsb = [200, 300, 600, 900, 1000, 2000]
+        self.ak8Jet_Ptbins = [200, 300, 500, 1000, 2000, 3000]
+        self.ak8Jet_Ptbinsb = [200, 300, 600, 800, 1000, 2000]
 
         ### These Histos are binned by AK8 jet Pt
         self.ak8PuppiJetP4_Binned = [ROOT.TLorentzVector()] * len(self.ak8Jet_Ptbins)
@@ -461,7 +461,7 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.ak8SDsubjet0tau21 = 1.0
         if self.ak8SDsubjet0tau1 > 0.001:
             self.ak8SDsubjet0tau21 = self.ak8SDsubjet0tau2 / self.ak8SDsubjet0tau1
-            #if self.verbose : print "SD subjet 0 tau21 is: {0:2.2f}".format(self.ak8SDsubjet0tau21)            
+            if self.verbose : print "@@@@@@@@@@@@@@@@@@@  SD subjet 0 tau21 is: {0:2.2f}".format(self.ak8SDsubjet0tau21)            
 
         ### AK4 Jet - B tag candidate
         self.ak4Jet = ROOT.TLorentzVector( )        
@@ -525,14 +525,17 @@ class B2GSelectSemiLepTTbar_Type1( ) :
                 self.passed[6] = True
                 if self.verbose or self.matchverbose: print "Stage 16: Data has no Gen particles "
                 return self.passed
-            if  self.GenMatchDR_pup0_Wd1 > 0. :
+
+            if not ( self.ak8SDsubjet0tau21 < self.tau21Cut ) :
                 self.passed[7] = True
-                if self.verbose or self.matchverbose: print "Stage 17: Data has no Gen particles "
+                self.passedCount[7] += 1
+                if self.verbose or self.matchverbose : print "Stage 17:data FAIL AK8 SD subjet 0 tau21  {0:2.2f}  < ( {1} ) ".format( self.ak8SDsubjet0tau21 , self.tau21Cut )
                 return self.passed
-            if  self.GenMatchDR_pup0_Wd1 > 0. :
-                self.passed[8] = True
-                if self.verbose or self.matchverbose: print "Stage 18: Data has no Gen particles "
-                return self.passed
+            self.passed[8] = True
+            self.passedCount[8] += 1
+            if self.verbose or self.matchverbose : print "Stage 18: data PASS AK8 SD subjet 0 tau21  {0:2.2f}  < ( {1} ) ".format( self.ak8SDsubjet0tau21 , self.tau21Cut )
+            return self.passed
+           
             if  self.GenMatchDR_pup0_Wd1 > 0. :
                 self.passed[9] = True
                 if self.verbose or self.matchverbose: print "Stage 19: Data has no Gen particles "

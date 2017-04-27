@@ -97,7 +97,8 @@ class RunSemiLepTTbar_HighMass() :
         self.infile = options.infile
         self.outfile = ROOT.TFile(options.outfile, "RECREATE")
 
-        self.verboseW = True        
+        self.verboseW = False # True
+        
         ### Create the tree class. This will make simple class members for each
         ### of the branches that we want to read from the Tree to save time.
         ### Also saved are some nontrivial variables that involve combinations
