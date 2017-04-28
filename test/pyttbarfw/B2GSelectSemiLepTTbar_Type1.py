@@ -290,15 +290,10 @@ class B2GSelectSemiLepTTbar_Type1( ) :
             self.GenMatchDR_pup0_b = self.tree.JetGenMatched_DeltaR_pup0_b[0]
             self.GenMatchDR_pup0_Wd1 = self.tree.JetGenMatched_DeltaR_pup0_Wd1[0]
             self.GenMatchDR_pup0_Wd2 = self.tree.JetGenMatched_DeltaR_pup0_Wd2[0] 
+            self.GenMatchDR_pup1_b = self.tree.JetGenMatched_DeltaR_pup1_b[0]
+            self.GenMatchDR_pup1_Wd1 = self.tree.JetGenMatched_DeltaR_pup1_Wd1[0]
+            self.GenMatchDR_pup1_Wd2 = self.tree.JetGenMatched_DeltaR_pup1_Wd2[0] 
 
-        self.realW = 0
-        self.fakeW = 0
-        if (self.GenMatchDR_pup0_Wd1 < 0.4) and (self.GenMatchDR_pup0_Wd2 < 0.4) and (self.GenMatchDR_pup0_Wd2 < self.GenMatchDR_pup0_b) and (self.GenMatchDR_pup0_Wd1 < self.GenMatchDR_pup0_b) :
-            self.realW = 1
-            self.fakeW = 0
-        else:    
-            self.realW = 0
-            self.fakeW = 1
         ### AK8 jets
 
         self.akCHSSD_m = self.tree.JetSDmassCorrL23[0]
@@ -415,7 +410,7 @@ class B2GSelectSemiLepTTbar_Type1( ) :
                                                  self.ak8PuppiSDJetP4_Subjet1Raw.Eta(),
                                                  self.ak8PuppiSDJetP4_Subjet1Raw.M()  )
                                                  
-        self.ak8Jet_Ptbins = [200, 300, 400, 500, 800, 1000]
+        self.ak8Jet_Ptbins = [200, 300, 400, 500, 1000, 2000]
         '''
         ### These Histos are binned by AK8 PUPPI Soft Drop jet Pt
         self.ak8PuppiJetP4_Binned = [ROOT.TLorentzVector()] * len(self.ak8Jet_Ptbins)
@@ -457,11 +452,19 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         '''            
         self.ak8SDsubjet0tau1 = self.tree.JetSDsubjet0tau1[0]
         self.ak8SDsubjet0tau2 = self.tree.JetSDsubjet0tau2[0]
+        self.ak8SDsubjet1tau1 = self.tree.JetSDsubjet1tau1[0]
+        self.ak8SDsubjet1tau2 = self.tree.JetSDsubjet1tau2[0]
+
 
         self.ak8SDsubjet0tau21 = 1.0
         if self.ak8SDsubjet0tau1 > 0.001:
             self.ak8SDsubjet0tau21 = self.ak8SDsubjet0tau2 / self.ak8SDsubjet0tau1
-            if self.verbose : print "@@@@@@@@@@@@@@@@@@@  SD subjet 0 tau21 is: {0:2.2f}".format(self.ak8SDsubjet0tau21)            
+            if self.verbose : print "SD subjet 0 tau21 is: {0:2.2f}".format(self.ak8SDsubjet0tau21)            
+
+        self.ak8SDsubjet1tau21 = 1.0
+        if self.ak8SDsubjet1tau1 > 0.001:
+            self.ak8SDsubjet1tau21 = self.ak8SDsubjet1tau2 / self.ak8SDsubjet1tau1
+            if self.verbose : print "SD subjet 1 tau21 is: {0:2.2f}".format(self.ak8SDsubjet1tau21)  
 
         ### AK4 Jet - B tag candidate
         self.ak4Jet = ROOT.TLorentzVector( )        
@@ -509,24 +512,21 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.passedCount[4] += 1
         if self.verbose : print "Stage 14: AK8 tau32  {0:2.2f}  < ( {1:2.2f} ) [For comparison puppi tau32 is  {2:2.2f} ]".format(  self.tau32 , self.tau32Cut, self.puppitau32)
 
-
-
-        #W tag the SD subjet 0 fix this: later see if bdisc is higher for subjet 0 or 1
-        if self.verbose : print "Mass of SD subjet 0 before puppi corr is: {0:2.2f}".format( float(self.ak8PuppiSDJetP4_Subjet0.M()))
-        if not ( self.minAK8sjMass <  self.ak8PuppiSDJetP4_Subjet0.M()  <  self.maxAK8sjMass) : return self.passed
+        #if self.verbose : print "Mass of W cand subjet (with L2L3 corr) is: {0:2.2f}".format( float(self.wcandp4.M()))
+        if not ( self.minAK8sjMass <  self.wcandp4.M()  <  self.maxAK8sjMass) : return self.passed
         self.passed[5] = True
         self.passedCount[5] += 1
-        if self.verbose : print "Stage 15: AK8 SD subjet 0 mass  ({0}) < {1:2.2f} GeV < ({2})  [mass is after puppi mass corr]".format( self.minAK8sjMass ,  self.ak8PuppiSD_subjet0_m  , self.maxAK8sjMass)
+        if self.verbose : print "Stage 15: AK8 SD subjet W cand mass  ({0}) < {1:2.2f} GeV < ({2}) ".format( self.minAK8sjMass ,  self.wcandp4.M()  , self.maxAK8sjMass)
 
         #if self.verbose : print "mass of sd subjet 0 after puppi corr in bin 200-300 {0:2.3f}, 300-400 {1:2.3f}, 400-500 {2:2.3f}, 500-800 {3:2.3f}".format(self.ak8SDsj0_m200,self.ak8SDsj0_m300,self.ak8SDsj0_m400,self.ak8SDsj0_m500)
+        self.realWloose = 0
+        self.fakeWloose = 0 
+        if self.itIsData :             
+            self.passed[6] = True
+            if self.verbose or self.matchverbose: print "Stage 16: Data has no Gen particles "
+            return self.passed
 
-        if self.itIsData :
-            if  self.GenMatchDR_pup0_Wd1 > 0. : 
-                self.passed[6] = True
-                if self.verbose or self.matchverbose: print "Stage 16: Data has no Gen particles "
-                return self.passed
-
-            if not ( self.ak8SDsubjet0tau21 < self.tau21Cut ) :
+            if not ( self.wcandtau21 < self.tau21Cut ) :
                 self.passed[7] = True
                 self.passedCount[7] += 1
                 if self.verbose or self.matchverbose : print "Stage 17:data FAIL AK8 SD subjet 0 tau21  {0:2.2f}  < ( {1} ) ".format( self.ak8SDsubjet0tau21 , self.tau21Cut )
@@ -535,27 +535,56 @@ class B2GSelectSemiLepTTbar_Type1( ) :
             self.passedCount[8] += 1
             if self.verbose or self.matchverbose : print "Stage 18: data PASS AK8 SD subjet 0 tau21  {0:2.2f}  < ( {1} ) ".format( self.ak8SDsubjet0tau21 , self.tau21Cut )
             return self.passed
-           
-            if  self.GenMatchDR_pup0_Wd1 > 0. :
-                self.passed[9] = True
-                if self.verbose or self.matchverbose: print "Stage 19: Data has no Gen particles "
-                return self.passed
-            if  self.GenMatchDR_pup0_Wd1 > 0. :
-                self.passed[10] = True
-                if self.verbose or self.matchverbose: print "Stage 20: Data has no Gen particles "
-            if  self.GenMatchDR_pup0_Wd1 > 0. :
-                self.passed[11] = True
-                if self.verbose or self.matchverbose: print "Stage 21: Data has no Gen particles "
-                return self.passed
+
+            self.passed[9] = True
+            if self.verbose or self.matchverbose: print "Stage 19: Data has no Gen particles "
+            return self.passed
+
+            self.passed[10] = True
+            if self.verbose or self.matchverbose: print "Stage 20: Data has no Gen particles "
+            self.passed[11] = True
+            if self.verbose or self.matchverbose: print "Stage 21: Data has no Gen particles "
+            return self.passed
         else : ### Gen matching to find the REAL merged Ws 
+            #### W candidate is the SD subjet with higher mass 
+            #### NOTE: Later see if bdisc is higher for subjet 0 or 1
+            self.wcandp4 = ROOT.TLorentzVector()
+            self.wcandBdisc = 10.
+            self.wcandtau21 = 10.
+
+            self.wcand_dR_WdauQuark1 = 10.
+            self.wcand_dR_WdaQquark2 = 10.
+            self.wcand_dR_bQuark = 10.
+
+            if self.ak8PuppiSDJetP4_Subjet0.M() > self.ak8PuppiSDJetP4_Subjet1.M() :
+              self.wcandp4 = self.ak8PuppiSDJetP4_Subjet0
+              self.wcandBdisc = self.ak8PuppiSDsubjet0Bdisc
+              self.wcandtau21 = self.ak8SDsubjet0tau21
+              self.wcand_dR_WdauQuark1 = self.GenMatchDR_pup0_Wd1
+              self.wcand_dR_WdauQuark2 = self.GenMatchDR_pup0_Wd2
+              self.wcand_dR_bQuark = self.GenMatchDR_pup0_b        
+            else :
+              self.wcandp4 = self.ak8PuppiSDJetP4_Subjet1
+              self.wcandBdisc = self.ak8PuppiSDsubjet1Bdisc
+              self.wcandtau21 = self.ak8SDsubjet1tau21
+              self.wcand_dR_WdauQuark1 = self.GenMatchDR_pup1_Wd1
+              self.wcand_dR_WdauQuark2 = self.GenMatchDR_pup1_Wd2
+              self.wcand_dR_bQuark = self.GenMatchDR_pup1_b 
+
+            ### This realWloose flag means that the 2 gen quark daughters of W candidate are closer to W than b
+            if (self.wcand_dR_WdauQuark1 < self.wcand_dR_bQuark) and (self.wcand_dR_WdauQuark2 < self.wcand_dR_bQuark)  :
+                self.realWloose = 1
+            else:    
+                self.fakeWloose = 1
+
             print "PRE Stage 16:  DR btw subjet and quarks are {0:2.2f} and {1:2.2f} compared to DR with b {2:2.2f} ".format( self.GenMatchDR_pup0_Wd1, self.GenMatchDR_pup0_Wd2, self.GenMatchDR_pup0_b )
-            if  (self.GenMatchDR_pup0_Wd1 > 0.40) or (self.GenMatchDR_pup0_Wd2 > 0.4) or self.GenMatchDR_pup0_Wd1 >self.GenMatchDR_pup0_b  or  self.GenMatchDR_pup0_Wd2 > self.GenMatchDR_pup0_b  :
+            if  (self.wcand_dR_WdauQuark1 > 0.6) or (self.wcand_dR_WdauQuark2 > 0.6) :
                 self.passed[6] = True
                 self.passedCount[6] += 1
                 if self.verbose or self.matchverbose: 
-                    print "Stage 16: W is unmerged since DR btw subjet and quarks are {0:2.2f} and {1:2.2f} compared to DR with b {2:2.2f} ".format( self.GenMatchDR_pup0_Wd1, self.GenMatchDR_pup0_Wd2, self.GenMatchDR_pup0_b )
+                    print "Stage 16: W is unmerged since DR btw subjet and quarks are {0:2.2f} and {1:2.2f} which is greater than the 0.6 maximum allowed ".format( self.GenMatchDR_pup0_Wd1, self.GenMatchDR_pup0_Wd2)
                 if self.verbose :print " tau21 of SD subjet 0 is: {0:2.2f}".format( float( self.ak8SDsubjet0tau21) )
-                if not ( self.ak8SDsubjet0tau21 < self.tau21Cut ) :
+                if not ( self.wcandtau21 < self.tau21Cut ) :
                     self.passed[7] = True
                     self.passedCount[7] += 1
                     if self.verbose or self.matchverbose : print "Stage 17:  W is unmerged FAIL AK8 SD subjet 0 tau21  {0:2.2f}  < ( {1} ) ".format( self.ak8SDsubjet0tau21 , self.tau21Cut )
@@ -568,8 +597,8 @@ class B2GSelectSemiLepTTbar_Type1( ) :
             self.passedCount[9] += 1
             if self.verbose or self.matchverbose : print "Stage 19: W is MERGED since DR btw subjet and quarks are {0:2.2f} and {1:2.2f} compared to DR with b {2:2.2f} ".format( self.GenMatchDR_pup0_Wd1, self.GenMatchDR_pup0_Wd2, self.GenMatchDR_pup0_b )
 
-            if self.verbose or self.matchverbose :print " tau21 of SD subjet 0 is: {0:2.2f}".format( float( self.ak8SDsubjet0tau21) )
-            if not ( self.ak8SDsubjet0tau21 < self.tau21Cut ) :
+            if self.verbose or self.matchverbose :print " tau21 of SD subjet 0 is: {0:2.2f}".format( float( self.wcandtau21) )
+            if not ( self.wcandtau21 < self.tau21Cut ) :
                 self.passed[10] = True
                 self.passedCount[10] += 1
                 if self.verbose or self.matchverbose : print "Stage 20: W is MERGED FAIL AK8 SD subjet 0 tau21  {0:2.2f}  < ( {1} ) ".format( self.ak8SDsubjet0tau21 , self.tau21Cut )
@@ -581,11 +610,11 @@ class B2GSelectSemiLepTTbar_Type1( ) :
 
         if self.verbose :print "Bdisc of SD subjet 1 is: {0:2.2f}".format( float( self.ak8PuppiSDsubjet1Bdisc) )
         if self.matchverbose: print "PRE Stage 22" 
-        if not ( self.ak8PuppiSDsubjet1Bdisc >  self.bdiscmin ) : return self.passed
+        if not ( self.wcandBdisc >  self.bdiscmin ) : return self.passed
         self.passed[12] = True
         self.passedCount[12] += 1
         if self.verbose : 
-            print "Stage 22: Bdisc of SD subjet 1 {0:2.2f}  < ( {1} ) ".format( float( self.ak8PuppiSDsubjet1Bdisc) ,   self.Subjettau21Cut )
+            print "Stage 22: Bdisc of SD subjet 1 {0:2.2f}  < ( {1} ) ".format( float( self..wcandBdisc) ,   self.Subjettau21Cut )
 
 
         return self.passed
