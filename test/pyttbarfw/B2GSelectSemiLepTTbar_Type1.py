@@ -450,10 +450,10 @@ class B2GSelectSemiLepTTbar_Type1( ) :
                     self.ak8PuppiSDJetP4Subjet1PuppiCorrMass_Binned0[iptbin] = self.ak8SDsj1_m
                     
         '''            
-        self.ak8SDsubjet0tau1 = self.tree.JetSDsubjet0tau1[0]
-        self.ak8SDsubjet0tau2 = self.tree.JetSDsubjet0tau2[0]
-        self.ak8SDsubjet1tau1 = self.tree.JetSDsubjet1tau1[0]
-        self.ak8SDsubjet1tau2 = self.tree.JetSDsubjet1tau2[0]
+        self.ak8SDsubjet0tau1 = self.tree.JetPuppiSDsubjet0tau1[0]
+        self.ak8SDsubjet0tau2 = self.tree.JetPuppiSDsubjet0tau1[0]
+        self.ak8SDsubjet1tau1 = self.tree.JetPuppiSDsubjet1tau1[0]
+        self.ak8SDsubjet1tau2 = self.tree.JetPuppiSDsubjet1tau2[0]
 
 
         self.ak8SDsubjet0tau21 = 1.0
