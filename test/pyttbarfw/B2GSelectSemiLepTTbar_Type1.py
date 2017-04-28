@@ -614,7 +614,7 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.passed[12] = True
         self.passedCount[12] += 1
         if self.verbose : 
-            print "Stage 22: Bdisc of SD subjet 1 {0:2.2f}  < ( {1} ) ".format( float( self..wcandBdisc) ,   self.Subjettau21Cut )
+            print "Stage 22: Bdisc of SD subjet 1 {0:2.2f}  < ( {1} ) ".format( float( self.wcandBdisc) ,   self.Subjettau21Cut )
 
 
         return self.passed
