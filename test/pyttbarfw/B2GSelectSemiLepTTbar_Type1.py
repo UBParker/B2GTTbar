@@ -362,6 +362,8 @@ class B2GSelectSemiLepTTbar_Type1( ) :
                                             self.tree.JetPuppiSDsubjet0mass[0] )
         self.ak8PuppiSDJetP4_Subjet0Raw =   self.ak8PuppiSDJetP4_Subjet0 
         self.ak8PuppiSDJetP4_Subjet0 =   self.ak8PuppiSDJetP4_Subjet0  * self.PuppiCorr
+        self.ak8PuppiSDsubjet0Bdisc = self.tree.JetPuppiSDsubjet0bdisc[0]
+
         if self.ak8PuppiSDJetP4_Subjet0 != None :
             self.ak8PuppiSD_subjet0_m = self.CorrPUPPIMass( 
                                                            self.ak8PuppiSDJetP4_Subjet0Raw.Perp(), 
@@ -450,10 +452,10 @@ class B2GSelectSemiLepTTbar_Type1( ) :
                     self.ak8PuppiSDJetP4Subjet1PuppiCorrMass_Binned0[iptbin] = self.ak8SDsj1_m
                     
         '''            
-        self.ak8SDsubjet0tau1 = self.tree.JetSDsubjet0tau1[0]
-        self.ak8SDsubjet0tau2 = self.tree.JetSDsubjet0tau2[0]
-        self.ak8SDsubjet1tau1 = self.tree.JetSDsubjet1tau1[0]
-        self.ak8SDsubjet1tau2 = self.tree.JetSDsubjet1tau2[0]
+        self.ak8SDsubjet0tau1 = self.tree.JetPuppiSDsubjet0tau1[0]
+        self.ak8SDsubjet0tau2 = self.tree.JetPuppiSDsubjet0tau1[0]
+        self.ak8SDsubjet1tau1 = self.tree.JetPuppiSDsubjet1tau1[0]
+        self.ak8SDsubjet1tau2 = self.tree.JetPuppiSDsubjet1tau2[0]
 
 
         self.ak8SDsubjet0tau21 = 1.0
@@ -513,7 +515,7 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         if self.verbose : print "Stage 14: AK8 tau32  {0:2.2f}  < ( {1:2.2f} ) [For comparison puppi tau32 is  {2:2.2f} ]".format(  self.tau32 , self.tau32Cut, self.puppitau32)
 
         #if self.verbose : print "Mass of W cand subjet (with L2L3 corr) is: {0:2.2f}".format( float(self.wcandp4.M()))
-        if not ( self.minAK8sjMass <  self.wcandp4.M()  <  self.maxAK8sjMass) : return self.passed
+        if not ( self.minAK8sjMass <  (self.ak8PuppiSDJetP4_Subjet0.M() or self.ak8PuppiSDJetP4_Subjet1.M() )  <  self.maxAK8sjMass) : return self.passed
         self.passed[5] = True
         self.passedCount[5] += 1
         if self.verbose : print "Stage 15: AK8 SD subjet W cand mass  ({0}) < {1:2.2f} GeV < ({2}) ".format( self.minAK8sjMass ,  self.wcandp4.M()  , self.maxAK8sjMass)
@@ -614,7 +616,7 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.passed[12] = True
         self.passedCount[12] += 1
         if self.verbose : 
-            print "Stage 22: Bdisc of SD subjet 1 {0:2.2f}  < ( {1} ) ".format( float( self..wcandBdisc) ,   self.Subjettau21Cut )
+            print "Stage 22: Bdisc of SD subjet 1 {0:2.2f}  < ( {1} ) ".format( float( self.wcandBdisc) ,   self.Subjettau21Cut )
 
 
         return self.passed
