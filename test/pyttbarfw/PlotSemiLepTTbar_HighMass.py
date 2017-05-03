@@ -564,7 +564,7 @@ class PlotSemiLepTTbar_HighMass() :
         rangeMax = 140
 
         ### Set colors for the W candidates
-        colorslist = [6,7,8]
+        colorslist = [ROOT.kRed,ROOT.kMagenta, ROOT.kCyan+2]
             
         ### Create the legend
         self.leg = ROOT.TLegend(0.68,0.4,0.80,0.84)
@@ -580,16 +580,15 @@ class PlotSemiLepTTbar_HighMass() :
         ith1 = 0
         for nameof , th1 in self.hists1D.iteritems() :      
             print"th1 is {} and th1[2] is {}".format(th1, th1[2] )
-            th1[2].GetXaxis().SetRangeUser( rangeMin, rangeMax )
+            #th1[2].GetXaxis().SetRangeUser( rangeMin, rangeMax )
             th1[2].GetXaxis().SetNdivisions(506)
             th1[2].GetXaxis().SetLabelFont(42)
-            th1[2].GetXaxis().SetLabelSize(0.5)
+            th1[2].GetXaxis().SetLabelSize(0.05)
             th1[2].GetXaxis().SetTitleSize(0.0475)
             th1[2].GetXaxis().SetTickLength(0.045)
             th1[2].GetXaxis().SetTitleOffset(1.15)
             th1[2].GetXaxis().SetTitleFont(42)
             th1[2].GetXaxis().SetTitle("PUPPI softdrop subjet mass (GeV)")
-
 
             th1[2].SetMaximum(self.y_max * th1[2].GetMaximum() )
             th1[2].SetMinimum(0.0001 )
@@ -601,14 +600,16 @@ class PlotSemiLepTTbar_HighMass() :
             th1[2].GetYaxis().SetTitleOffset(0.9)
             th1[2].GetYaxis().SetTitleFont(42)   
 
-            th1[2].SetFillColor(colorslist[ith1])
+            th1[2].SetLineColor(colorslist[ith1])
             ith1+=1
-            th1[2].SetFillStyle(0)
-            th1[2].Draw("hist")
-            self.leg.AddEntry( th1[2] , nameof , 'f')
+            th1[2].SetLineStyle(0)
+            if ith1 > 0 : th1[2].Draw("hist same")
+            else : th1[2].Draw("hist")
+
+            self.leg.AddEntry( th1[2] , nameof , 'l')
 
         self.leg.Draw()
-
+        '''
         self.words = ROOT.TLatex(0.14,0.916,"#font[62]{CMS} #font[52]{Preliminary}")
         self.words.SetNDC()
         self.words.SetTextFont(42)
@@ -629,7 +630,7 @@ class PlotSemiLepTTbar_HighMass() :
         self.words1.SetTextSize(0.0725)
         self.words1.SetLineWidth(2)
         self.words1.Draw()
-
+        '''
         self.c1.Modified()
         self.c1.Print("SDsubjet3Wcands.png", "png")
       
