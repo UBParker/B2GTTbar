@@ -12,7 +12,7 @@ import math
 import array as array
 from optparse import OptionParser
 
-from B2GTTreeSemiLep import B2GTTreeSemiLep
+from B2GTTreeSemiLepOut import B2GTTreeSemiLep
 import B2GSelectSemiLepTTbar_Type1, B2GSelectSemiLepTTbar_Iso2D
 
 
@@ -77,7 +77,12 @@ class PlotSemiLepTTbar_HighMass() :
                           help="Maximum subjet 0 pt")
         (options, args) = parser.parse_args(argv)
         argv = []
-
+     
+        self.tau21Cut = options.tau21Cut
+        self.tau32Cut = options.tau32Cut
+        self.ptbinmin = options.ptbinmin
+        self.ptbinmax = options.ptbinmax
+   
         ### Counts of the W candidate subjet: 1 -most massive, 2 - lowest b disc, 3 - highest pt
         ### SJ0 is the leading pt subjet so countW3isSJ1 will always be 0
         self.countW1isSJ0 = 0
@@ -108,6 +113,8 @@ class PlotSemiLepTTbar_HighMass() :
         self.countFakeW3sInFail = 0
         self.countFakeW3sInPass = 0        
 
+        self.hists1D = {}
+        self.hists2D = {}
 
         self.outfile = ROOT.TFile(options.outfile, "RECREATE")
 
@@ -140,9 +147,54 @@ class PlotSemiLepTTbar_HighMass() :
         for jentry in xrange( self.eventsToRun ):
             if jentry % 100000 == 0 :
                 print 'processing ' + str(jentry)
-            # get the next tree in the chain and verify            
-            ientry = self.treeobj.tree.GetEntry( jentry )        
-            # Select events and fill histograms
+            # get the next event            
+            ientry = self.treeobj.tree.GetEntry( jentry ) 
+                   
+            # correct the subjets and sum to find SD+PUPPI AK8 mass
+            PuppiJetCorr = self.treeobj.tree.JetPuppiCorrFactor
+            
+            self.ak8PuppiSDJetP4_Subjet0 = ROOT.TLorentzVector()
+            self.ak8PuppiSDJetP4_Subjet0.SetPtEtaPhiM( self.treeobj.tree.JetPuppiSDsubjet0pt ,
+                                                       self.treeobj.tree.JetPuppiSDsubjet0eta , 
+                                                       self.treeobj.tree.JetPuppiSDsubjet0phi , 
+                                                       self.treeobj.tree.JetPuppiSDsubjet0mass   )
+            
+            self.ak8PuppiSDJetP4_Subjet0Raw =   self.ak8PuppiSDJetP4_Subjet0 
+            self.ak8PuppiSDJetP4_Subjet0 =   self.ak8PuppiSDJetP4_Subjet0  * PuppiJetCorr
+            self.ak8subjet0PuppiSD_m = self.ak8PuppiSDJetP4_Subjet0.M()
+
+
+            self.ak8PuppiSDJetP4_Subjet1 = ROOT.TLorentzVector()
+            self.ak8PuppiSDJetP4_Subjet1.SetPtEtaPhiM( self.treeobj.tree.JetPuppiSDsubjet1pt ,
+                                                       self.treeobj.tree.JetPuppiSDsubjet1eta , 
+                                                       self.treeobj.tree.JetPuppiSDsubjet1phi , 
+                                                       self.treeobj.tree.JetPuppiSDsubjet1mass   )
+            self.ak8PuppiSDJetP4_Subjet1Raw =   self.ak8PuppiSDJetP4_Subjet1 
+            self.ak8PuppiSDJetP4_Subjet1 =   self.ak8PuppiSDJetP4_Subjet1 * PuppiJetCorr
+            self.ak8subjet1PuppiSD_m = self.ak8PuppiSDJetP4_Subjet1.M()
+
+            self.ak8PuppiSDJetP4Raw =  self.ak8PuppiSDJetP4_Subjet0Raw +  self.ak8PuppiSDJetP4_Subjet1Raw
+            #self.ak8PuppiSDJetP4Raw =   self.ak8PuppiSDJetP4
+            self.ak8PuppiSDJetP4 = None
+            self.ak8PuppiSD_m = 0.
+            ### Only keep jets where both subjets have mass > 1 GeV
+            if (self.ak8subjet1PuppiSD_m and self.ak8subjet0PuppiSD_m) > 1. :
+                self.ak8PuppiSDJetP4 = self.ak8PuppiSDJetP4Raw * PuppiJetCorr            
+                self.ak8PuppiSD_m = float(self.ak8PuppiSDJetP4.M()) 
+            fatjetTau32 = self.treeobj.tree.JetPuppiTau32 
+
+            ### Top mass window cut
+            
+            if  not ( 110. <= self.ak8PuppiSD_m <= 250.) : continue  
+
+            ### Top tag loose n-subjettiness cut
+
+            if  not ( fatjetTau32 <  self.tau32Cut) : continue
+
+            ### Wtag mass window cut
+            #if  not ( 10. <=  self.ak8subjet0PuppiSD_m <= 140.) : continue
+
+            # fill histograms
             self.selectCountFill( )
 
         # Wrap it up. 
@@ -159,8 +211,8 @@ class PlotSemiLepTTbar_HighMass() :
         '''
         self.outfile.cd()
     
-        self.hists1D = {}
-        self.hists2D = {}
+        #self.hists1D = {}
+        #self.hists2D = {}
 
 
         self.lepNames = ['Electron', 'Muon']
@@ -173,20 +225,22 @@ class PlotSemiLepTTbar_HighMass() :
         
         
         for var in self.titles1D:
-          title =  self.titles1D[var][0]  
+          title =  self.titles1D[var][0]   
           nbins =  self.titles1D[var][1]
           minval = self.titles1D[var][2]
           maxval = self.titles1D[var][3]
           th1name =   self.titles1D[var]  
-          self.hists1D["%s"%(th1name)] = [   ROOT.TH1F(th1name+'_'+self.lepNames[0]  , title , nbins , minval, maxval) ,
-                                             ROOT.TH1F(th1name+'_'+self.lepNames[1]  , title , nbins , minval, maxval) ,
-                                             ROOT.TH1F(th1name+'_ElandMu', title , nbins , minval, maxval) ]
+          print "var {} th1name {} title {}".format(var, th1name, title )
+          self.hists1D[str(var)] = [      ROOT.TH1F(str(var)+'_'+self.lepNames[0]   , title , nbins , minval, maxval) ,
+                                             ROOT.TH1F(str(var)+'_'+self.lepNames[1]  , title , nbins , minval, maxval) ,
+                                             ROOT.TH1F(str(var)+'_ElandMu', title , nbins , minval, maxval) ]
 
+        print"Just created self.hists1D {}".format(self.hists1D)
         self.titles2D = {
-        'Iso2DHist':["Lepton 2D isolation (#Delta R vs p_{T}^{REL} ), ", 25, 0, 500, 25, 0, 1],
+        'Iso2DHist':["Lepton 2D isolation (#Delta R vs p_{T}^{REL} ), ", 25, 0, 500, 25, 0, 1]}
 
         for var in self.titles2D:
-          title =  self.titles2D[var][0]  
+          title =  self.titles2D[var][0]   
           nbinsx =  self.titles2D[var][1]
           minx = self.titles2D[var][2]
           maxx = self.titles2D[var][3]
@@ -194,9 +248,9 @@ class PlotSemiLepTTbar_HighMass() :
           miny = self.titles2D[var][5]
           maxy = self.titles2D[var][6]        
           th2name =   self.titles2D[var]       
-          self.hists2D["%s"%(th2name)]=  [ ROOT.TH2F( th2name+ '_' + self.lepNames[0], title , nbinsx , minx , maxx, nbinsy , miny , maxy) ,
-                                           ROOT.TH2F( th2name+ '_' + self.lepNames[1], title , nbinsx , minx , maxx, nbinsy , miny , maxy) ,
-                                           ROOT.TH2F( th2name+ '_ElandMu' , title , nbinsx , minx , maxx, nbinsy , miny , maxy) ]
+          self.hists2D["%s"%var] =  [ ROOT.TH2F( var+ '_' + self.lepNames[0] , title , nbinsx , minx , maxx, nbinsy , miny , maxy) ,
+                                           ROOT.TH2F( var+ '_' + self.lepNames[1], title , nbinsx , minx , maxx, nbinsy , miny , maxy) ,
+                                           ROOT.TH2F( var+ '_ElandMu' , title , nbinsx , minx , maxx, nbinsy , miny , maxy) ]
 
     def selectCountFill( self) :
         '''
@@ -205,49 +259,7 @@ class PlotSemiLepTTbar_HighMass() :
         
         ### Get neccessary info from the tree
 
-        ilep = self.treeobj.tree.LeptonIsMu[0]        
-
-        PuppiJetCorr = self.treeobj.tree.JetPuppiCorrFactor[0]
-        
-        self.ak8PuppiSDJetP4_Subjet0 = ROOT.TLorentzVector()
-        self.ak8PuppiSDJetP4_Subjet0.SetPtEtaPhiM( self.treeobj.tree.JetPuppiSDsubjet0pt[0],
-                                                   self.treeobj.tree.JetPuppiSDsubjet0eta[0], 
-                                                   self.treeobj.tree.JetPuppiSDsubjet0phi[0], 
-                                                   self.treeobj.tree.JetPuppiSDsubjet0mass[0]  )
-                                                   
-        self.ak8PuppiSDJetP4_Subjet0Raw =   self.ak8PuppiSDJetP4_Subjet0 
-        self.ak8PuppiSDJetP4_Subjet0 =   self.ak8PuppiSDJetP4_Subjet0  * PuppiJetCorr
-        self.ak8subjet0PuppiSD_m = self.ak8PuppiSDJetP4_Subjet0.M()
-
-
-        self.ak8PuppiSDJetP4_Subjet1 = ROOT.TLorentzVector()
-        self.ak8PuppiSDJetP4_Subjet1.SetPtEtaPhiM( self.treeobj.tree.JetPuppiSDsubjet1pt[0],
-                                                   self.treeobj.tree.JetPuppiSDsubjet1eta[0], 
-                                                   self.treeobj.tree.JetPuppiSDsubjet1phi[0], 
-                                                   self.treeobj.tree.JetPuppiSDsubjet1mass[0]  )
-        self.ak8PuppiSDJetP4_Subjet1Raw =   self.ak8PuppiSDJetP4_Subjet1 
-        self.ak8PuppiSDJetP4_Subjet1 =   self.ak8PuppiSDJetP4_Subjet1 * PuppiJetCorr
-        self.ak8subjet1PuppiSD_m = self.ak8PuppiSDJetP4_Subjet1.M()
-
-
-        self.ak8PuppiSDJetP4Raw =  self.ak8PuppiSDJetP4_Subjet0Raw +  self.ak8PuppiSDJetP4_Subjet1Raw
-        #self.ak8PuppiSDJetP4Raw =   self.ak8PuppiSDJetP4
-        self.ak8PuppiSDJetP4 =   self.ak8PuppiSDJetP4Raw * PuppiJetCorr
-          
-        self.ak8PuppiSD_m = float(self.ak8PuppiSDJetP4.M()) 
-        fatjetTau32 = self.treeobj.tree.JetPuppiTau32[0]
-
-
-        ### Top mass window cut
-        
-        if  not ( 110. <= b.ak8PuppiSD_m <= 250.) : continue  
-
-        ### Top tag loose n-subjettiness cut
-
-        if  not ( fatjetTau32 <  options.tau32Cut) : continue
-
-        ### Wtag mass window cut
-        #if  not ( 10. <=  self.ak8subjet0PuppiSD_m <= 140.) : continue
+        ilep = self.treeobj.tree.LeptonIsMu         
 
         ### Pick our W candidate from the 2 subjets. Higher mass /lower B disc than the b candidate
         self.subjet0isW = False
@@ -256,10 +268,10 @@ class PlotSemiLepTTbar_HighMass() :
         ### Throw away events where subjets are too light
         #if (self.ak8PuppiSDJetP4_Subjet0.M() and self.ak8PuppiSDJetP4_Subjet1.M()) < 10. : continue
 
-        SJ0tau1 = self.treeobj.tree.JetPuppiSDsubjet0tau1[0]  
-        SJ0tau2 = self.treeobj.tree.JetPuppiSDsubjet0tau2[0]
-        SJ1tau1 = self.treeobj.tree.JetPuppiSDsubjet1tau1[0] 
-        SJ1tau2 = self.treeobj.tree.JetPuppiSDsubjet1tau2[0]
+        SJ0tau1 = self.treeobj.tree.JetPuppiSDsubjet0tau1   
+        SJ0tau2 = self.treeobj.tree.JetPuppiSDsubjet0tau2 
+        SJ1tau1 = self.treeobj.tree.JetPuppiSDsubjet1tau1  
+        SJ1tau2 = self.treeobj.tree.JetPuppiSDsubjet1tau2 
 
         SJ0tau21 = 10.
         SJ1tau21 = 10.
@@ -268,13 +280,18 @@ class PlotSemiLepTTbar_HighMass() :
         if SJ1tau1 >= 0.1 :
           SJ1tau21 = SJ1tau2/ SJ1tau1
 
-        SJ0Bdisc = self.treeobj.tree.JetPuppiSDsubjet0bdisc[0]
-        SJ1Bdisc = self.treeobj.tree.JetPuppiSDsubjet1bdisc[0]
+        SJ0Bdisc = self.treeobj.tree.JetPuppiSDsubjet0bdisc 
+        SJ1Bdisc = self.treeobj.tree.JetPuppiSDsubjet1bdisc 
 
         ### Define the 3 W candidate categories
         self.SJ1 = None # Most massive
         self.SJ2 = None  # Lowest Bdisc
         self.SJ3 = None  # Highest Pt
+
+        ### Tau21 in each of 3 cases
+        tau21w1 = 10.
+        tau21w2 = 10.
+        tau21w3 = 10.
 
         ### Flag to know which subjet (0 or 1)is W candidate in each of 3 cases above (e.g case 3 is always True)
         self.subjet0isW1   =  False
@@ -288,10 +305,12 @@ class PlotSemiLepTTbar_HighMass() :
         if (self.ak8PuppiSDJetP4_Subjet0.M() > self.ak8PuppiSDJetP4_Subjet1.M()) :
           self.subjet0isW1   = True
           self.countW1isSJ0 += 1
+          tau21w1 = SJ0tau21
           self.SJ1 = self.ak8PuppiSDJetP4_Subjet0
         else:  
           self.subjet1isW1   = True
           self.countW1isSJ1 += 1
+          tau21w1 = SJ1tau21
           self.SJ1 = self.ak8PuppiSDJetP4_Subjet1
     
         ### Pick the lowest Bdisc as the W candidate
@@ -299,19 +318,19 @@ class PlotSemiLepTTbar_HighMass() :
         if SJ0Bdisc < SJ1Bdisc :                                                                                                                           
           self.subjet0isW2   = True                                                                                                                                                                          
           self.countW2isSJ0 += 1  
-          tau21w1 = SJ0tau21  
+          tau21w2 = SJ0tau21  
           self.SJ2 = self.ak8PuppiSDJetP4_Subjet0                                                                                                                                                                        
         else:   
           self.subjet1isW2   = True
           self.countW2isSJ1 += 1  
-          tau21w1 = SJ1tau21 
+          tau21w2 = SJ1tau21 
           self.SJ2 = self.ak8PuppiSDJetP4_Subjet1
 
         ### Pick the highest Pt as the W candidate
         #if self.whighPt == 1 :                                                                                                                                                                                                                                                                                   
         self.subjet0isW3   = True                                                                                                                                                                          
         self.countW3isSJ0 += 1        
-        tau21w1 = SJ0tau21                                                                                                                                                                      
+        tau21w3 = SJ0tau21                                                                                                                                                                      
         self.SJ3 = self.ak8PuppiSDJetP4_Subjet0
 
         ### Decide on how W candidate subjet is picked ( options.wcand 1 for most massive, 2 for lowest b disc, 3 for highest pt)
@@ -353,44 +372,44 @@ class PlotSemiLepTTbar_HighMass() :
         isRealW3 = None
         isFakeW3 = None
 
-        #if (self.treeobj.tree.JetGenMatched_DeltaR_pup0_Wd1[0] > 0.40) or  (self.treeobj.tree.JetGenMatched_DeltaR_pup0_Wd2[0] > 0.4) or 
+        #if (self.treeobj.tree.JetGenMatched_DeltaR_pup0_Wd1  > 0.40) or  (self.treeobj.tree.JetGenMatched_DeltaR_pup0_Wd2  > 0.4) or 
         if self.subjet0isW1 :
-          if (self.treeobj.tree.JetGenMatched_DeltaR_pup0_Wd1[0] < self.treeobj.tree.JetGenMatched_DeltaR_pup0_b[0])  and  (self.treeobj.tree.JetGenMatched_DeltaR_pup0_Wd2[0] < self.treeobj.tree.JetGenMatched_DeltaR_pup0_b[0]) :
+          if (self.treeobj.tree.JetGenMatched_DeltaR_pup0_Wd1  < self.treeobj.tree.JetGenMatched_DeltaR_pup0_b )  and  (self.treeobj.tree.JetGenMatched_DeltaR_pup0_Wd2  < self.treeobj.tree.JetGenMatched_DeltaR_pup0_b ) :
             isRealW1 = 1
             isFakeW1 = 0
           else:
             isRealW1 = 0
             isFakeW1 = 1
         if self.subjet1isW1 :
-          if (self.treeobj.tree.JetGenMatched_DeltaR_pup1_Wd1[0] < self.treeobj.tree.JetGenMatched_DeltaR_pup1_b[0])  and  (self.treeobj.tree.JetGenMatched_DeltaR_pup1_Wd2[0] < self.treeobj.tree.JetGenMatched_DeltaR_pup1_b[0]) :  
+          if (self.treeobj.tree.JetGenMatched_DeltaR_pup1_Wd1  < self.treeobj.tree.JetGenMatched_DeltaR_pup1_b )  and  (self.treeobj.tree.JetGenMatched_DeltaR_pup1_Wd2  < self.treeobj.tree.JetGenMatched_DeltaR_pup1_b ) :  
             isRealW1 = 1
             isFakeW1 = 0
           else:
             isRealW1 = 0
             isFakeW1 = 1
         if self.subjet0isW2 :
-          if (self.treeobj.tree.JetGenMatched_DeltaR_pup0_Wd1[0] < self.treeobj.tree.JetGenMatched_DeltaR_pup0_b[0])  and  (self.treeobj.tree.JetGenMatched_DeltaR_pup0_Wd2[0] < self.treeobj.tree.JetGenMatched_DeltaR_pup0_b[0]) :
+          if (self.treeobj.tree.JetGenMatched_DeltaR_pup0_Wd1  < self.treeobj.tree.JetGenMatched_DeltaR_pup0_b )  and  (self.treeobj.tree.JetGenMatched_DeltaR_pup0_Wd2  < self.treeobj.tree.JetGenMatched_DeltaR_pup0_b ) :
             isRealW2 = 1
             isFakeW2 = 0
           else:
             isRealW2 = 0
             isFakeW2 = 1
         if self.subjet1isW2 :
-          if (self.treeobj.tree.JetGenMatched_DeltaR_pup1_Wd1[0] < self.treeobj.tree.JetGenMatched_DeltaR_pup1_b[0])  and  (self.treeobj.tree.JetGenMatched_DeltaR_pup1_Wd2[0] < self.treeobj.tree.JetGenMatched_DeltaR_pup1_b[0]) :  
+          if (self.treeobj.tree.JetGenMatched_DeltaR_pup1_Wd1  < self.treeobj.tree.JetGenMatched_DeltaR_pup1_b )  and  (self.treeobj.tree.JetGenMatched_DeltaR_pup1_Wd2  < self.treeobj.tree.JetGenMatched_DeltaR_pup1_b ) :  
             isRealW2 = 1
             isFakeW2 = 0
           else:
             isRealW2 = 0
             isFakeW2 = 1        ### See how many gen matched Ws pass and fail the tau21 cut
         if self.subjet0isW3 :
-          if (self.treeobj.tree.JetGenMatched_DeltaR_pup0_Wd1[0] < self.treeobj.tree.JetGenMatched_DeltaR_pup0_b[0])  and  (self.treeobj.tree.JetGenMatched_DeltaR_pup0_Wd2[0] < self.treeobj.tree.JetGenMatched_DeltaR_pup0_b[0]) :
+          if (self.treeobj.tree.JetGenMatched_DeltaR_pup0_Wd1  < self.treeobj.tree.JetGenMatched_DeltaR_pup0_b )  and  (self.treeobj.tree.JetGenMatched_DeltaR_pup0_Wd2  < self.treeobj.tree.JetGenMatched_DeltaR_pup0_b ) :
             isRealW3 = 1
             isFakeW3 = 0
           else:
             isRealW3 = 0
             isFakeW3 = 1
         if self.subjet1isW3 :
-          if (self.treeobj.tree.JetGenMatched_DeltaR_pup1_Wd1[0] < self.treeobj.tree.JetGenMatched_DeltaR_pup1_b[0])  and  (self.treeobj.tree.JetGenMatched_DeltaR_pup1_Wd2[0] < self.treeobj.tree.JetGenMatched_DeltaR_pup1_b[0]) :  
+          if (self.treeobj.tree.JetGenMatched_DeltaR_pup1_Wd1  < self.treeobj.tree.JetGenMatched_DeltaR_pup1_b )  and  (self.treeobj.tree.JetGenMatched_DeltaR_pup1_Wd2  < self.treeobj.tree.JetGenMatched_DeltaR_pup1_b ) :  
             isRealW3 = 1
             isFakeW3 = 0
           else:
@@ -398,58 +417,59 @@ class PlotSemiLepTTbar_HighMass() :
             isFakeW3 = 1
         ### Count numbers of real and fake Ws in pass and fail for this tau21 cut
         if  isRealW1 == 1 :
-          if tau21w1 >= options.tau21Cut :
+          if tau21w1 >= self.tau21Cut :
             self.countRealW1sInFail += 1
           else :                                                             
             self.countRealW1sInPass += 1
         if  isFakeW1 == 1 :
-          if tau21w1 >= options.tau2tau1cutHP : 
+          if tau21w1 >= self.tau21Cut : 
             self.countFakeW1sInFail += 1
           else :                                                            
             self.countFakeW1sInPass += 1
 
         if  isRealW2 == 1 :
-          if tau21w2 >= options.tau21Cut :
+          if tau21w2 >= self.tau21Cut :
             self.countRealW2sInFail += 1
           else :                                                             
             self.countRealW2sInPass += 1
         if  isFakeW2 == 1 :
-          if tau21w2 >= options.tau2tau1cutHP : 
+          if tau21w2 >= self.tau21Cut : 
             self.countFakeW2sInFail += 1
           else :                                                            
             self.countFakeW2sInPass += 1
 
         if  isRealW3 == 1 :
-          if tau21w3 >= options.tau21Cut :
+          if tau21w3 >= self.tau21Cut :
             self.countRealW3sInFail += 1
           else :                                                             
             self.countRealW3sInPass += 1
         if  isFakeW3 == 1 :
-          if tau21w3 >= options.tau2tau1cutHP : 
+          if tau21w3 >= self.tau21Cut : 
             self.countFakeW3sInFail += 1
           else :                                                            
             self.countFakeW3sInPass += 1
 
-        if b.ak8Jet != None :
+        if self.ak8PuppiSDJetP4 != None:
             ### Choose which pt bin to plot  
             ### FIX THIS: should cut before any counting, now counts are for all Pt bins
-            if (self.subjet0isW1 or self.subjet1isW1 ):
-                if not (options.ptbinmin <= self.SJ1.Perp() <= options.ptbinmax ): continue
-            if (self.subjet0isW2 or self.subjet1isW2 ):
-                if not (options.ptbinmin <= self.SJ2.Perp() <= options.ptbinmax ): continue
-            if (self.subjet0isW3 or self.subjet1isW3 ):
-                if not (options.ptbinmin <= self.SJ3.Perp() <= options.ptbinmax ): continue
+            SJpts = [self.SJ1.Pt() , self.SJ2.Pt()  , self.SJ3.Pt() ]
+            SJws =  [self.subjet0isW1 or self.subjet1isW1, self.subjet0isW2 or self.subjet1isW2, self.subjet0isW3 or self.subjet1isW3 ]
+
+            for isj, sjpt in enumerate(SJpts):
+                if (SJws[isj] ):
+                    if not ( self.ptbinmin <= sjpt <= self.ptbinmax ): continue
 
             SJmasses = [self.SJ1.M() , self.SJ2.M()  , self.SJ3.M() ]
             for ival, val in enumerate(self.hists1D.itervalues()):
+                print"Filling TH1Fs : val {} val[ilep] {}".format(val, val[ilep])
                 val[ilep].Fill(SJmasses[ival])                         # Fill either Electron or Muon histo
                 if ilep == (0 or 1): val[2].Fill(SJmasses[ival])       # Always Fill Electron + Muon histo
             
-            if a.ak4Jet != None : 
-                fill2d = [a.leptonP4.Perp( a.ak4Jet.Vect() ), a.leptonP4.DeltaR( a.ak4Jet )]  ### Fix this : surely theres a better way
-                for ival, val in enumerate(self.hists2D.itervalues()):
-                    val[ilep].Fill(fill2d[ival], fill2d[ival + 1])
-                    if ilep == (0 or 1): val[2].Fill(fill2d[ival], fill2d[ival + 1]) # Always Fill Electron + Muon histo
+           # if a.ak4Jet != None : 
+           #     fill2d = [a.leptonP4.Perp( a.ak4Jet.Vect() ), a.leptonP4.DeltaR( a.ak4Jet )]  ### Fix this : surely theres a better way
+           #     for ival, val in enumerate(self.hists2D.itervalues()):
+           #         val[ilep].Fill(fill2d[ival], fill2d[ival + 1])
+           #         if ilep == (0 or 1): val[2].Fill(fill2d[ival], fill2d[ival + 1]) # Always Fill Electron + Muon histo
 
         ### Perform tighter matching criteria and make more plots
 
@@ -476,7 +496,7 @@ class PlotSemiLepTTbar_HighMass() :
         print"W is fake    {0} ".format( self.countFakeW1sInFail + self.countFakeW1sInPass )
         print""
         print"W tag:"
-        print"WP - tau21 < {}".format(options.tau21Cut)
+        print"WP - tau21 < {}".format(self.tau21Cut)
         print"real Ws Passed {}".format(self.countRealW1sInPass)
         print"fake Ws Passed {}".format(self.countFakeW1sInPass)
         print""
@@ -486,7 +506,7 @@ class PlotSemiLepTTbar_HighMass() :
         print"Case 2:          W is lowest Bdisc"
         print".........................................................."
         print"W is leading pt subjet     {0} of {1} total".format(self.countW2isSJ0 , self.countW2isSJ0+self.countW2isSJ1)
-        print"W has high mass and low B disc {0} of {1} total".format(self.countW2highMassLowBdisc  , self.countW2highMassandBdisc + self.countW2highMassLowBdisc)
+        print"W has high mass and low B disc {0} of {1} total".format(self.countW2highMassLowBdisc  , self.countW2isSJ0+self.countW2isSJ1 )
         print""
         print"Gen Matching:"
         print"Loose - Both W daughter quarks closer to W than b "
@@ -494,7 +514,7 @@ class PlotSemiLepTTbar_HighMass() :
         print"W is fake    {0} ".format( self.countFakeW2sInFail + self.countFakeW2sInPass )
         print""
         print"W tag:"
-        print"WP - tau21 < {}".format(options.tau21Cut)
+        print"WP - tau21 < {}".format(self.tau21Cut)
         print"real Ws Passed {}".format(self.countRealW2sInPass)
         print"fake Ws Passed {}".format(self.countFakeW2sInPass)
         print""
@@ -512,13 +532,12 @@ class PlotSemiLepTTbar_HighMass() :
         print"W is fake    {0} ".format( self.countFakeW3sInFail + self.countFakeW3sInPass )
         print""
         print"W tag:"
-        print"WP - tau21 < {}".format(options.tau21Cut)
+        print"WP - tau21 < {}".format(self.tau21Cut)
         print"real Ws Passed {}".format(self.countRealW3sInPass)
         print"fake Ws Passed {}".format(self.countFakeW3sInPass)
         print""
         print"real Ws Failed {}".format(self.countRealW3sInFail)
         print"fake Ws Failed {}".format(self.countFakeW3sInFail)
-
 
     def plotit( self ) :
         '''
@@ -555,10 +574,11 @@ class PlotSemiLepTTbar_HighMass() :
         ### FIX THIS: Eventually plot merged and unmerged for each category
         ### self.leg.AddEntry( self.ttbarUnmerged, 'Unmatched   t#bar{t} ', 'f')
         ### self.leg.AddEntry( self.ttbarMerged,   'Gen-Matched t#bar{t} ', 'f')
-        ###  For now only plot the histograms with both Electrons and Muons val[2] (val[0] is electrons and val[1] is muons )      
+        ###  For now only plot the histograms with both Electrons and Muons val[2] (val  is electrons and val[1] is muons )      
         
         #for ival, val in enumerate(self.hists1D.itervalues()):
-        for histname, th1 in self.hists1D.iteritems():
+        for ith1, th1 in enumerate(self.hists1D.itervalues()):        
+            print"th1 is {} and th1[2] is {}".format(th1, th1[2] )
             th1[2].GetXaxis().SetRangeUser( rangeMin, rangeMax )
             th1[2].GetXaxis().SetNdivisions(506)
             th1[2].GetXaxis().SetLabelFont(42)
@@ -617,4 +637,4 @@ class PlotSemiLepTTbar_HighMass() :
 if __name__ == "__main__" :
     r = PlotSemiLepTTbar_HighMass(sys.argv)
     r.run()
-    r.plotit()
+    #r.plotit()
