@@ -199,8 +199,8 @@ class PlotSemiLepTTbar_HighMass() :
 
         # Wrap it up. 
         print 'Finished looping'
-        self.close()
-        print 'Closed'
+        #self.close()
+        #print 'Closed'
 
 
 
@@ -461,7 +461,7 @@ class PlotSemiLepTTbar_HighMass() :
 
             SJmasses = [self.SJ1.M() , self.SJ2.M()  , self.SJ3.M() ]
             for ival, val in enumerate(self.hists1D.itervalues()):
-                print"Filling TH1Fs : val {} val[ilep] {}".format(val, val[ilep])
+                #print"Filling TH1Fs : val {} val[ilep] {}".format(val, val[ilep])
                 val[ilep].Fill(SJmasses[ival])                         # Fill either Electron or Muon histo
                 if ilep == (0 or 1): val[2].Fill(SJmasses[ival])       # Always Fill Electron + Muon histo
             
@@ -576,8 +576,9 @@ class PlotSemiLepTTbar_HighMass() :
         ### self.leg.AddEntry( self.ttbarMerged,   'Gen-Matched t#bar{t} ', 'f')
         ###  For now only plot the histograms with both Electrons and Muons val[2] (val  is electrons and val[1] is muons )      
         
-        #for ival, val in enumerate(self.hists1D.itervalues()):
-        for ith1, th1 in enumerate(self.hists1D.itervalues()):        
+        self.y_max = 1.6
+        ith1 = 0
+        for nameof , th1 in self.hists1D.iteritems() :      
             print"th1 is {} and th1[2] is {}".format(th1, th1[2] )
             th1[2].GetXaxis().SetRangeUser( rangeMin, rangeMax )
             th1[2].GetXaxis().SetNdivisions(506)
@@ -590,7 +591,7 @@ class PlotSemiLepTTbar_HighMass() :
             th1[2].GetXaxis().SetTitle("PUPPI softdrop subjet mass (GeV)")
 
 
-            th1[2].SetMaximum(self.y_max * self.mcStack.GetMaximum() )
+            th1[2].SetMaximum(self.y_max * th1[2].GetMaximum() )
             th1[2].SetMinimum(0.0001 )
             th1[2].GetYaxis().SetTitle("Events")
             th1[2].GetYaxis().SetNdivisions(506)
@@ -601,9 +602,10 @@ class PlotSemiLepTTbar_HighMass() :
             th1[2].GetYaxis().SetTitleFont(42)   
 
             th1[2].SetFillColor(colorslist[ith1])
+            ith1+=1
             th1[2].SetFillStyle(0)
             th1[2].Draw("hist")
-            self.leg.AddEntry( th1[2] , histname, 'f')
+            self.leg.AddEntry( th1[2] , nameof , 'f')
 
         self.leg.Draw()
 
@@ -630,11 +632,13 @@ class PlotSemiLepTTbar_HighMass() :
 
         self.c1.Modified()
         self.c1.Print("SDsubjet3Wcands.png", "png")
-
+      
+        self.close()
+        print 'Closed'
 '''
         Executable
 '''
 if __name__ == "__main__" :
     r = PlotSemiLepTTbar_HighMass(sys.argv)
     r.run()
-    #r.plotit()
+    r.plotit()
