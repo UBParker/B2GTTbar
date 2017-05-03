@@ -13,22 +13,16 @@ import array as array
 from optparse import OptionParser
 
 from B2GTTreeSemiLep import B2GTTreeSemiLep
-import B2GSelectSemiLepTTbar_Type2, B2GSelectSemiLepTTbar_IsoStd
+import B2GSelectSemiLepTTbar_Type1, B2GSelectSemiLepTTbar_Iso2D
 
-import time as time
+
 import ROOT
 
 
-class RunSemiLepTTbar() :
+class PlotSemiLepTTbar_HighMass() :
     '''
-    Driver class for Semileptonic TTbar analyses.
-    This will use "Selection" classes (the first below is B2GSelectSemiLepTTbar)
-    that return a bitset of cuts at different phases. This class can then
-    make plots at those stages of selection.
-
-    The factorization allows different drivers to use the same selection classes
-    with the same bitsets, or to use different selections to use the same histogramming
-    functionality.
+    Simple Plotter class for Semileptonic TTbar analyses.
+    This will use "Selection" classes (the first below is B2GSelectSemiLepTTbar_Iso2D)
 
 
     '''
@@ -43,48 +37,76 @@ class RunSemiLepTTbar() :
 
         parser.add_option('--infile', type='string', action='store',
                           dest='infile',
-                          default = '',
+                          default = 'ttbarTuneCUETP8M2T4_highmass_METmu40el80ptRel30.root',
                           help='Input file string')
+
 
         parser.add_option('--outfile', type='string', action='store',
                           dest='outfile',
-                          default = '',
+                          default = 'outfile_PlotSemiLepTTbar_HighMass.root',
                           help='Output file string')
 
         parser.add_option('--tau21Cut', type='float', action='store',
                           dest='tau21Cut',
-                          default = 0.55,
+                          default = 0.35,
                           help='Tau 21 cut')
 
         parser.add_option('--tau32Cut', type='float', action='store',
                           dest='tau32Cut',
-                          default = 0.75,
+                          default = 0.8,
                           help='Tau 32 cut')
         
         parser.add_option('--bdiscmin', type='float', action='store',
                           dest='bdiscmin',
-                          default = 0.8484, ### Medium https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation80XReReco
+                          default = 0.8484,
                           help='B discriminator cut')
 
-        parser.add_option('--maxevents', type='int', action='store',
-                          default=None,
-                          dest='maxevents',
-                          help='Maximum number of events')
+        #parser.add_option('--wcand', type='int', action='store', #### !!!! Instead showing all 3 options on 1 plot
+        #                  dest='wcand',
+        #                  default = 1,
+        #                  help='Pick the W candidate subjet: 1 -most massive, 2 - lowest b disc, 3 - highest pt')
 
-        parser.add_option('--ignoreTrig', action='store_true',
-                          dest='ignoreTrig',
-                          default = False,
-                          help='Ignore the trigger?')
-        
-        parser.add_option('--verbose', action='store_true',
-                          default=False,
-                          dest='verbose',
-                          help='Do you want to print values of key variables?')
+        parser.add_option('--binmin',dest="ptbinmin", 
+                          default=300, 
+                          type=int,
+                          help="Minimum subjet 0 pt")
 
+        parser.add_option('--binmax',dest="ptbinmax",
+                          default=500, 
+                          type=int,
+                          help="Maximum subjet 0 pt")
         (options, args) = parser.parse_args(argv)
         argv = []
 
-        self.startTime = time.time()
+        ### Counts of the W candidate subjet: 1 -most massive, 2 - lowest b disc, 3 - highest pt
+        ### SJ0 is the leading pt subjet so countW3isSJ1 will always be 0
+        self.countW1isSJ0 = 0
+        self.countW1isSJ1 = 0
+        self.countW2isSJ0 = 0
+        self.countW2isSJ1 = 0
+        self.countW3isSJ0 = 0
+        self.countW3isSJ1 = 0
+
+        self.countW1highMassandBdisc = 0 
+        self.countW1highMassLowBdisc = 0
+        self.countW2highMassandBdisc = 0 
+        self.countW2highMassLowBdisc = 0
+        self.countW3highMassandBdisc = 0 
+        self.countW3highMassLowBdisc = 0
+
+        ### Define counts of Gen Matched Ws in each category  passing and failing the options.tau21cut            
+        self.countRealW1sInFail = 0
+        self.countRealW1sInPass = 0
+        self.countFakeW1sInFail = 0
+        self.countFakeW1sInPass = 0
+        self.countRealW2sInFail = 0
+        self.countRealW2sInPass = 0
+        self.countFakeW2sInFail = 0
+        self.countFakeW2sInPass = 0
+        self.countRealW3sInFail = 0
+        self.countRealW3sInPass = 0
+        self.countFakeW3sInFail = 0
+        self.countFakeW3sInPass = 0        
 
 
         self.outfile = ROOT.TFile(options.outfile, "RECREATE")
@@ -94,29 +116,12 @@ class RunSemiLepTTbar() :
         ### Also saved are some nontrivial variables that involve combinations
         ### of things from the tree
         self.treeobj = B2GTTreeSemiLep( options )
-
-        
-        self.options = options
-        self.verbose = options.verbose
-        self.infile = options.infile
-        self.maxevents = options.maxevents
-        
         
         print 'Getting entries'
-        entries = self.treeobj.tree.GetEntries()              
-        if options.maxevents == None or options.maxevents < 0 :
-            self.eventsToRun = entries      
-        else :      
-            self.eventsToRun = min( options.maxevents, entries )
+        entries = self.treeobj.tree.GetEntries()
+        self.eventsToRun = entries
 
-        ### Here is the semileptonic ttbar selection for W jets
-
-        self.lepSelection = B2GSelectSemiLepTTbar_IsoStd.B2GSelectSemiLepTTbar_IsoStd( options, self.treeobj )
-        self.hadSelection = B2GSelectSemiLepTTbar_Type2.B2GSelectSemiLepTTbar_Type2( options, self.treeobj, self.lepSelection )
-        
-        self.nstages = self.lepSelection.nstages + self.hadSelection.nstages
-        self.nlep = 2 # Electrons and muons
-
+        self.nlep = 2 # Electron and Muon are the 2 leptons considered
 
         ### Book histograms
         self.book()
@@ -129,21 +134,16 @@ class RunSemiLepTTbar() :
     in, and just make simple plots here. 
     '''
     def run(self):
+        
         print 'processing ', self.eventsToRun, ' events'
 
         for jentry in xrange( self.eventsToRun ):
-            if jentry % 10000 == 0 :
+            if jentry % 100000 == 0 :
                 print 'processing ' + str(jentry)
             # get the next tree in the chain and verify            
             ientry = self.treeobj.tree.GetEntry( jentry )        
-            # Select events, get the bitset corresponding to the cut flow
-            passbitsLep = self.lepSelection.select()
-            passbitsHad = self.hadSelection.select()
-            passbits = passbitsLep + passbitsHad
-            # For each stage in the cut flow, make plots
-            for ipassbit in xrange( len(passbits) ) :
-                if passbits[ipassbit] :
-                    self.fill( ipassbit )
+            # Select events and fill histograms
+            self.selectCountFill( )
 
         # Wrap it up. 
         print 'Finished looping'
@@ -154,274 +154,467 @@ class RunSemiLepTTbar() :
 
         
     def book( self ) :
-
-        a = self.lepSelection
-        b = self.hadSelection 
-                
-        self.outfile.cd()
-        
         '''
         Book histograms, one for each stage of the selection. 
         '''
-        ### Run number - Use to check luminosity of data samples
-        self.RunNumberHist = []
-        ### Weights histogram with total weight applied to the event when filling histograms
-        self.WeightHist = []     
-        
-        self.LeptonPtHist = []
-        self.LeptonEtaHist = []
-        self.METPtHist = []
-        self.HTLepHist = []
-        
-        
-        self.Iso2DHist = []
-        self.AK4BdiscHist = []        
+        self.outfile.cd()
+    
+        self.hists1D = {}
+        self.hists2D = {}
 
-        self.AK8PtHist = []
-        self.AK8HTHist = []
-        self.AK8SDPtHist = [] 
-        self.AK8PuppiSDPtHist = [] 
-        self.AK8PuppiPtHist = [] 
-        self.AK8PuppiSDPtResponse = []
-        self.AK8SDPtResponse = []
-        self.AK8puppitau21Hist = []
-        self.AK8puppitau32Hist = []
-        self.AK8EtaHist = []
-        self.AK8MHist = []
-        self.AK8MSDHist = []
-        self.AK8SDRhoRatioHist = []
-        self.AK8MSDSJ0Hist = []
-        self.AK8SDSJ0PtHist = []      
-            
-        self.lepNames = ['Electron', 'Muon' ]
+
+        self.lepNames = ['Electron', 'Muon']
+
+        self.titles1D = {
+        'mostMassive':[';Most Massive Subjet Mass (GeV);Number', 90, 50, 140],
+        'lowestBdisc':[';Lowest Bdisc Subjet Mass (GeV);Number', 90, 50, 140],
+        'highestPt'  :[';Highest Pt   Subjet Mass (GeV);Number', 90, 50, 140]
+        }
         
         
-        # Create histos for type 1 selection binned by pt of leading SD subjet
-        self.AK8MPtBinnedHistList = [[], [] ,[], [] , []]
-        self.AK8MSDPtBinnedHistList = [[], [] ,[], [] , []]
-        self.AK8MSDSJ0PtBinnedHistList = [[], [] ,[], [] , []]
-        self.AK8MSDSJ1PtBinnedHistList = [[], [] ,[], [] , []]
+        for var in self.titles1D:
+          title =  self.titles1D[var][0]  
+          nbins =  self.titles1D[var][1]
+          minval = self.titles1D[var][2]
+          maxval = self.titles1D[var][3]
+          th1name =   self.titles1D[var]  
+          self.hists1D["%s"%(th1name)] = [   ROOT.TH1F(th1name+'_'+self.lepNames[0]  , title , nbins , minval, maxval) ,
+                                             ROOT.TH1F(th1name+'_'+self.lepNames[1]  , title , nbins , minval, maxval) ,
+                                             ROOT.TH1F(th1name+'_ElandMu', title , nbins , minval, maxval) ]
+
+        self.titles2D = {
+        'Iso2DHist':["Lepton 2D isolation (#Delta R vs p_{T}^{REL} ), ", 25, 0, 500, 25, 0, 1],
+
+        for var in self.titles2D:
+          title =  self.titles2D[var][0]  
+          nbinsx =  self.titles2D[var][1]
+          minx = self.titles2D[var][2]
+          maxx = self.titles2D[var][3]
+          nbinsy =  self.titles2D[var][4]
+          miny = self.titles2D[var][5]
+          maxy = self.titles2D[var][6]        
+          th2name =   self.titles2D[var]       
+          self.hists2D["%s"%(th2name)]=  [ ROOT.TH2F( th2name+ '_' + self.lepNames[0], title , nbinsx , minx , maxx, nbinsy , miny , maxy) ,
+                                           ROOT.TH2F( th2name+ '_' + self.lepNames[1], title , nbinsx , minx , maxx, nbinsy , miny , maxy) ,
+                                           ROOT.TH2F( th2name+ '_ElandMu' , title , nbinsx , minx , maxx, nbinsy , miny , maxy) ]
+
+    def selectCountFill( self) :
         '''
-        for iptbin, ptbin in enumerate(b.ak8Jet_Ptbins) :
-            if iptbin < 5:
-                self.AK8MPtBinnedHistList.append([])
-                self.AK8MSDPtBinnedHistList.append([])
-                self.AK8MSDSJ0PtBinnedHistList.append([])
-                self.AK8MSDSJ1PtBinnedHistList.append([])
+        Fill the histograms with gen matching criteria and variant W candidate subjets.
         '''
-        ### List of all histograms
-        self.hists = []
         
-        for ilep in xrange(self.nlep) :
-            self.RunNumberHist.append( [] )
+        ### Get neccessary info from the tree
 
-            self.WeightHist.append( [] )
-            
-            self.AK8PtHist.append([])       
-            self.AK8HTHist.append( [] )
-            self.AK8SDPtHist.append( [] )
-            self.AK8PuppiSDPtHist.append([])
-            self.AK8PuppiPtHist.append( [] )
-            self.AK8PuppiSDPtResponse.append( [] )
-            self.AK8SDPtResponse.append([])
-            self.AK8SDSJ0PtHist.append( [])
-            self.AK8EtaHist.append([])      
-            self.AK8puppitau21Hist.append([])
-            self.AK8puppitau32Hist.append([])
-            
+        ilep = self.treeobj.tree.LeptonIsMu[0]        
 
-            self.AK8MHist.append( [] )
-            self.AK8MSDHist.append( [] )
-            self.AK8SDRhoRatioHist.append( [] )
-            self.AK8MSDSJ0Hist.append( [] )
-
-            self.LeptonPtHist.append( [] )
-            self.LeptonEtaHist.append( [] )
-
-            self.METPtHist.append( [] )
-            self.HTLepHist.append([] )
-            self.Iso2DHist.append ( [] )
-            self.AK4BdiscHist.append( [] )
-
-            for iptbin, ptbin in enumerate(b.ak8Jet_Ptbins) :
-                if iptbin < 5:
-                    if self.verbose: print"self.AK8MPtBinnedHistList {} of length {}".format(self.AK8MPtBinnedHistList, len(self.AK8MPtBinnedHistList))
-                    self.AK8MPtBinnedHistList[iptbin].append( [] )
-                    self.AK8MSDPtBinnedHistList[iptbin].append( [] )
-                    self.AK8MSDSJ0PtBinnedHistList[iptbin].append( [] )
-                    self.AK8MSDSJ1PtBinnedHistList[iptbin].append( [] )
-
-            for ival in xrange(self.nstages):
-                self.WeightHist[ilep].append( ROOT.TH1F("WeightHist" +  self.lepNames[ilep]+  str(ival), "Total Weight, Stage "+  self.lepNames[ilep] + str(ival), 1000, -1.,2.) )
-                self.RunNumberHist[ilep].append( ROOT.TH1F("RunNumberHist" + self.lepNames[ilep]+  str(ival), "Run Number for lepton "+self.lepNames[ilep]+  str(ival)  , 286591, 0, 286591) )
-
-                self.AK8PtHist[ilep].append( ROOT.TH1F("AK8PtHist" +  self.lepNames[ilep] + str(ival), "Jet p_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 1000) )
-                self.AK8HTHist[ilep].append( ROOT.TH1F("AK8HTHist" +  self.lepNames[ilep] + str(ival), "Jet H_{T}, Stage " + self.lepNames[ilep] + str(ival), 4000, 0, 4000) )
-                self.AK8SDPtHist[ilep].append( ROOT.TH1F("AK8SDPtHist" +  self.lepNames[ilep] + str(ival), "Jet SD p_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 1000) )
-                self.AK8PuppiSDPtHist[ilep].append( ROOT.TH1F("AK8PuppiSDPtHist" +  self.lepNames[ilep] + str(ival), "Jet Puppi SD p_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 1000) )
-                self.AK8PuppiPtHist[ilep].append( ROOT.TH1F("AK8PuppiPtHist" +  self.lepNames[ilep] + str(ival), "Jet p_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 1000) )
-
-                self.AK8PuppiSDPtResponse[ilep].append( ROOT.TH1F("AK8PuppiSDPtResponse" +  self.lepNames[ilep] + str(ival), "Jet p_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 1000) )
-                self.AK8SDPtResponse[ilep].append( ROOT.TH1F("AK8SDPtResponse" +  self.lepNames[ilep] + str(ival), "Jet p_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 1000) )
-
-                self.AK8SDSJ0PtHist[ilep].append( ROOT.TH1F("AK8SDSJ0PtHist" +  self.lepNames[ilep] + str(ival), "SD subjet 0 P_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 1000) )
-                self.AK8EtaHist[ilep].append( ROOT.TH1F("AK8EtaHist" +  self.lepNames[ilep] + str(ival), "Jet #eta, Stage " + self.lepNames[ilep] + str(ival), 1000, -2.5, 2.5) )
-                self.AK8puppitau21Hist[ilep].append( ROOT.TH1F("AK8puppitau21Hist" +  self.lepNames[ilep] + str(ival), "Jet #tau_{21}, Stage " + self.lepNames[ilep] + str(ival), 1000, 0., 1.) )
-                self.AK8puppitau32Hist[ilep].append( ROOT.TH1F("AK8puppitau32Hist" +  self.lepNames[ilep] + str(ival), "Jet #tau_{32}, Stage " + self.lepNames[ilep] + str(ival), 1000, 0., 1.) )
-
-
-                self.AK8MHist[ilep].append( ROOT.TH1F("AK8MHist" +  self.lepNames[ilep] + str(ival), "Jet Mass, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 500) )
-                self.AK8MSDHist[ilep].append( ROOT.TH1F("AK8MSDHist" +  self.lepNames[ilep] + str(ival), "Jet Soft Dropped Mass, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 500) )
-                self.AK8SDRhoRatioHist[ilep].append( ROOT.TH1F("AK8SDRhoRatioHist" +  self.lepNames[ilep] + str(ival), "SD Rho Ratio, Stage " + self.lepNames[ilep] + str(ival), 1000, 0., 1.) )
-                self.AK8MSDSJ0Hist[ilep].append( ROOT.TH1F("AK8MSDSJ0Hist" +  self.lepNames[ilep] + str(ival), "Leading Subjet Soft Dropped Mass, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 500) )
-
-                self.LeptonPtHist[ilep].append( ROOT.TH1F("LeptonPtHist" +  self.lepNames[ilep] + str(ival), "Lepton p_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 1000) )
-                self.LeptonEtaHist[ilep].append( ROOT.TH1F("LeptonEtaHist" +  self.lepNames[ilep] + str(ival), "Lepton #eta, Stage " + self.lepNames[ilep] + str(ival), 1000, -2.5, 2.5) )
-
-                self.METPtHist[ilep].append( ROOT.TH1F("METPtHist" +  self.lepNames[ilep] + str(ival), "Missing p_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 1000) )
-                self.HTLepHist[ilep].append( ROOT.TH1F("HTLepHist" +  self.lepNames[ilep] + str(ival), "Lepton p_{T} + Missing p_{T}, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 1000) )
-                self.Iso2DHist[ilep].append ( ROOT.TH2F("Iso2DHist" +  self.lepNames[ilep] + str(ival), "Lepton 2D isolation (#Delta R vs p_{T}^{REL} ), Stage " + self.lepNames[ilep] + str(ival), 25, 0, 500, 25, 0, 1) )
-                self.AK4BdiscHist[ilep].append( ROOT.TH1F("AK4BdiscHist" +  self.lepNames[ilep] + str(ival), "CSVv2 B disc , Stage " + self.lepNames[ilep] + str(ival), 1000, 0., 1.) )
-
-                for iptbin, ptbin in enumerate(b.ak8Jet_Ptbins) :
-                    if iptbin < 4:
-                        self.AK8MPtBinnedHistList[iptbin][ilep].append( ROOT.TH1F("AK8MPt%sTo%sHist"%(ptbin, b.ak8Jet_Ptbins[iptbin+1]) +  self.lepNames[ilep] + str(ival), "Jet Mass, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 500) )
-                        self.AK8MSDPtBinnedHistList[iptbin][ilep].append( ROOT.TH1F("AK8MSDPt%sTo%sHist"%(ptbin, b.ak8Jet_Ptbins[iptbin+1]) +  self.lepNames[ilep] + str(ival), "Jet Soft Dropped Mass, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 500) )
-                        self.AK8MSDSJ0PtBinnedHistList[iptbin][ilep].append( ROOT.TH1F("AK8MSDSJ0Pt%sTo%sHist"%(ptbin, b.ak8Jet_Ptbins[iptbin+1]) +  self.lepNames[ilep] + str(ival), "Leading Subjet Soft Dropped Mass, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 500) )
-                        self.AK8MSDSJ1PtBinnedHistList[iptbin][ilep].append( ROOT.TH1F("AK8MSDSJ1Pt%sTo%sHist"%(ptbin, b.ak8Jet_Ptbins[iptbin+1]) +  self.lepNames[ilep] + str(ival), "Sub-Leading Subjet Soft Dropped Mass, Stage " + self.lepNames[ilep] + str(ival), 1000, 0, 500) )
-                
-
-    def fill( self, index ) :
-        '''
-        Fill the histograms we're interested in. If you're doing something complicated, make a
-        member variable in the Selector class to cache the variable and just fill here. 
-        '''
-        a = self.lepSelection
-        b = self.hadSelection 
-        ilep = a.tree.LeptonIsMu[0]     
-        if self.verbose:  print 'ilep = ', ilep       
-
-        ### Define the weights used for histo filling
-        self.RunNum = a.runNum
-
-        self.theWeight = a.theWeight
-        self.EventWeight =  a.EventWeight
-        self.PUWeight = a.PUWeight
-        self.TriggEffIs  = a.TriggEffIs
-        self.recoSFIs = a.recoSFIs 
-        self.CutIDScaleFIs = a.CutIDScaleFIs
-        self.CutIDScaleFLooseIs = a.CutIDScaleFLooseIs
-        self.MuHighPtScaleFIs = a.MuHighPtScaleFIs
-        self.HEEPSFIs = a.HEEPSFIs
-        #self.MuonHIPScaleFIs = a.MuonHIPScaleFIs
-        self.BtagWeight =  a.BtagWeight
-        self.theWeight = 1.
+        PuppiJetCorr = self.treeobj.tree.JetPuppiCorrFactor[0]
         
-        #if self.verbose and index == 0 : print "Event weight {0:2.4f} * PU weight {1:2.4f} *Trigger Eff. {2:2.4f} * Cut ID {3:2.4f} * HIP SF {4:2.4f} * Btag SF {5:2.4f} * self.CutIDScaleFLooseIs {6:2.4f}".format(self.EventWeight , self.PUWeight , self.TriggEffIs , self.CutIDScaleFIs, self.MuonHIPScaleFIs, self.BtagWeight, self.CutIDScaleFLooseIs)
-
-        ### The total weight depends on the stage of selection
-        #self.theWeight =  self.EventWeight * self.PUWeight
-
-        ### B tag SF
-        if index >= 12: #        
-            self.theWeight =  self.EventWeight * self.PUWeight * self.CutIDScaleFIs * self.recoSFIs * self.TriggEffIs * self.MuHighPtScaleFIs * self.HEEPSFIs  * self.BtagWeight
-            if self.verbose : print "theWeight for stage {0:} is : {1:2.4f} = eventWeight {2:2.2f} * self.PUWeight{3:2.2f} * self.CutIDScaleFIs {4:2.2f} * self.recoSFIs  {5:2.2f} * self.TriggEffIs {6:2.3f} self.MuHighPtScaleFIs{7:2.3f} * self.HEEPSFIs {8:2.3f}  * self.BtagWeight  {9:2.3f} ".format( 0, self.theWeight, self.EventWeight , self.PUWeight , self.CutIDScaleFIs, self.recoSFIs , self.TriggEffIs ,self.MuHighPtScaleFIs,  self.HEEPSFIs, self.BtagWeight)
-
-
-        if b.ak8JetP4 != None :                 
-            self.AK8PtHist[ilep][index].Fill( b.ak8JetP4.Perp()* b.PtSmear   , self.theWeight )  ### TO-DO : Implement Pt smear in hadselection and replace 1.000 with b.PtSmear
-            self.AK8HTHist[ilep][index].Fill( b.ak8JetHT  , self.theWeight )
-            if b.ak8SDJetP4 != None and b.SDptGenpt != None :
-                self.AK8SDPtResponse[ilep][index].Fill( b.SDptGenpt , b.ak8JetP4.Perp() * b.PtSmear )    
-
-        if b.ak8SDJetP4 != None :
-            self.AK8SDPtHist[ilep][index].Fill( b.ak8SDJetP4.Perp() * b.PtSmear  , self.theWeight )
-            self.AK8MSDHist[ilep][index].Fill( b.ak8PuppiSD_m  , self.theWeight )
-
-        if b.ak8PuppiJetP4 != None :
-            self.AK8PuppiPtHist[ilep][index].Fill( b.ak8PuppiJetP4.Perp() * b.PuppiPtSmear  , self.theWeight )
-            self.AK8EtaHist[ilep][index].Fill( b.ak8PuppiJetP4.Eta()  , self.theWeight )
-            self.AK8puppitau21Hist[ilep][index].Fill( b.puppitau21  , self.theWeight )
-            self.AK8puppitau32Hist[ilep][index].Fill( b.puppitau32  , self.theWeight )
-
-            self.AK8MHist[ilep][index].Fill( b.ak8_Puppim  , self.theWeight )
-            if b.ak8PuppiSDJetP4 != None :
-                if b.ak8PuppiJetP4  != None and b.SDptPuppipt != None :
-                    self.AK8PuppiSDPtResponse[ilep][index].Fill(b.SDptPuppipt  , b.ak8PuppiJetP4.Perp() )# * b.PuppiPtSmear )  
-
-        if  b.SDRhoRatio  != None :
-            self.AK8SDRhoRatioHist[ilep][index].Fill(b.SDRhoRatio  , self.theWeight ) 
+        self.ak8PuppiSDJetP4_Subjet0 = ROOT.TLorentzVector()
+        self.ak8PuppiSDJetP4_Subjet0.SetPtEtaPhiM( self.treeobj.tree.JetPuppiSDsubjet0pt[0],
+                                                   self.treeobj.tree.JetPuppiSDsubjet0eta[0], 
+                                                   self.treeobj.tree.JetPuppiSDsubjet0phi[0], 
+                                                   self.treeobj.tree.JetPuppiSDsubjet0mass[0]  )
+                                                   
+        self.ak8PuppiSDJetP4_Subjet0Raw =   self.ak8PuppiSDJetP4_Subjet0 
+        self.ak8PuppiSDJetP4_Subjet0 =   self.ak8PuppiSDJetP4_Subjet0  * PuppiJetCorr
+        self.ak8subjet0PuppiSD_m = self.ak8PuppiSDJetP4_Subjet0.M()
 
 
-        if b.ak8PuppiSDJetP4 != None :
-            self.AK8PuppiSDPtHist[ilep][index].Fill( b.ak8PuppiSDJetP4.Perp() * b.PuppiPtSmear  , self.theWeight )
-            self.AK8SDSJ0PtHist[ilep][index].Fill( b.ak8PuppiSDJetP4_Subjet0.Perp() * b.PuppiPtSmear  , self.theWeight )
-            self.AK8MSDSJ0Hist[ilep][index].Fill( b.ak8SDsj0_m  , self.theWeight )
+        self.ak8PuppiSDJetP4_Subjet1 = ROOT.TLorentzVector()
+        self.ak8PuppiSDJetP4_Subjet1.SetPtEtaPhiM( self.treeobj.tree.JetPuppiSDsubjet1pt[0],
+                                                   self.treeobj.tree.JetPuppiSDsubjet1eta[0], 
+                                                   self.treeobj.tree.JetPuppiSDsubjet1phi[0], 
+                                                   self.treeobj.tree.JetPuppiSDsubjet1mass[0]  )
+        self.ak8PuppiSDJetP4_Subjet1Raw =   self.ak8PuppiSDJetP4_Subjet1 
+        self.ak8PuppiSDJetP4_Subjet1 =   self.ak8PuppiSDJetP4_Subjet1 * PuppiJetCorr
+        self.ak8subjet1PuppiSD_m = self.ak8PuppiSDJetP4_Subjet1.M()
 
 
-            # Filling jet mass histos binned by pt of the leading SD subjet
+        self.ak8PuppiSDJetP4Raw =  self.ak8PuppiSDJetP4_Subjet0Raw +  self.ak8PuppiSDJetP4_Subjet1Raw
+        #self.ak8PuppiSDJetP4Raw =   self.ak8PuppiSDJetP4
+        self.ak8PuppiSDJetP4 =   self.ak8PuppiSDJetP4Raw * PuppiJetCorr
+          
+        self.ak8PuppiSD_m = float(self.ak8PuppiSDJetP4.M()) 
+        fatjetTau32 = self.treeobj.tree.JetPuppiTau32[0]
 
-            # self.ak8Jet_Ptbins = [200., 300., 400., 500., 800., 1000.]
+
+        ### Top mass window cut
+        
+        if  not ( 110. <= b.ak8PuppiSD_m <= 250.) : continue  
+
+        ### Top tag loose n-subjettiness cut
+
+        if  not ( fatjetTau32 <  options.tau32Cut) : continue
+
+        ### Wtag mass window cut
+        #if  not ( 10. <=  self.ak8subjet0PuppiSD_m <= 140.) : continue
+
+        ### Pick our W candidate from the 2 subjets. Higher mass /lower B disc than the b candidate
+        self.subjet0isW = False
+        self.subjet1isW = False
+
+        ### Throw away events where subjets are too light
+        #if (self.ak8PuppiSDJetP4_Subjet0.M() and self.ak8PuppiSDJetP4_Subjet1.M()) < 10. : continue
+
+        SJ0tau1 = self.treeobj.tree.JetPuppiSDsubjet0tau1[0]  
+        SJ0tau2 = self.treeobj.tree.JetPuppiSDsubjet0tau2[0]
+        SJ1tau1 = self.treeobj.tree.JetPuppiSDsubjet1tau1[0] 
+        SJ1tau2 = self.treeobj.tree.JetPuppiSDsubjet1tau2[0]
+
+        SJ0tau21 = 10.
+        SJ1tau21 = 10.
+        if SJ0tau1 >= 0.1 :
+          SJ0tau21 = SJ0tau2/ SJ0tau1
+        if SJ1tau1 >= 0.1 :
+          SJ1tau21 = SJ1tau2/ SJ1tau1
+
+        SJ0Bdisc = self.treeobj.tree.JetPuppiSDsubjet0bdisc[0]
+        SJ1Bdisc = self.treeobj.tree.JetPuppiSDsubjet1bdisc[0]
+
+        ### Define the 3 W candidate categories
+        self.SJ1 = None # Most massive
+        self.SJ2 = None  # Lowest Bdisc
+        self.SJ3 = None  # Highest Pt
+
+        ### Flag to know which subjet (0 or 1)is W candidate in each of 3 cases above (e.g case 3 is always True)
+        self.subjet0isW1   =  False
+        self.subjet0isW2   =  False
+        self.subjet0isW3   =  False
+        self.subjet1isW1   =  False
+        self.subjet1isW2   =  False
+        self.subjet1isW3   =  False
+        ### Pick the most massive as the W candidate
+        #if self.whighMass == 1 :
+        if (self.ak8PuppiSDJetP4_Subjet0.M() > self.ak8PuppiSDJetP4_Subjet1.M()) :
+          self.subjet0isW1   = True
+          self.countW1isSJ0 += 1
+          self.SJ1 = self.ak8PuppiSDJetP4_Subjet0
+        else:  
+          self.subjet1isW1   = True
+          self.countW1isSJ1 += 1
+          self.SJ1 = self.ak8PuppiSDJetP4_Subjet1
+    
+        ### Pick the lowest Bdisc as the W candidate
+        #if self.wlowBdisc == 1 :                                                                                                                                                          
+        if SJ0Bdisc < SJ1Bdisc :                                                                                                                           
+          self.subjet0isW2   = True                                                                                                                                                                          
+          self.countW2isSJ0 += 1  
+          tau21w1 = SJ0tau21  
+          self.SJ2 = self.ak8PuppiSDJetP4_Subjet0                                                                                                                                                                        
+        else:   
+          self.subjet1isW2   = True
+          self.countW2isSJ1 += 1  
+          tau21w1 = SJ1tau21 
+          self.SJ2 = self.ak8PuppiSDJetP4_Subjet1
+
+        ### Pick the highest Pt as the W candidate
+        #if self.whighPt == 1 :                                                                                                                                                                                                                                                                                   
+        self.subjet0isW3   = True                                                                                                                                                                          
+        self.countW3isSJ0 += 1        
+        tau21w1 = SJ0tau21                                                                                                                                                                      
+        self.SJ3 = self.ak8PuppiSDJetP4_Subjet0
+
+        ### Decide on how W candidate subjet is picked ( options.wcand 1 for most massive, 2 for lowest b disc, 3 for highest pt)
+        #self.whighMass = options.wcand      
+        #self.wlowBdisc = options.wcand - 1  
+        #self.whighPt   = options.wcand - 2   
+
+        ### Count instances where W candidate has higher mass and higher bdisc 
+        if self.subjet0isW1 :
+          if SJ0Bdisc > SJ1Bdisc :
+            self.countW1highMassandBdisc +=1
+          else:
+            self.countW1highMassLowBdisc +=1
+        if self.subjet1isW1 :
+          if SJ0Bdisc < SJ1Bdisc :
+            self.countW1highMassandBdisc +=1
+          else:
+            self.countW1highMassLowBdisc +=1
+
+        if self.subjet0isW2 :
+          if self.ak8PuppiSDJetP4_Subjet0.M() > self.ak8PuppiSDJetP4_Subjet1.M() :
+            self.countW2highMassLowBdisc +=1
+        if self.subjet1isW2 :
+          if self.ak8PuppiSDJetP4_Subjet0.M() < self.ak8PuppiSDJetP4_Subjet1.M() :
+            self.countW2highMassLowBdisc +=1
+
+        if self.subjet0isW3 :
+          if (self.ak8PuppiSDJetP4_Subjet0.M() >self.ak8PuppiSDJetP4_Subjet1.M() ) and (SJ0Bdisc < SJ1Bdisc ) :
+            self.countW3highMassLowBdisc +=1
+          if (self.ak8PuppiSDJetP4_Subjet0.M() >self.ak8PuppiSDJetP4_Subjet1.M() ) and (SJ0Bdisc > SJ1Bdisc ) :
+            self.countW3highMassandBdisc +=1
+
+        #print"W candidate(higher mass subjet) has higher Bdisc than b candidate"
+
+        isRealW1 = None
+        isFakeW1 = None
+        isRealW2 = None
+        isFakeW2 = None
+        isRealW3 = None
+        isFakeW3 = None
+
+        #if (self.treeobj.tree.JetGenMatched_DeltaR_pup0_Wd1[0] > 0.40) or  (self.treeobj.tree.JetGenMatched_DeltaR_pup0_Wd2[0] > 0.4) or 
+        if self.subjet0isW1 :
+          if (self.treeobj.tree.JetGenMatched_DeltaR_pup0_Wd1[0] < self.treeobj.tree.JetGenMatched_DeltaR_pup0_b[0])  and  (self.treeobj.tree.JetGenMatched_DeltaR_pup0_Wd2[0] < self.treeobj.tree.JetGenMatched_DeltaR_pup0_b[0]) :
+            isRealW1 = 1
+            isFakeW1 = 0
+          else:
+            isRealW1 = 0
+            isFakeW1 = 1
+        if self.subjet1isW1 :
+          if (self.treeobj.tree.JetGenMatched_DeltaR_pup1_Wd1[0] < self.treeobj.tree.JetGenMatched_DeltaR_pup1_b[0])  and  (self.treeobj.tree.JetGenMatched_DeltaR_pup1_Wd2[0] < self.treeobj.tree.JetGenMatched_DeltaR_pup1_b[0]) :  
+            isRealW1 = 1
+            isFakeW1 = 0
+          else:
+            isRealW1 = 0
+            isFakeW1 = 1
+        if self.subjet0isW2 :
+          if (self.treeobj.tree.JetGenMatched_DeltaR_pup0_Wd1[0] < self.treeobj.tree.JetGenMatched_DeltaR_pup0_b[0])  and  (self.treeobj.tree.JetGenMatched_DeltaR_pup0_Wd2[0] < self.treeobj.tree.JetGenMatched_DeltaR_pup0_b[0]) :
+            isRealW2 = 1
+            isFakeW2 = 0
+          else:
+            isRealW2 = 0
+            isFakeW2 = 1
+        if self.subjet1isW2 :
+          if (self.treeobj.tree.JetGenMatched_DeltaR_pup1_Wd1[0] < self.treeobj.tree.JetGenMatched_DeltaR_pup1_b[0])  and  (self.treeobj.tree.JetGenMatched_DeltaR_pup1_Wd2[0] < self.treeobj.tree.JetGenMatched_DeltaR_pup1_b[0]) :  
+            isRealW2 = 1
+            isFakeW2 = 0
+          else:
+            isRealW2 = 0
+            isFakeW2 = 1        ### See how many gen matched Ws pass and fail the tau21 cut
+        if self.subjet0isW3 :
+          if (self.treeobj.tree.JetGenMatched_DeltaR_pup0_Wd1[0] < self.treeobj.tree.JetGenMatched_DeltaR_pup0_b[0])  and  (self.treeobj.tree.JetGenMatched_DeltaR_pup0_Wd2[0] < self.treeobj.tree.JetGenMatched_DeltaR_pup0_b[0]) :
+            isRealW3 = 1
+            isFakeW3 = 0
+          else:
+            isRealW3 = 0
+            isFakeW3 = 1
+        if self.subjet1isW3 :
+          if (self.treeobj.tree.JetGenMatched_DeltaR_pup1_Wd1[0] < self.treeobj.tree.JetGenMatched_DeltaR_pup1_b[0])  and  (self.treeobj.tree.JetGenMatched_DeltaR_pup1_Wd2[0] < self.treeobj.tree.JetGenMatched_DeltaR_pup1_b[0]) :  
+            isRealW3 = 1
+            isFakeW3 = 0
+          else:
+            isRealW3 = 0
+            isFakeW3 = 1
+        ### Count numbers of real and fake Ws in pass and fail for this tau21 cut
+        if  isRealW1 == 1 :
+          if tau21w1 >= options.tau21Cut :
+            self.countRealW1sInFail += 1
+          else :                                                             
+            self.countRealW1sInPass += 1
+        if  isFakeW1 == 1 :
+          if tau21w1 >= options.tau2tau1cutHP : 
+            self.countFakeW1sInFail += 1
+          else :                                                            
+            self.countFakeW1sInPass += 1
+
+        if  isRealW2 == 1 :
+          if tau21w2 >= options.tau21Cut :
+            self.countRealW2sInFail += 1
+          else :                                                             
+            self.countRealW2sInPass += 1
+        if  isFakeW2 == 1 :
+          if tau21w2 >= options.tau2tau1cutHP : 
+            self.countFakeW2sInFail += 1
+          else :                                                            
+            self.countFakeW2sInPass += 1
+
+        if  isRealW3 == 1 :
+          if tau21w3 >= options.tau21Cut :
+            self.countRealW3sInFail += 1
+          else :                                                             
+            self.countRealW3sInPass += 1
+        if  isFakeW3 == 1 :
+          if tau21w3 >= options.tau2tau1cutHP : 
+            self.countFakeW3sInFail += 1
+          else :                                                            
+            self.countFakeW3sInPass += 1
+
+        if b.ak8Jet != None :
+            ### Choose which pt bin to plot  
+            ### FIX THIS: should cut before any counting, now counts are for all Pt bins
+            if (self.subjet0isW1 or self.subjet1isW1 ):
+                if not (options.ptbinmin <= self.SJ1.Perp() <= options.ptbinmax ): continue
+            if (self.subjet0isW2 or self.subjet1isW2 ):
+                if not (options.ptbinmin <= self.SJ2.Perp() <= options.ptbinmax ): continue
+            if (self.subjet0isW3 or self.subjet1isW3 ):
+                if not (options.ptbinmin <= self.SJ3.Perp() <= options.ptbinmax ): continue
+
+            SJmasses = [self.SJ1.M() , self.SJ2.M()  , self.SJ3.M() ]
+            for ival, val in enumerate(self.hists1D.itervalues()):
+                val[ilep].Fill(SJmasses[ival])                         # Fill either Electron or Muon histo
+                if ilep == (0 or 1): val[2].Fill(SJmasses[ival])       # Always Fill Electron + Muon histo
             
-            for iptbin, ptbin in enumerate(b.ak8Jet_Ptbins) :
-                if iptbin < 4:
-                    thePthist = self.AK8MPtBinnedHistList[iptbin]
-                    theSDPthist = self.AK8MSDPtBinnedHistList[iptbin]
-                    theSDsj0Pthist = self.AK8MSDSJ0PtBinnedHistList[iptbin]
-                    theSDsj1Pthist = self.AK8MSDSJ1PtBinnedHistList[iptbin]
-
-
-                    if  b.ak8PuppiJetP4_Binned[iptbin].M() > 0 :
-                        thePthist[ilep][index].Fill( b.ak8PuppiJetP4_Binned[iptbin].M()  , self.theWeight )
-                        theSDPthist[ilep][index].Fill(  b.ak8PuppiSDJetP4_Binned[iptbin].M() , self.theWeight )
-                    if  b.ak8PuppiSDJetP4Subjet0PuppiCorrMass_Binned[iptbin]  > 0 :
-                        theSDsj0Pthist[ilep][index].Fill(  b.ak8PuppiSDJetP4Subjet0PuppiCorrMass_Binned[iptbin] , self.theWeight )
-                        theSDsj1Pthist[ilep][index].Fill(  b.ak8PuppiSDJetP4Subjet1PuppiCorrMass_Binned[iptbin] , self.theWeight )
-
-            
-        if a.leptonP4 != None :
-            if self.verbose: print"RunNumber is FILLED as {}".format(self.RunNum)
-
-            self.RunNumberHist[ilep][index].Fill(self.RunNum)
-            self.WeightHist[ilep][index].Fill(self.theWeight)
-            self.LeptonPtHist[ilep][index].Fill( a.leptonP4.Perp()  , self.theWeight )
-            self.LeptonEtaHist[ilep][index].Fill( a.leptonP4.Eta()  , self.theWeight )
-            self.METPtHist[ilep][index].Fill( a.nuP4.Perp() , self.theWeight  )
-            self.HTLepHist[ilep][index].Fill( a.leptonP4.Perp() + a.nuP4.Perp()  , self.theWeight )
             if a.ak4Jet != None : 
-                self.Iso2DHist[ilep][index].Fill( a.leptonP4.Perp( a.ak4Jet.Vect() ), a.leptonP4.DeltaR( a.ak4Jet )  , self.theWeight  )
-                self.AK4BdiscHist[ilep][index].Fill(b.ak4JetBdisc , self.theWeight)
+                fill2d = [a.leptonP4.Perp( a.ak4Jet.Vect() ), a.leptonP4.DeltaR( a.ak4Jet )]  ### Fix this : surely theres a better way
+                for ival, val in enumerate(self.hists2D.itervalues()):
+                    val[ilep].Fill(fill2d[ival], fill2d[ival + 1])
+                    if ilep == (0 or 1): val[2].Fill(fill2d[ival], fill2d[ival + 1]) # Always Fill Electron + Muon histo
 
-
-
+        ### Perform tighter matching criteria and make more plots
 
 
     def close( self ) :
         '''
         Wrap it up. 
         '''
-
-        self.ts = (time.time() - self.startTime)
-
-        self.unitIs = 'Seconds'
-        if self.ts > 60. :
-            self.ts /= 60.
-            self.unitIs = 'Minutes'
-        if self.ts > 60. :
-            self.ts /= 60.
-            self.unitIs = 'Hours' 
-
-        print ('The script took {0}  {1}!'.format(   self.ts  , self.unitIs    ) )
-
-
         self.outfile.cd() 
         self.outfile.Write()
         self.outfile.Close()
 
+        print"              W candidate event counts                    "
+        print"    WARNING: Counts are for all pt bins but plots are not "
+        print".........................................................."
+        print"Case 1:          W is most massive"
+        print".........................................................."
+        print"W is leading pt subjet     {0} of {1} total".format(self.countW1isSJ0 , self.countW1isSJ0+self.countW1isSJ1)
+        print"W has high mass and low B disc {0} of {1} total".format(self.countW1highMassLowBdisc  , self.countW1highMassandBdisc + self.countW1highMassLowBdisc)
+        print""
+        print"Gen Matching:"
+        print"Loose - Both W daughter quarks closer to W than b "
+        print"W is real    {0} ".format( self.countRealW1sInFail + self.countRealW1sInPass )
+        print"W is fake    {0} ".format( self.countFakeW1sInFail + self.countFakeW1sInPass )
+        print""
+        print"W tag:"
+        print"WP - tau21 < {}".format(options.tau21Cut)
+        print"real Ws Passed {}".format(self.countRealW1sInPass)
+        print"fake Ws Passed {}".format(self.countFakeW1sInPass)
+        print""
+        print"real Ws Failed {}".format(self.countRealW1sInFail)
+        print"fake Ws Failed {}".format(self.countFakeW1sInFail)
+        print".........................................................."
+        print"Case 2:          W is lowest Bdisc"
+        print".........................................................."
+        print"W is leading pt subjet     {0} of {1} total".format(self.countW2isSJ0 , self.countW2isSJ0+self.countW2isSJ1)
+        print"W has high mass and low B disc {0} of {1} total".format(self.countW2highMassLowBdisc  , self.countW2highMassandBdisc + self.countW2highMassLowBdisc)
+        print""
+        print"Gen Matching:"
+        print"Loose - Both W daughter quarks closer to W than b "
+        print"W is real    {0} ".format( self.countRealW2sInFail + self.countRealW2sInPass )
+        print"W is fake    {0} ".format( self.countFakeW2sInFail + self.countFakeW2sInPass )
+        print""
+        print"W tag:"
+        print"WP - tau21 < {}".format(options.tau21Cut)
+        print"real Ws Passed {}".format(self.countRealW2sInPass)
+        print"fake Ws Passed {}".format(self.countFakeW2sInPass)
+        print""
+        print"real Ws Failed {}".format(self.countRealW2sInFail)
+        print"fake Ws Failed {}".format(self.countFakeW2sInFail)
+        print".........................................................."
+        print"Case 3:          W is highest Pt"
+        print".........................................................."
+        print"W is leading pt subjet     {0} of {1} total".format(self.countW3isSJ0 , self.countW3isSJ0+self.countW3isSJ1)
+        print"W has high mass and low B disc {0} of {1} total".format(self.countW3highMassLowBdisc  , self.countW3highMassandBdisc + self.countW3highMassLowBdisc)
+        print""
+        print"Gen Matching:"
+        print"Loose - Both W daughter quarks closer to W than b "
+        print"W is real    {0} ".format( self.countRealW3sInFail + self.countRealW3sInPass )
+        print"W is fake    {0} ".format( self.countFakeW3sInFail + self.countFakeW3sInPass )
+        print""
+        print"W tag:"
+        print"WP - tau21 < {}".format(options.tau21Cut)
+        print"real Ws Passed {}".format(self.countRealW3sInPass)
+        print"fake Ws Passed {}".format(self.countFakeW3sInPass)
+        print""
+        print"real Ws Failed {}".format(self.countRealW3sInFail)
+        print"fake Ws Failed {}".format(self.countFakeW3sInFail)
+
+
+    def plotit( self ) :
+        '''
+        Plot all histos you just created
+        '''
+        ROOT.gStyle.SetOptStat(000000)
+        self.c1 = ROOT.TCanvas("c1" , "c1" ,1,1,745,701)
+        self.c1.SetHighLightColor(2)
+        self.c1.Range(0,0,1,1)
+        self.c1.SetFillColor(0)
+        self.c1.SetBorderMode(0)
+        self.c1.SetBorderSize(2)
+        self.c1.SetTickx(1)
+        self.c1.SetTicky(1)
+        self.c1.SetLeftMargin(0.14)
+        self.c1.SetRightMargin(0.04)
+        self.c1.SetTopMargin(0.08)
+        self.c1.SetBottomMargin(0.15)
+        self.c1.SetFrameFillStyle(0)
+        self.c1.SetFrameBorderMode(0)
+
+        ### Set x axis range for W candidate Mass plot
+        rangeMin = 50
+        rangeMax = 140
+
+        ### Set colors for the W candidates
+        colorslist = [6,7,8]
+            
+        ### Create the legend
+        self.leg = ROOT.TLegend(0.68,0.4,0.80,0.84)
+        self.leg.SetFillColor(0)
+        self.leg.SetBorderSize(0)
+        self.leg.SetTextSize(0.026)
+        ### FIX THIS: Eventually plot merged and unmerged for each category
+        ### self.leg.AddEntry( self.ttbarUnmerged, 'Unmatched   t#bar{t} ', 'f')
+        ### self.leg.AddEntry( self.ttbarMerged,   'Gen-Matched t#bar{t} ', 'f')
+        ###  For now only plot the histograms with both Electrons and Muons val[2] (val[0] is electrons and val[1] is muons )      
+        
+        #for ival, val in enumerate(self.hists1D.itervalues()):
+        for histname, th1 in self.hists1D.iteritems():
+            th1[2].GetXaxis().SetRangeUser( rangeMin, rangeMax )
+            th1[2].GetXaxis().SetNdivisions(506)
+            th1[2].GetXaxis().SetLabelFont(42)
+            th1[2].GetXaxis().SetLabelSize(0.5)
+            th1[2].GetXaxis().SetTitleSize(0.0475)
+            th1[2].GetXaxis().SetTickLength(0.045)
+            th1[2].GetXaxis().SetTitleOffset(1.15)
+            th1[2].GetXaxis().SetTitleFont(42)
+            th1[2].GetXaxis().SetTitle("PUPPI softdrop subjet mass (GeV)")
+
+
+            th1[2].SetMaximum(self.y_max * self.mcStack.GetMaximum() )
+            th1[2].SetMinimum(0.0001 )
+            th1[2].GetYaxis().SetTitle("Events")
+            th1[2].GetYaxis().SetNdivisions(506)
+            th1[2].GetYaxis().SetLabelFont(42)
+            th1[2].GetYaxis().SetLabelSize(0.06375)
+            th1[2].GetYaxis().SetTitleSize(0.06225)
+            th1[2].GetYaxis().SetTitleOffset(0.9)
+            th1[2].GetYaxis().SetTitleFont(42)   
+
+            th1[2].SetFillColor(colorslist[ith1])
+            th1[2].SetFillStyle(0)
+            th1[2].Draw("hist")
+            self.leg.AddEntry( th1[2] , histname, 'f')
+
+        self.leg.Draw()
+
+        self.words = ROOT.TLatex(0.14,0.916,"#font[62]{CMS} #font[52]{Preliminary}")
+        self.words.SetNDC()
+        self.words.SetTextFont(42)
+        self.words.SetTextSize(0.0725)
+        self.words.SetLineWidth(2)
+        self.words.Draw()
+        
+        ttTune = None
+        self.otherttbar = False
+        if self.otherttbar == True :
+            ttTune = '#scale[0.6]{(80X Powheg + Pythia 8) Tune CUETP8M2T4}'
+        else: ttTune = '#scale[0.6]{(80X Powheg + Pythia 8) Tune CUETP8M1} '
+
+        self.words1 = ROOT.TLatex(0.7,0.916, ttTune)
+        self.words1.SetNDC()
+        self.words1.SetTextAlign(31)
+        self.words1.SetTextFont(42)
+        self.words1.SetTextSize(0.0725)
+        self.words1.SetLineWidth(2)
+        self.words1.Draw()
+
+        self.c1.Modified()
+        self.c1.Print("SDsubjet3Wcands.png", "png")
 
 '''
         Executable
 '''
 if __name__ == "__main__" :
-    r = RunSemiLepTTbar(sys.argv)
+    r = PlotSemiLepTTbar_HighMass(sys.argv)
     r.run()
+    r.plotit()
