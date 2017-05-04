@@ -70,7 +70,8 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         self.AK4EtaCut = 2.4
 
         # Stage 7 : 2D cut (decrease QCD contamination)
-        self.DrAK4Lep = 1.    #0.4                       Loosen cuts here so they can be studied at later stages of selection
+        self.DrAK4Lep = 0.1    #0.4                 
+        # Loosen cuts here so they can be studied at later stages of selection
         self.PtRel = 10.      #30.
 
 
