@@ -70,8 +70,8 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         self.AK4EtaCut = 2.4
 
         # Stage 7 : 2D cut (decrease QCD contamination)
-        self.DrAK4Lep = 0.4
-        self.PtRel = 30.
+        self.DrAK4Lep = 1.    #0.4                       Loosen cuts here so they can be studied at later stages of selection
+        self.PtRel = 10.      #30.
 
 
         # Stage 8 : Hemisphere cut (keep leptons far from AK8 Jet)
