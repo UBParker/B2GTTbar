@@ -147,10 +147,23 @@ class PlotSemiLepTTbar_HighMass() :
         for jentry in xrange( self.eventsToRun ):
             if jentry % 100000 == 0 :
                 print 'processing ' + str(jentry)
-            # get the next event            
+            ### get the next event            
             ientry = self.treeobj.tree.GetEntry( jentry ) 
-                   
-            # correct the subjets and sum to find SD+PUPPI AK8 mass
+       
+            ### Get lepton and AK4 for 2D isolation plot
+            self.leptonP4 = ROOT.TLorentzVector()
+            self.leptonP4.SetPtEtaPhiM(
+                                       self.treeobj.tree.LeptonPt,
+                                       self.treeobj.tree.LeptonEta,
+                                       self.treeobj.tree.LeptonPhi,
+                                                           0. ) 
+
+            self.ak4Jet = ROOT.TLorentzVector( )
+            self.ak4Jet.SetPtEtaPhiM( self.treeobj.tree.AK4_dRminLep_Pt,
+                                      self.treeobj.tree.AK4_dRminLep_Eta,
+                                      self.treeobj.tree.AK4_dRminLep_Phi,
+                                      self.treeobj.tree.AK4_dRminLep_Mass )             
+            ### Get AK8 stuff -correct the subjets and sum to find SD+PUPPI AK8 mass
             PuppiJetCorr = self.treeobj.tree.JetPuppiCorrFactor
             
             self.ak8PuppiSDJetP4_Subjet0 = ROOT.TLorentzVector()
@@ -177,6 +190,7 @@ class PlotSemiLepTTbar_HighMass() :
             #self.ak8PuppiSDJetP4Raw =   self.ak8PuppiSDJetP4
             self.ak8PuppiSDJetP4 = None
             self.ak8PuppiSD_m = 0.
+
             ### Only keep jets where both subjets have mass > 1 GeV
             if (self.ak8subjet1PuppiSD_m and self.ak8subjet0PuppiSD_m) > 1. :
                 self.ak8PuppiSDJetP4 = self.ak8PuppiSDJetP4Raw * PuppiJetCorr            
@@ -218,11 +232,12 @@ class PlotSemiLepTTbar_HighMass() :
         self.lepNames = ['Electron', 'Muon']
 
         self.titles1D = {
-        'mostMassive':[';Most Massive Subjet Mass (GeV);Number', 90, 50, 140],
-        'lowestBdisc':[';Lowest Bdisc Subjet Mass (GeV);Number', 90, 50, 140],
-        'highestPt'  :[';Highest Pt   Subjet Mass (GeV);Number', 90, 50, 140]
+        'mostMassive':[';Most Massive Subjet Mass (GeV);Number', 130, 10, 140],
+        'lowestBdisc':[';Lowest Bdisc Subjet Mass (GeV);Number', 130, 10, 140],
+        'highestPt'  :[';Highest Pt   Subjet Mass (GeV);Number', 130, 10, 140]
         }
         
+        ### TO-DO: Also make opposites leastMassive, highestBdisc, lowestpt
         
         for var in self.titles1D:
           title =  self.titles1D[var][0]   
@@ -230,14 +245,22 @@ class PlotSemiLepTTbar_HighMass() :
           minval = self.titles1D[var][2]
           maxval = self.titles1D[var][3]
           th1name =   self.titles1D[var]  
-          print "var {} th1name {} title {}".format(var, th1name, title )
+          #print "var {} th1name {} title {}".format(var, th1name, title )
           self.hists1D[str(var)] = [      ROOT.TH1F(str(var)+'_'+self.lepNames[0]   , title , nbins , minval, maxval) ,
                                              ROOT.TH1F(str(var)+'_'+self.lepNames[1]  , title , nbins , minval, maxval) ,
                                              ROOT.TH1F(str(var)+'_ElandMu', title , nbins , minval, maxval) ]
 
-        print"Just created self.hists1D {}".format(self.hists1D)
+        #print"Just created self.hists1D {}".format(self.hists1D)
+        xhigh = 2.
         self.titles2D = {
-        'Iso2DHist':["Lepton 2D isolation (#Delta R vs p_{T}^{REL} ), ", 25, 0, 500, 25, 0, 1]}
+        'Iso2DHist':["Lepton 2D isolation (#Delta R vs p_{T}^{REL} ); p_{T}^{REL}(AK4, Lepton); dR(AK4, Lepton) ", 25, 0, 25, 20, 0, 2],
+        'dRWcandWdfar_dRWcandb':[";dR(W cand jet,farthest daughter quark); dR(W cand jet,b quark)", 25, 0, xhigh, 25, 0, xhigh],
+        'dRWcandWdfar_dRWcandWdclose':[";dR(W cand jet,farthest daughter quark ; dR(W cand jet, closest daughter quark) ", 25, 0, xhigh, 25, 0, xhigh],
+        'dRWcandWdfar_dRbcandWdfar':[";dR(W cand jet,farthest daughter quark ; dR(b cand jet, closest daughter quark to W cand jet) ", 25, 0, xhigh, 25, 0, xhigh],
+        'dRWcandWdfar_dRbcandb':[";dR(W cand jet,farthest daughter quark) ; dR(b cand jet, b quark) ", 25, 0, xhigh, 25, 0, xhigh],
+        'dRWcandWdclose_dRbcandb':[";dR(W cand jet,closest daughter quark); dR(b cand jet, b quark) ", 25, 0, xhigh, 25, 0, xhigh],
+        'dRWcandb_dRbcandb':[";dR(W cand jet,b quark) ; dR(b cand jet, b quark) ", 25, 0, xhigh, 25, 0, xhigh],
+        }
 
         for var in self.titles2D:
           title =  self.titles2D[var][0]   
@@ -372,8 +395,38 @@ class PlotSemiLepTTbar_HighMass() :
         isRealW3 = None
         isFakeW3 = None
 
+
+                   #'dRWcandWdfar_dRWcandb':["dR(W candidate,[farthest daughter quark, b quark]), ", 25, 0, 1, 25, 0, 1]}
+        ### Define dRs btw W candidate and W daughter quarks as well as b quark
+        ### Note: These are set the Case 1 definition of W candidate (highest mass subjet)
+        ### dR(W candidate subjet, daughter quark which is farthest from this subjet)
+        self.dRWcandWdfar = None
+        ### dR(W candidate subjet, daughter quark which is closest to this subjet)
+        self.dRWcandWdclose = None
+        ### dR(W candidate subjet, b quark )
+        self.dRWcandb = None      
+        ### dR(b candidate subjet, daughter quark which is farthest from W candidate subjet)
+        self.dRbcandWdfar = None
+        ### dR(b candidate subjet, daughter quark which is closest to W candidate subjet)
+        self.dRbcandWdclose = None
+        ### dR(b candidate subjet, b quark )
+        self.dRbcandb = None
+
         #if (self.treeobj.tree.JetGenMatched_DeltaR_pup0_Wd1  > 0.40) or  (self.treeobj.tree.JetGenMatched_DeltaR_pup0_Wd2  > 0.4) or 
         if self.subjet0isW1 :
+          self.dRWcandb = self.treeobj.tree.JetGenMatched_DeltaR_pup0_b
+          self.dRbcandb = self.treeobj.tree.JetGenMatched_DeltaR_pup1_b
+          if (self.treeobj.tree.JetGenMatched_DeltaR_pup0_Wd1  < self.treeobj.tree.JetGenMatched_DeltaR_pup0_Wd2):
+              self.dRWcandWdclose =  self.treeobj.tree.JetGenMatched_DeltaR_pup0_Wd1
+              self.dRWcandWdfar =  self.treeobj.tree.JetGenMatched_DeltaR_pup0_Wd2
+              self.dRbcandWdclose =  self.treeobj.tree.JetGenMatched_DeltaR_pup1_Wd1
+              self.dRbcandWdfar =  self.treeobj.tree.JetGenMatched_DeltaR_pup1_Wd2
+          if (self.treeobj.tree.JetGenMatched_DeltaR_pup0_Wd1  > self.treeobj.tree.JetGenMatched_DeltaR_pup0_Wd2):
+              self.dRWcandWdclose =  self.treeobj.tree.JetGenMatched_DeltaR_pup0_Wd2
+              self.dRWcandWdfar =  self.treeobj.tree.JetGenMatched_DeltaR_pup0_Wd1
+              self.dRbcandWdclose =  self.treeobj.tree.JetGenMatched_DeltaR_pup1_Wd2
+              self.dRbcandWdfar =  self.treeobj.tree.JetGenMatched_DeltaR_pup1_Wd1
+
           if (self.treeobj.tree.JetGenMatched_DeltaR_pup0_Wd1  < self.treeobj.tree.JetGenMatched_DeltaR_pup0_b )  and  (self.treeobj.tree.JetGenMatched_DeltaR_pup0_Wd2  < self.treeobj.tree.JetGenMatched_DeltaR_pup0_b ) :
             isRealW1 = 1
             isFakeW1 = 0
@@ -381,6 +434,19 @@ class PlotSemiLepTTbar_HighMass() :
             isRealW1 = 0
             isFakeW1 = 1
         if self.subjet1isW1 :
+          self.dRWcandb = self.treeobj.tree.JetGenMatched_DeltaR_pup1_b
+          self.dRbcandb = self.treeobj.tree.JetGenMatched_DeltaR_pup0_b
+          if (self.treeobj.tree.JetGenMatched_DeltaR_pup1_Wd1  < self.treeobj.tree.JetGenMatched_DeltaR_pup1_Wd2):
+              self.dRWcandWdclose =  self.treeobj.tree.JetGenMatched_DeltaR_pup1_Wd1
+              self.dRWcandWdfar =  self.treeobj.tree.JetGenMatched_DeltaR_pup1_Wd2
+              self.dRbcandWdclose =  self.treeobj.tree.JetGenMatched_DeltaR_pup0_Wd1
+              self.dRbcandWdfar =  self.treeobj.tree.JetGenMatched_DeltaR_pup0_Wd2
+          if (self.treeobj.tree.JetGenMatched_DeltaR_pup1_Wd1  > self.treeobj.tree.JetGenMatched_DeltaR_pup1_Wd2):
+              self.dRWcandWdclose =  self.treeobj.tree.JetGenMatched_DeltaR_pup1_Wd2
+              self.dRWcandWdfar =  self.treeobj.tree.JetGenMatched_DeltaR_pup1_Wd1
+              self.dRbcandWdclose =  self.treeobj.tree.JetGenMatched_DeltaR_pup0_Wd2
+              self.dRbcandWdfar =  self.treeobj.tree.JetGenMatched_DeltaR_pup0_Wd1         
+
           if (self.treeobj.tree.JetGenMatched_DeltaR_pup1_Wd1  < self.treeobj.tree.JetGenMatched_DeltaR_pup1_b )  and  (self.treeobj.tree.JetGenMatched_DeltaR_pup1_Wd2  < self.treeobj.tree.JetGenMatched_DeltaR_pup1_b ) :  
             isRealW1 = 1
             isFakeW1 = 0
@@ -465,14 +531,21 @@ class PlotSemiLepTTbar_HighMass() :
                 val[ilep].Fill(SJmasses[ival])                         # Fill either Electron or Muon histo
                 if ilep == (0 or 1): val[2].Fill(SJmasses[ival])       # Always Fill Electron + Muon histo
             
-           # if a.ak4Jet != None : 
-           #     fill2d = [a.leptonP4.Perp( a.ak4Jet.Vect() ), a.leptonP4.DeltaR( a.ak4Jet )]  ### Fix this : surely theres a better way
-           #     for ival, val in enumerate(self.hists2D.itervalues()):
-           #         val[ilep].Fill(fill2d[ival], fill2d[ival + 1])
-           #         if ilep == (0 or 1): val[2].Fill(fill2d[ival], fill2d[ival + 1]) # Always Fill Electron + Muon histo
+            if self.ak4Jet != None : # was self.leptonP4.Perp( self.ak4Jet.Vect() )
+                #[self.leptonP4.Perp(self.ak4Jet.Vect() ), self.leptonP4.DeltaR( self.ak4Jet )],  ### Fix this : surely theres a better way
+                fill2d = [ 
+                          [self.treeobj.tree.PtRel, self.treeobj.tree.AK4_dRminLep_dRlep],
+                          [self.dRWcandWdfar , self.dRWcandb ],
+                          [self.dRWcandWdfar , self.dRWcandWdclose ],
+                          [self.dRWcandWdfar , self.dRbcandWdfar ],
+                          [self.dRWcandWdfar , self.dRbcandb ],
+                          [self.dRWcandWdclose , self.dRbcandb ],
+                          [self.dRWcandb , self.dRbcandb ]
+                         ] 
 
-        ### Perform tighter matching criteria and make more plots
-
+                for ival, val in enumerate(self.hists2D.itervalues()):
+                    val[ilep].Fill(fill2d[ival][0], fill2d[ival][1])
+                    if ilep == (0 or 1): val[2].Fill(fill2d[ival][0], fill2d[ival][1]) # Always Fill Electron + Muon histo
 
     def close( self ) :
         '''
@@ -481,6 +554,8 @@ class PlotSemiLepTTbar_HighMass() :
         self.outfile.cd() 
         self.outfile.Write()
         self.outfile.Close()
+
+        '''
 
         print"              W candidate event counts                    "
         print"    WARNING: Counts are for all pt bins but plots are not "
@@ -538,11 +613,14 @@ class PlotSemiLepTTbar_HighMass() :
         print""
         print"real Ws Failed {}".format(self.countRealW3sInFail)
         print"fake Ws Failed {}".format(self.countFakeW3sInFail)
+        '''
 
-    def plotit( self ) :
+
+    def plot1D( self ) :
         '''
         Plot all histos you just created
         '''
+
         ROOT.gStyle.SetOptStat(000000)
         self.c1 = ROOT.TCanvas("c1" , "c1" ,1,1,745,701)
         self.c1.SetHighLightColor(2)
@@ -579,7 +657,7 @@ class PlotSemiLepTTbar_HighMass() :
         self.y_max = 1.6
         ith1 = 0
         for nameof , th1 in self.hists1D.iteritems() :      
-            print"th1 is {} and th1[2] is {}".format(th1, th1[2] )
+            #print"th1 is {} and th1[2] is {}".format(th1, th1[2] )
             #th1[2].GetXaxis().SetRangeUser( rangeMin, rangeMax )
             th1[2].GetXaxis().SetNdivisions(506)
             th1[2].GetXaxis().SetLabelFont(42)
@@ -596,7 +674,7 @@ class PlotSemiLepTTbar_HighMass() :
             th1[2].GetYaxis().SetNdivisions(506)
             th1[2].GetYaxis().SetLabelFont(42)
             th1[2].GetYaxis().SetLabelSize(0.06375)
-            th1[2].GetYaxis().SetTitleSize(0.06225)
+            th1[2].GetYaxis().SetTitleSize(0.05225)
             th1[2].GetYaxis().SetTitleOffset(0.9)
             th1[2].GetYaxis().SetTitleFont(42)   
 
@@ -632,8 +710,56 @@ class PlotSemiLepTTbar_HighMass() :
         self.words1.Draw()
         '''
         self.c1.Modified()
-        self.c1.Print("SDsubjet3Wcands.png", "png")
-      
+        self.c1.Print("./ttbarStudies/SDsubjet3Wcands.png", "png")
+        ### End plotting of TH1Fs
+    def plot2D( self ) :
+        ### Begin plotting of TH2Fs
+        ROOT.gStyle.SetOptStat(000000)
+        ith2 = 0
+        for nameof , th2 in self.hists2D.iteritems() :      
+            #print"th2 is {} and th2[2] is {}".format(th2, th2[2] )      
+            self.c2 = ROOT.TCanvas("c2"+ nameof , "c2" + nameof ,1,1,745,701)
+            self.c2.SetHighLightColor(2)
+            self.c2.Range(0,0,1,1)
+            self.c2.SetFillColor(0)
+            self.c2.SetBorderMode(0)
+            self.c2.SetBorderSize(2)
+            self.c2.SetTickx(1)
+            self.c2.SetTicky(1)
+            self.c2.SetLeftMargin(0.14)
+            self.c2.SetRightMargin(0.04)
+            self.c2.SetTopMargin(0.08)
+            self.c2.SetBottomMargin(0.15)
+            self.c2.SetFrameFillStyle(0)
+            self.c2.SetFrameBorderMode(0)     
+
+            th2[2].GetXaxis().SetNdivisions(506)
+            th2[2].GetXaxis().SetLabelFont(42)
+            th2[2].GetXaxis().SetLabelSize(0.05)
+            th2[2].GetXaxis().SetTitleSize(0.0475)
+            th2[2].GetXaxis().SetTickLength(0.045)
+            th2[2].GetXaxis().SetTitleOffset(1.15)
+            th2[2].GetXaxis().SetTitleFont(42)
+            #th2[2].GetXaxis().SetTitle("")
+
+            #th2[2].SetMaximum(self.y_max * th2[2].GetMaximum() )
+            th2[2].SetMinimum(0.0001 )
+            #th2[2].GetYaxis().SetTitle("")
+            th2[2].GetYaxis().SetNdivisions(506)
+            th2[2].GetYaxis().SetLabelFont(42)
+            th2[2].GetYaxis().SetLabelSize(0.04375)
+            th2[2].GetYaxis().SetTitleSize(0.04225)
+            th2[2].GetYaxis().SetTitleOffset(1.1)
+            th2[2].GetYaxis().SetTitleFont(42)   
+
+            #th2[2].SetLineColor(colorslist[ith1])
+            ith2+=1
+            #th2[2].SetLineStyle(0)
+            th2[2].Draw("colz")
+            self.c2.Modified()
+            self.c2.Print("./ttbarStudies/2Dplotof_{}.png".format(nameof), "png")
+
+        ### Write the output tree and close the outfile
         self.close()
         print 'Closed'
 '''
@@ -642,4 +768,5 @@ class PlotSemiLepTTbar_HighMass() :
 if __name__ == "__main__" :
     r = PlotSemiLepTTbar_HighMass(sys.argv)
     r.run()
-    r.plotit()
+    #r.plot1D()
+    r.plot2D()

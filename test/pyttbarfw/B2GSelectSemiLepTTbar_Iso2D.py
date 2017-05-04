@@ -60,7 +60,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
 
         # Stage 5 : MET selection 
 
-        # NOTE: These cuts correspond to the cuts in the ttrees labeled "METmu40el80ptRel30" (as well as"looserMETandPtRelcuts" but these are missing some branches) e.g. wjets_highmass_METmu40el80ptRel30
+        # NOTE: These cuts correspond to the cuts in the ttrees labeled "METmu40el80ptRel30" (as well as"looserMETandPtRelcuts" but these are missing some branches) e.g. wjets_highmass_METmu40el80ptRel30.root
         self.muonMETPtCut = 40.
         self.electronMETPtCut = 80.
 
