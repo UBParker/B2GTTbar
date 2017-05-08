@@ -54,7 +54,8 @@ l_Muon  =        ("slimmedMuons")
 h_GenParticle  = Handle ("std::vector<reco::GenParticle>")
 l_GenParticle  =        ("prunedGenParticles")
 
-for ievent, event in events:
+ievent = 0
+for event in events:
   if options.maxevents > 0 :
     if (options.maxevents == ievent ): break
 
@@ -64,9 +65,9 @@ for ievent, event in events:
     event.getByLabel (l_Electron, h_Electron)
     event.getByLabel (l_Muon, h_Muon)
     event.getByLabel (l_GenParticle, h_GenParticle)
-
-    ak8Jets = h_ak8Jets.product(0)
-    ak8Subjets = h_ak8Jets.product(1)
+    #print"AK8 jets product is {}".format(h_ak8Jets.product())
+    ak8Jets = h_ak8Jets.product()
+    #ak8Subjets = h_ak8Jets.product()[1]
     ak4Jets = h_ak4Jets.product()
     met = h_MET.product()
     electrons = h_Electron.product()
@@ -81,6 +82,15 @@ for ievent, event in events:
     nBs   = 0
     nWd1s = 0
     nWd2s = 0
+
+    ### Save 4-vectors of the gen particles
+    topQuark_p4 = ROOT.TLorentzVector()
+    bt_p4 = ROOT.TLorentzVector() # Gen b quark from top decay
+    Wt_p4 = ROOT.TLorentzVector() # Gen W boson from top decay
+
+    antitopQuark_p4 = ROOT.TLorentzVector()
+    bat_p4 = ROOT.TLorentzVector() # Gen b quark from antitop decay
+    Wat_p4 = ROOT.TLorentzVector()
 
     ### Loop over all pruned gen particles and find the 4-vectors of the top, W, B and W daughters
     for particle in  genParticles :
@@ -106,8 +116,8 @@ for ievent, event in events:
 	      
 	        ### Loop over daughters to find W and b by their PDG IDs
 	        for daught in xrange(nDau):
-	          if ( fabs(particle.daughter( daught ).pdgId())==5 ) :  bt_p4.SetPxPyPzE( particle.daughter( daught ).px(), particle.daughter( daught ).py(), particle.daughter( daught ).pz(), particle.daughter( daught ).energy() )
-	          if ( fabs(particle.daughter( daught ).pdgId())==24 ) : Wt_p4.SetPxPyPzE( particle.daughter( daught ).px(), particle.daughter( daught ).py(), particle.daughter( daught ).pz(), particle.daughter( daught ).energy() )
+	          if ( abs(particle.daughter( daught ).pdgId())==5 ) :  bt_p4.SetPxPyPzE( particle.daughter( daught ).px(), particle.daughter( daught ).py(), particle.daughter( daught ).pz(), particle.daughter( daught ).energy() )
+	          if ( abs(particle.daughter( daught ).pdgId())==24 ) : Wt_p4.SetPxPyPzE( particle.daughter( daught ).px(), particle.daughter( daught ).py(), particle.daughter( daught ).pz(), particle.daughter( daught ).energy() )
 	          if options.verbose: print"......top daughter ID {} pt {} ".format( particle.daughter( daught ).pdgId(), particle.daughter( daught ).pt() )
 	      elif PDGid==-6 :
 	        antitopQuark_p4.SetPxPyPzE( px, py, pz, energy ); 
@@ -115,12 +125,12 @@ for ievent, event in events:
 	      
 	        ### Loop over daughters to find W and b by their PDG IDs
 	        for daught in xrange(nDau):
-	          if ( fabs(particle.daughter( daught ).pdgId())==5 ) :  bat_p4.SetPxPyPzE( particle.daughter( daught ).px(), particle.daughter( daught ).py(), particle.daughter( daught ).pz(), particle.daughter( daught ).energy() )
-	          if ( fabs(particle.daughter( daught ).pdgId())==24 ) : Wat_p4.SetPxPyPzE( particle.daughter( daught ).px(), particle.daughter( daught ).py(), particle.daughter( daught ).pz(), particle.daughter( daught ).energy() )
+	          if ( abs(particle.daughter( daught ).pdgId())==5 ) :  bat_p4.SetPxPyPzE( particle.daughter( daught ).px(), particle.daughter( daught ).py(), particle.daughter( daught ).pz(), particle.daughter( daught ).energy() )
+	          if ( abs(particle.daughter( daught ).pdgId())==24 ) : Wat_p4.SetPxPyPzE( particle.daughter( daught ).px(), particle.daughter( daught ).py(), particle.daughter( daught ).pz(), particle.daughter( daught ).energy() )
 	          if options.verbose: print"......antiTop daughter ID {} pt {} ".format( particle.daughter( daught ).pdgId(), particle.daughter( daught ).pt() )
 
 
 
 
-
+    ievent +=1
 
