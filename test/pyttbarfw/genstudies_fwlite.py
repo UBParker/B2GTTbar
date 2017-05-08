@@ -12,7 +12,7 @@ parser = OptionParser()
 
 parser.add_option('--infile', type='string', action='store',
                   dest='infile',
-                  default = "root://cmseos.fnal.gov//store/mc/RunIISpring16MiniAODv2/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/MINIAODSIM/premix_withHLT_80X_mcRun2_asymptotic_v14-v1/00000/0446C8BC-A197-E611-8481-6CC2173BC120.root",
+                  default = "root://cmsxrootd.fnal.gov//store/mc/RunIISpring16MiniAODv2/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/MINIAODSIM/premix_withHLT_80X_mcRun2_asymptotic_v14-v1/00000/0446C8BC-A197-E611-8481-6CC2173BC120.root",
                   help='Input file string')
 
 parser.add_option('--v', type='string', action='store',
@@ -20,7 +20,12 @@ parser.add_option('--v', type='string', action='store',
                   default = 1,
                   help='verbose: 1 is everything, 2 is W info only ...')
 
-(options, args) = parser.parse_args(argv)
+parser.add_option('--m', type='float', action='store',
+                  dest='maxevents',
+                  default = 10000,
+                  help='Max # of events to process')
+
+(options, args) = parser.parse_args()
 argv = []
 
 
@@ -46,14 +51,13 @@ l_Electron  =        ("slimmedElectrons")
 h_Muon  = Handle ("std::vector<pat::Muon>")
 l_Muon  =        ("slimmedMuons")
 
-h_GenParticle  = Handle ("std::vector<pat::GenParticle>")
+h_GenParticle  = Handle ("std::vector<reco::GenParticle>")
 l_GenParticle  =        ("prunedGenParticles")
 
+for ievent, event in events:
+  if options.maxevents > 0 :
+    if (options.maxevents == ievent ): break
 
-#rho     = (rho_H.product())[0]
-
-
-for event in events:
     event.getByLabel (l_ak8Jets, h_ak8Jets)
     event.getByLabel (l_ak4Jets, h_ak4Jets)
     event.getByLabel (l_MET, h_MET)
@@ -61,10 +65,8 @@ for event in events:
     event.getByLabel (l_Muon, h_Muon)
     event.getByLabel (l_GenParticle, h_GenParticle)
 
-
-
-    ak8Jets = (h_ak8Jets.product())[0]
-    ak8Subjets = (h_ak8Jets.product())[1]
+    ak8Jets = h_ak8Jets.product(0)
+    ak8Subjets = h_ak8Jets.product(1)
     ak4Jets = h_ak4Jets.product()
     met = h_MET.product()
     electrons = h_Electron.product()
@@ -80,9 +82,7 @@ for event in events:
     nWd1s = 0
     nWd2s = 0
 
-
     ### Loop over all pruned gen particles and find the 4-vectors of the top, W, B and W daughters
-
     for particle in  genParticles :
       ngenParticles +=1
       ### Get all the info on the gen particle
@@ -106,18 +106,18 @@ for event in events:
 	      
 	        ### Loop over daughters to find W and b by their PDG IDs
 	        for daught in xrange(nDau):
-	          if ( fabs(particle.daughter( daught )->pdgId())==5 ) :  bt_p4.SetPxPyPzE( particle.daughter( daught )->px(), particle.daughter( daught )->py(), particle.daughter( daught )->pz(), particle.daughter( daught )->energy() )
-	          if ( fabs(particle.daughter( daught )->pdgId())==24 ) : Wt_p4.SetPxPyPzE( particle.daughter( daught )->px(), particle.daughter( daught )->py(), particle.daughter( daught )->pz(), particle.daughter( daught )->energy() )
-	          if options.verbose: print"......top daughter ID {} pt {} ".format( particle.daughter( daught )->pdgId(), particle.daughter( daught )->pt() )
+	          if ( fabs(particle.daughter( daught ).pdgId())==5 ) :  bt_p4.SetPxPyPzE( particle.daughter( daught ).px(), particle.daughter( daught ).py(), particle.daughter( daught ).pz(), particle.daughter( daught ).energy() )
+	          if ( fabs(particle.daughter( daught ).pdgId())==24 ) : Wt_p4.SetPxPyPzE( particle.daughter( daught ).px(), particle.daughter( daught ).py(), particle.daughter( daught ).pz(), particle.daughter( daught ).energy() )
+	          if options.verbose: print"......top daughter ID {} pt {} ".format( particle.daughter( daught ).pdgId(), particle.daughter( daught ).pt() )
 	      elif PDGid==-6 :
 	        antitopQuark_p4.SetPxPyPzE( px, py, pz, energy ); 
 	        if options.verbose: print"....Gen antiTop with two daughters --- pt {0:2.0f} status {1:3.0f} # of Daughters {2:3.0f} eta {3:2.2f} phi {4:2.2f}".format(pt, statusIs, nDau, eta, phi )
 	      
 	        ### Loop over daughters to find W and b by their PDG IDs
 	        for daught in xrange(nDau):
-	          if ( fabs(particle.daughter( daught )->pdgId())==5 ) :  bat_p4.SetPxPyPzE( particle.daughter( daught )->px(), particle.daughter( daught )->py(), particle.daughter( daught )->pz(), particle.daughter( daught )->energy() )
-	          if ( fabs(particle.daughter( daught )->pdgId())==24 ) : Wat_p4.SetPxPyPzE( particle.daughter( daught )->px(), particle.daughter( daught )->py(), particle.daughter( daught )->pz(), particle.daughter( daught )->energy() )
-	          if options.verbose: print"......antiTop daughter ID {} pt {} ".format( particle.daughter( daught )->pdgId(), particle.daughter( daught )->pt() )
+	          if ( fabs(particle.daughter( daught ).pdgId())==5 ) :  bat_p4.SetPxPyPzE( particle.daughter( daught ).px(), particle.daughter( daught ).py(), particle.daughter( daught ).pz(), particle.daughter( daught ).energy() )
+	          if ( fabs(particle.daughter( daught ).pdgId())==24 ) : Wat_p4.SetPxPyPzE( particle.daughter( daught ).px(), particle.daughter( daught ).py(), particle.daughter( daught ).pz(), particle.daughter( daught ).energy() )
+	          if options.verbose: print"......antiTop daughter ID {} pt {} ".format( particle.daughter( daught ).pdgId(), particle.daughter( daught ).pt() )
 
 
 
