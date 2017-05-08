@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+>#! /usr/bin/env python
 
 # python unittest_cmstt.py
 
@@ -36,8 +36,11 @@ files = [  #"root://cmseos.fnal.gov///store/user/jdolen/B2G2016/ZprimeToTT_M-300
         ]
 events = Events (files)
 
-h_ak8Jets =  Handle ("std::vector<pat::Jet>")
-l_ak8Jets =         ("slimmedJetsAK8PFPuppiSoftDropPacked", "SubJets" )
+#h_ak8Jets =  Handle ("std::vector<pat::Jet>")           SD + PUPPI AK8 info not stored but 4-vector is  equal to sum of 2 subjets
+#l_ak8Jets =         ("selectedPatJetsAK8PFPuppi")
+
+h_ak8SubJets =  Handle ("std::vector<pat::Jet>")
+l_ak8SubJets =         ("slimmedJetsAK8PFPuppiSoftDropPacked", "SubJets" )
 
 h_ak4Jets =  Handle ("std::vector<pat::Jet>")
 l_ak4Jets =         ("slimmedJetsPuppi" )
@@ -58,21 +61,25 @@ ievent = 0
 for event in events:
   if options.maxevents > 0 :
     if (options.maxevents == ievent ): break
-
-    event.getByLabel (l_ak8Jets, h_ak8Jets)
+    event.getByLabel (l_ak8SubJets, h_ak8SubJets)
     event.getByLabel (l_ak4Jets, h_ak4Jets)
     event.getByLabel (l_MET, h_MET)
     event.getByLabel (l_Electron, h_Electron)
     event.getByLabel (l_Muon, h_Muon)
     event.getByLabel (l_GenParticle, h_GenParticle)
     #print"AK8 jets product is {}".format(h_ak8Jets.product())
-    ak8Jets = h_ak8Jets.product()
-    #ak8Subjets = h_ak8Jets.product()[1]
+    #ak8Jets = h_ak8Jets.product()
+    ak8SubJets = h_ak8SubJets.product()
     ak4Jets = h_ak4Jets.product()
     met = h_MET.product()
     electrons = h_Electron.product()
     muons = h_Muon.product()
     genParticles = h_GenParticle.product()
+
+    ### Save the 4-vector of Reco level objects
+    hadtopCand_p4 = ROOT.TLorentzVector()
+    bCand_p4 = ROOT.TLorentzVector()
+    WCand_p4 = ROOT.TLorentzVector() ### Most massive SD subjet of hadronic top candidate AK8 jet
 
     ### Particle Counts
     ngenParticles = 0   
@@ -103,6 +110,11 @@ for event in events:
     Watd2_id = -300.
     antitophadronic = None
     antitopleptonic = None  
+
+    ### Save the channel for this event : Hadronic, leptonic or semileptonic
+    GenTruth_hadronic = None
+    GenTruth_leptonic = None
+    GenTruth_semileptonic = None
 
     ### Loop over all pruned gen particles and find the 4-vectors of the top, W, B and W daughters
     for particle in  genParticles :
@@ -143,28 +155,49 @@ for event in events:
         ### Get the Ws which decay - record their daughter information
         ### W+
         elif PDGid==24 :
-          if options.verbose: print"....W+ with 2 daughters  id "+id+" status "+status+" ndau "+nDau+" pt "+pt+" eta "+eta+" phi "+phi
-          if options.verbose: print"......dd0 "+particle.daughter( 0 ).pdgId()+" ndau "+particle.daughter( 0 ).numberOfDaughters()
-          if options.verbose: print"......dd1 "+particle.daughter( 1 ).pdgId()+" ndau "+particle.daughter( 1 ).numberOfDaughters()
+          if options.verbose: print"....W+ with 2 daughters  id {} statusIs {} ndau {} pt {} eta {} phi {}".format(id, statusIs, nDau, pt, eta, phi)
+          if options.verbose: print"......W+ dd0 ID {} ndau {} ".format(particle.daughter( 0 ).pdgId(), particle.daughter( 0 ).numberOfDaughters())
+          if options.verbose: print"......W+ dd1 ID {} ndau {} ".format(particle.daughter( 1 ).pdgId(), particle.daughter( 1 ).numberOfDaughters())
           Wtd1_p4.SetPxPyPzE( particle.daughter( 0 ).px(), particle.daughter( 0 ).py(), particle.daughter( 0 ).pz(), particle.daughter( 0 ).energy() )
           Wtd2_p4.SetPxPyPzE( particle.daughter( 1 ).px(), particle.daughter( 1 ).py(), particle.daughter( 1 ).pz(), particle.daughter( 1 ).energy() )
-          if ( abs( particle.daughter( 0 ).pdgId() ) < 6 and abs( particle.daughter( 1 ).pdgId() ) < 6): tophadronic = true
-          if ( abs( particle.daughter( 0 ).pdgId() ) <= 18 and abs( particle.daughter( 0 ).pdgId() ) >= 11): topleptonic = true  
+          if ( abs( particle.daughter( 0 ).pdgId() ) < 6 and abs( particle.daughter( 1 ).pdgId() ) < 6): tophadronic = True
+          if ( abs( particle.daughter( 0 ).pdgId() ) <= 18 and abs( particle.daughter( 0 ).pdgId() ) >= 11): topleptonic = True  
           Wtd1_id = particle.daughter( 0 ).pdgId()
           Wtd2_id = particle.daughter( 1 ).pdgId()
         ### W-
         elif PDGid==-24 :
-          if options.verbose: print"....W- with 2 daughters  id "+id+" status "+status+" ndau "+nDau+" pt "+pt+" eta "+eta+" phi "+phi
-          if options.verbose: print"......dd0 "+particle.daughter( 0 ).pdgId()+" ndau "+particle.daughter( 0 ).numberOfDaughters()
-          if options.verbose: print"......dd1 "+particle.daughter( 1 ).pdgId()+" ndau "+particle.daughter( 1 ).numberOfDaughters()
+          if options.verbose: print"....W- with 2 daughters  id {} statusIs {} ndau {} pt {} eta {} phi {}".format(id, statusIs, nDau, pt, eta, phi)
+          if options.verbose: print"......W- dd0 ID {} ndau {} ".format(particle.daughter( 0 ).pdgId(), particle.daughter( 0 ).numberOfDaughters())
+          if options.verbose: print"......W- dd1 ID {} ndau {} ".format(particle.daughter( 1 ).pdgId(), particle.daughter( 1 ).numberOfDaughters())
           Watd1_p4.SetPxPyPzE( particle.daughter( 0 ).px(), particle.daughter( 0 ).py(), particle.daughter( 0 ).pz(), particle.daughter( 0 ).energy() )
           Watd2_p4.SetPxPyPzE( particle.daughter( 1 ).px(), particle.daughter( 1 ).py(), particle.daughter( 1 ).pz(), particle.daughter( 1 ).energy() )
-          if ( abs( particle.daughter( 0 ).pdgId() ) < 6 and abs( particle.daughter( 1 ).pdgId() ) < 6) : antitophadronic = true 
-          if ( abs( particle.daughter( 0 ).pdgId() ) <= 18 and abs( particle.daughter( 0 ).pdgId() ) >= 11):  antitopleptonic = true  
+          if ( abs( particle.daughter( 0 ).pdgId() ) < 6 and abs( particle.daughter( 1 ).pdgId() ) < 6) : antitophadronic = True 
+          if ( abs( particle.daughter( 0 ).pdgId() ) <= 18 and abs( particle.daughter( 0 ).pdgId() ) >= 11):  antitopleptonic = True  
           Watd1_id = particle.daughter( 0 ).pdgId()
           Watd2_id = particle.daughter( 1 ).pdgId()
         
-      ### End genParticle loop
+    ### End genParticle loop
+    if (tophadronic  and antitophadronic)      : GenTruth_hadronic     = True
+    if (tophadronic  and not antitophadronic)  : GenTruth_semileptonic = True
+    if ( not tophadronic and antitophadronic)  : GenTruth_semileptonic = True
 
-    ievent +=1
-    ### End Event Loop
+    ### For the semi-leptonic decays find the reco level top , W and b candidates
+    if GenTruth_semileptonic :
+      for isj , sj in enumerate(ak8SubJets):
+        print" got isj {}, isj.pt() {}  ".format(sj, sj.pt())
+        ### Find leading and sublead subjets and store their 4-vectors
+        ### Higher mass subjet is W candidate
+
+        ### Add 2 subjet P4s to get AK8 4-vector
+
+        #if iak8.Pt() < 400. : continue ### To ensure a boosted topology
+
+        ### Save the 4-vector of Reco level objects                                                             
+
+        #hadtopCand_p4 = SetPtEtaPhiM( iak8.Pt(), iak8.Eta(), iak8.Phi() , iak8.M()  )
+        #bCand_p4 = ROOT.TLorentzVector()
+        # WCand_p4 = ROOT.TLorentzVector() ### Most massive SD subjet of hadronic top candidate AK8 jet                 
+
+
+ievent +=1
+### End Event Loop
