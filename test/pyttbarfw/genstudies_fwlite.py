@@ -142,7 +142,7 @@ for event in events:
 	          if options.verbose: print"......antiTop daughter ID {} pt {} ".format( particle.daughter( daught ).pdgId(), particle.daughter( daught ).pt() )
         ### Get the Ws which decay - record their daughter information
         ### W+
-        elif PDGid==24:
+        elif PDGid==24 :
           if options.verbose: print"....W+ with 2 daughters  id "+id+" status "+status+" ndau "+nDau+" pt "+pt+" eta "+eta+" phi "+phi
           if options.verbose: print"......dd0 "+particle.daughter( 0 ).pdgId()+" ndau "+particle.daughter( 0 ).numberOfDaughters()
           if options.verbose: print"......dd1 "+particle.daughter( 1 ).pdgId()+" ndau "+particle.daughter( 1 ).numberOfDaughters()
@@ -153,7 +153,7 @@ for event in events:
           Wtd1_id = particle.daughter( 0 ).pdgId()
           Wtd2_id = particle.daughter( 1 ).pdgId()
         ### W-
-        elif PDGid==-24:
+        elif PDGid==-24 :
           if options.verbose: print"....W- with 2 daughters  id "+id+" status "+status+" ndau "+nDau+" pt "+pt+" eta "+eta+" phi "+phi
           if options.verbose: print"......dd0 "+particle.daughter( 0 ).pdgId()+" ndau "+particle.daughter( 0 ).numberOfDaughters()
           if options.verbose: print"......dd1 "+particle.daughter( 1 ).pdgId()+" ndau "+particle.daughter( 1 ).numberOfDaughters()
