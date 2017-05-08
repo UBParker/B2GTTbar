@@ -142,31 +142,29 @@ for event in events:
 	          if options.verbose: print"......antiTop daughter ID {} pt {} ".format( particle.daughter( daught ).pdgId(), particle.daughter( daught ).pt() )
         ### Get the Ws which decay - record their daughter information
         ### W+
-        if (PDGid==24):
+        elif PDGid==24:
           if options.verbose: print"....W+ with 2 daughters  id "+id+" status "+status+" ndau "+nDau+" pt "+pt+" eta "+eta+" phi "+phi
           if options.verbose: print"......dd0 "+particle.daughter( 0 ).pdgId()+" ndau "+particle.daughter( 0 ).numberOfDaughters()
           if options.verbose: print"......dd1 "+particle.daughter( 1 ).pdgId()+" ndau "+particle.daughter( 1 ).numberOfDaughters()
           Wtd1_p4.SetPxPyPzE( particle.daughter( 0 ).px(), particle.daughter( 0 ).py(), particle.daughter( 0 ).pz(), particle.daughter( 0 ).energy() )
           Wtd2_p4.SetPxPyPzE( particle.daughter( 1 ).px(), particle.daughter( 1 ).py(), particle.daughter( 1 ).pz(), particle.daughter( 1 ).energy() )
-          if ( abs( particle.daughter( 0 ).pdgId() ) < 6 && abs( particle.daughter( 1 ).pdgId() ) < 6): tophadronic = true
-          if ( abs( particle.daughter( 0 ).pdgId() ) <= 18 && abs( particle.daughter( 0 ).pdgId() ) >= 11): topleptonic = true  
+          if ( abs( particle.daughter( 0 ).pdgId() ) < 6 and abs( particle.daughter( 1 ).pdgId() ) < 6): tophadronic = true
+          if ( abs( particle.daughter( 0 ).pdgId() ) <= 18 and abs( particle.daughter( 0 ).pdgId() ) >= 11): topleptonic = true  
           Wtd1_id = particle.daughter( 0 ).pdgId()
           Wtd2_id = particle.daughter( 1 ).pdgId()
         ### W-
-        if (PDGid==-24):
+        elif PDGid==-24:
           if options.verbose: print"....W- with 2 daughters  id "+id+" status "+status+" ndau "+nDau+" pt "+pt+" eta "+eta+" phi "+phi
           if options.verbose: print"......dd0 "+particle.daughter( 0 ).pdgId()+" ndau "+particle.daughter( 0 ).numberOfDaughters()
           if options.verbose: print"......dd1 "+particle.daughter( 1 ).pdgId()+" ndau "+particle.daughter( 1 ).numberOfDaughters()
           Watd1_p4.SetPxPyPzE( particle.daughter( 0 ).px(), particle.daughter( 0 ).py(), particle.daughter( 0 ).pz(), particle.daughter( 0 ).energy() )
           Watd2_p4.SetPxPyPzE( particle.daughter( 1 ).px(), particle.daughter( 1 ).py(), particle.daughter( 1 ).pz(), particle.daughter( 1 ).energy() )
-          if ( abs( particle.daughter( 0 ).pdgId() ) < 6 && abs( particle.daughter( 1 ).pdgId() ) < 6) : antitophadronic = true 
-          if ( abs( particle.daughter( 0 ).pdgId() ) <= 18 && abs( particle.daughter( 0 ).pdgId() ) >= 11):  antitopleptonic = true  
+          if ( abs( particle.daughter( 0 ).pdgId() ) < 6 and abs( particle.daughter( 1 ).pdgId() ) < 6) : antitophadronic = true 
+          if ( abs( particle.daughter( 0 ).pdgId() ) <= 18 and abs( particle.daughter( 0 ).pdgId() ) >= 11):  antitopleptonic = true  
           Watd1_id = particle.daughter( 0 ).pdgId()
           Watd2_id = particle.daughter( 1 ).pdgId()
         
       ### End genParticle loop
 
-
-
     ievent +=1
-
+    ### End Event Loop
