@@ -36,6 +36,9 @@ files = [  #"root://cmseos.fnal.gov///store/user/jdolen/B2G2016/ZprimeToTT_M-300
         ]
 events = Events (files)
 
+h_vertices = Handle("std::vector<reco::Vertex>")
+l_vertices =  ("offlineSlimmedPrimaryVertices")
+
 h_ak8Jets =  Handle ("std::vector<pat::Jet>")        #   SD + PUPPI AK8 info not stored but 4-vector is  equal to sum of 2 subjets
 l_ak8Jets =  ("slimmedJetsAK8")      # ("selectedPatJetsAK8PFPuppi")
 
@@ -61,6 +64,14 @@ ievent = 0
 for event in events:
   if options.maxevents > 0 :
     if (options.maxevents == ievent ): break
+    # Get events with good primary vertices
+    event.getByLabel (l_vertices, h_vertices)
+    PV = None
+    if len(vertices) == 0 or vertices[0].ndof() < 4 :
+      continue
+    else:
+      PV = vertices[0]
+
     event.getByLabel (l_ak8Jets, h_ak8Jets)
     #event.getByLabel (l_ak8SubJets, h_ak8SubJets)
     #event.getByLabel (l_ak4Jets, h_ak4Jets)
@@ -69,6 +80,7 @@ for event in events:
     #event.getByLabel (l_Muon, h_Muon)
     event.getByLabel (l_GenParticle, h_GenParticle)
     #print"AK8 jets product is {}".format(h_ak8Jets.product())
+    vertices = h_vertices.product() 
     ak8Jets  = h_ak8Jets.product()
     #ak8SubJets = h_ak8SubJets.product()
     #ak4Jets = h_ak4Jets.product()
@@ -78,9 +90,10 @@ for event in events:
     genParticles = h_GenParticle.product()
 
     ### Save the 4-vector of Reco level objects
-    hadtopCand_p4 = ROOT.TLorentzVector()
-    bCand_p4 = ROOT.TLorentzVector()
-    WCand_p4 = ROOT.TLorentzVector() ### Most massive SD subjet of hadronic top candidate AK8 jet
+    hadtopCand_p4 = None #ROOT.TLorentzVector()
+    bCand_p4 = None      #ROOT.TLorentzVector()
+    WCand_p4 = None      #ROOT.TLorentzVector() 
+    ### W cand is most massive SD subjet of hadronic top candidate AK8 jet
 
     ### Particle Counts
     ngenParticles = 0   
@@ -178,6 +191,7 @@ for event in events:
           Watd2_id = particle.daughter( 1 ).pdgId()
         
     ### End genParticle loop
+
     if (tophadronic  and antitophadronic)      : GenTruth_hadronic     = True
     if (tophadronic  and not antitophadronic)  : GenTruth_semileptonic = True
     if ( not tophadronic and antitophadronic)  : GenTruth_semileptonic = True
@@ -199,41 +213,49 @@ for event in events:
       for i, jet in enumerate(ak8Jets):
         ### Ensure a boosted topology with pt cut 
         if jet.pt()* jet.jecFactor('Uncorrected') < 400. : continue 
-        print"........Reco AK8 jet of Pt {0:2.2f} > 400 GeV".format(chsjet_p4.Pt())         
+        print"........Reco AK8 jet of Pt {0:2.2f} > 400 GeV".format(jet.pt())         
         jet_p4= ROOT.TLorentzVector()
         jet_p4.SetPtEtaPhiM(jet.pt(), jet.eta(), jet.phi(), jet.mass() ) 
         ak8_p4.append(jet_p4)
         goodJets +=1
-        ### If a boosted AK8 exists, loop over it's subjets
+        ### If a boosted AK8 exists, loop over it's SoftDrop subjets
         tempSJ_p4 = ROOT.TLorentzVector()
-        ### Find the 4-vectors of all Soft Drop subjets 
         Subjets = jet.subjets('SoftDrop')
         for iw, sj in enumerate( Subjets ) :
           tempSJ_p4.SetPtEtaPhiM(sj.pt(), sj.eta(), sj.phi(), sj.mass() )
           dR_sj_ak8 = tempSJ_p4.DeltaR(jet_p4)
-          print"..........Puppi SoftDrop subjet number {0} of pt {1:2.2f} (raw pt {2:2.2f}), eta  {3:2.2f}, mass  {4:2.2f} dR(subjet, AK8) {5:2.2f} ".format(isj, sj.pt(), sj.pt()*sj.jecFactor('Uncorrected'), sj.eta(), sj.mass() dR_sj_ak8)
+          print"..........Puppi SoftDrop subjet number {0} of pt {1:2.2f} (raw pt {2:2.2f}), eta  {3:2.2f}, mass  {4:2.2f} dR(subjet, AK8) {5:2.2f} ".format(iw, sj.pt(), sj.pt()*sj.jecFactor('Uncorrected'), sj.eta(), sj.mass(), dR_sj_ak8)
           sj_p4.append(tempSJ_p4)
 
-      print"...... {} AK8 jets with pt > 400 GeV in this event".format(goodJets)
-      print"...... {} AK8 SoftDrop Subjets within AK8s of pt > 400 GeV in this event".format(goodJets)
+      print"...... {} AK8 jets with pt > 400 GeV in this event".format(len(ak8_p4))
+      print"...... {} AK8 SoftDrop Subjets within AK8s of pt > 400 GeV in this event".format(len(sj_p4))
+      ### Only look at events where there is at least 1 boosted AK8 with 2 subjets
+      if len(ak8_p4) > 0 and len(sj_p4) >1 :
+        ### Determine which of the subjet is closest to the AK8 axis 
+        dRMin_ak8_sj0  = 1000.
+        dRMin2_ak8_sj0 = 1000.
+        for isjet, sjet in enumerate(sj_p4):
+          if isjet <= 1:
+            if ak8_p4[0].DeltaR(sjet) < dRMin_ak8_sj0  : 
+              dRMin_ak8_sj0 = ak8_p4[0].DeltaR(sjet)
+              sjcloseak8_p4 = ROOT.TLorentzVector()
+              sjcloseak8_p4 = sjet
+              print"..............Subjet {0} is dR {1:2.2f} from the AK8".format(isjet, ak8_p4[0].DeltaR(sjet) )
+            print"............Closest subjet is {} from the AK8".format(dRMin_ak8_sj0)
+            for issjet, ssjet in enumerate(sj_p4):
+              if issjet == isjet : continue
+              if ( dRMin_ak8_sj0 < ak8_p4[0].DeltaR(sjet) < dRMin2_ak8_sj0)  :
+                dRMin2_ak8_sj0 = ak8_p4[0].DeltaR(sjet)
+                sjfarak8_p4 = ROOT.TLorentzVector()
+                sjfarak8_p4 = ssjet
+            print"Farthest subjet is {} from the AK8".format(dRMin2_ak8_sj0)  
+          if isjet > 1:
+            print"..............More than 2 SoftDrop subjets!!!!!!!!!"
 
-      ### Determine which of the subjet is closest to the AK8 axis 
-      dRMin_ak8_sj0  = 1000.
-      dRMin2_ak8_sj0 = 1000.
-      for isjet, sjet in enumerate(sj_p4):
-        if isjet <= 1:
-          if ak8_p4[0].DeltaR(sjet) < dRMin_ak8_sj0  : 
-            dRMin_ak8_sj0 = ak8_p4[0].DeltaR(sjet)
-            sjcloseak8_p4 = sjet
-          for issjet, sjet in enumerate(sj_p4):
-            if issjet == isjet : continue
-            if ( dRMin_ak8_sj0 < ak8_p4[0].DeltaR(sjet) < dRMin2_ak8_sj0)  :
-              dRMin2_ak8_sj0 = ak8_p4[0].DeltaR(sjet)
-              sjfarak8_p4 = sjet  
-        if isjet > 1:
-          print"..............More than 2 SoftDrop subjets!!!!!!!!!"
-
-    if sjcloseak8_p4  != None and sjfarak8_p4  != None:      
+    if sjcloseak8_p4 != None and sjfarak8_p4  != None:
+      hadtopCand_p4 = ROOT.TLorentzVector()
+      bCand_p4 = ROOT.TLorentzVector()
+      WCand_p4 = ROOT.TLorentzVector()                 
       ### Higher mass subjet is W candidate
       if sjcloseak8_p4.M() > sjfarak8_p4.M() :
         WCand_p4.SetPtEtaPhiM(sjcloseak8_p4.Pt(), sjcloseak8_p4.Eta(), sjcloseak8_p4.Phi(), sjcloseak8_p4.M() )
@@ -242,10 +264,9 @@ for event in events:
         bCand_p4.SetPtEtaPhiM(sjcloseak8_p4.Pt(), sjcloseak8_p4.Eta(), sjcloseak8_p4.Phi(), sjcloseak8_p4.M() )
         WCand_p4.SetPtEtaPhiM(sjfarak8_p4.Pt(), sjfarak8_p4.Eta(), sjfarak8_p4.Phi(), sjfarak8_p4.M() )
       print"......W candidate PUPPI + SD subjet of pt {0:2.2f} and mass {1:2.2f}".format(WCand_p4.Perp() , WCand_p4.M())
-      print"......b quark candidate PUPPI + SD subjet of pt {0:2.2f} and mass {1:2.2f}".format(WCand_p4.Perp() , WCand_p4.M())
-
+      print"......b quark candidate PUPPI + SD subjet of pt {0:2.2f} and mass {1:2.2f}".format(bCand_p4.Perp() , bCand_p4.M())
       hadtopCand_p4 = bCand_p4 + WCand_p4      ### Add 2 subjet P4s to get AK8 Puppi + SD 4-vector
-
+      print"......Top candidate PUPPI + SD AK8 of pt {0:2.2f} and mass {1:2.2f}".format(hadtopCand_p4.Pt(), hadtopCand_p4.M())
         #if iak8.Pt() < 400. : continue ### To ensure a boosted topology
 
         #### We now have gen particles and reco subjets so we need DeltaRs btw them and then plot those dRs in 2D histos
@@ -256,9 +277,15 @@ for event in events:
       print"dR btw W candidate subjet of pt {0:2.2f} from ak8 of pt {1:2.2f} and W daugter quark 2 (from top ) of pt {2:2.2f} is {3:2.2f}".format(WCand_p4.Pt(), hadtopCand_p4.Pt(), Wtd2_p4.Pt(), dR_WCand_Wtd2 )
 
       dR_WCand_Watd1 = WCand_p4.DeltaR(Watd1_p4 )
-      print"dR btw W candidate subjet of pt {0:2.2f} from ak8 of pt {1:2.2f} and W daugter quark 1 (from antitop ) of pt {2:2.2f} is {3:2.2f}".format(WCand_p4.Pt(), hadtopCand_p4.Pt(), Wtd1_p4.Pt(), dR_WCand_Wtd1 )
+      print"dR btw W candidate subjet of pt {0:2.2f} from ak8 of pt {1:2.2f} and W daugter quark 1 (from antitop ) of pt {2:2.2f} is {3:2.2f}".format(WCand_p4.Pt(), hadtopCand_p4.Pt(), Watd1_p4.Pt(), dR_WCand_Watd1 )
       dR_WCand_Watd2 = WCand_p4.DeltaR(Watd2_p4 )
-      print"dR btw W candidate subjet of pt {0:2.2f} from ak8 of pt {1:2.2f} and W daugter quark 2 (from antitop ) of pt {2:2.2f} is {3:2.2f}".format(WCand_p4.Pt(), hadtopCand_p4.Pt(), Wtd2_p4.Pt(), dR_WCand_Wtd2 )
+      print"dR btw W candidate subjet of pt {0:2.2f} from ak8 of pt {1:2.2f} and W daugter quark 2 (from antitop ) of pt {2:2.2f} is {3:2.2f}".format(WCand_p4.Pt(), hadtopCand_p4.Pt(), Watd2_p4.Pt(), dR_WCand_Watd2 )
+
+      dR_WCand_bat = WCand_p4.DeltaR(bat_p4 )
+      print"dR btw W candidate subjet of pt {0:2.2f} from ak8 of pt {1:2.2f} and b quark (from antitop) of pt {2:2.2f} is {3:2.2f}".format(WCand_p4.Pt(), hadtopCand_p4.Pt(), bat_p4.Pt(), dR_WCand_bat )
+      dR_WCand_bt = WCand_p4.DeltaR(bt_p4 )
+      print"dR btw W candidate subjet of pt {0:2.2f} from ak8 of pt {1:2.2f} and b quark (from top) of pt {2:2.2f} is {3:2.2f}".format(WCand_p4.Pt(), hadtopCand_p4.Pt(), bt_p4.Pt(), dR_WCand_bt )
+
 
     ievent +=1
     ### End Event Loop
