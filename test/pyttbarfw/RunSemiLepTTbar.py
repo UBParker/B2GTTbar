@@ -77,6 +77,10 @@ class RunSemiLepTTbar() :
                           default = False,
                           help='Ignore the trigger?')
         
+        parser.add_option('--verbose', action='store_true',
+                          dest='verbose',
+                          default = False,
+                          help='Verbose information printed')
 
         (options, args) = parser.parse_args(argv)
         argv = []
@@ -238,12 +242,12 @@ class RunSemiLepTTbar() :
         b = self.hadSelection
         ilep = a.tree.LeptonIsMu[0]
         print 'ilep = ', ilep
-        if b.ak8Jet != None :
-            self.AK8PtHist[ilep][index].Fill( b.ak8Jet.Perp() )
-            self.AK8EtaHist[ilep][index].Fill( b.ak8Jet.Eta() )
-            self.AK8MHist[ilep][index].Fill( b.ak8Jet.M() )
-            self.AK8MSDHist[ilep][index].Fill( b.ak8SDJet.M() )
-            self.AK8MSDSJ0Hist[ilep][index].Fill( b.ak8SDJet_Subjet0.M() )
+        if b.ak8SDJetP4 != None :
+            self.AK8PtHist[ilep][index].Fill( b.ak8SDJetP4.Perp() )
+            self.AK8EtaHist[ilep][index].Fill( b.ak8SDJetP4.Eta() )
+            self.AK8MHist[ilep][index].Fill( b.ak8SDJetP4.M() )
+            self.AK8MSDHist[ilep][index].Fill( b.ak8SDJetP4.M() )
+            self.AK8MSDSJ0Hist[ilep][index].Fill( b.ak8PuppiSDJetP4_Subjet0.M() )
 
         if a.leptonP4 != None : 
             self.LeptonPtHist[ilep][index].Fill( a.leptonP4.Perp() )
@@ -254,7 +258,7 @@ class RunSemiLepTTbar() :
                 self.Iso2DHist[ilep][index].Fill( a.leptonP4.Perp( a.ak4Jet.Vect() ), a.leptonP4.DeltaR( a.ak4Jet ) )
         ### Fill the ttree
         if index == 12:            
-            
+            self.theWeight = 1.0
             ### Define lumi weight
             
             if self.theCount < 1 :
@@ -336,11 +340,11 @@ class RunSemiLepTTbar() :
                 self.lumi = 35867.0 # /pb                 
                                
                 for ifile, afile in enumerate(self.infiles):
-                    if self.verboseW  : print"infile is  {}   Afile is {}".format(self.infile, afile)
+                    #if self.verbose  : print"infile is  {}   Afile is {}".format(self.infile, afile)
                     if afile == self.infile:
                         self.lumiWeight =  self.xSections[ifile] / self.nEvents[ifile] * self.lumi
 
-                        if self.verboseW : print"lumiweight is {}".format(self.lumiWeight)
+                        #if self.verboseW : print"lumiweight is {}".format(self.lumiWeight)
             
             '''
             self.weights = {
@@ -357,7 +361,7 @@ class RunSemiLepTTbar() :
                 #self.weightVal = float( self.fillVars[ivar])
                 
 
-            if self.verboseW : print"FILLLLL--------   self.fillVars {}  float( self.fillVars[0])  {}   , float( self.fillVars[1])  {}, subjet tau21 {}".format( self.fillVars, float( self.fillVars[0]) , float( self.fillVars[1]), float( b.ak8SDsubjet0tau21 ) )    
+            #if self.verboseW : print"FILLLLL--------   self.fillVars {}  float( self.fillVars[0])  {}   , float( self.fillVars[1])  {}, subjet tau21 {}".format( self.fillVars, float( self.fillVars[0]) , float( self.fillVars[1]), float( b.ak8SDsubjet0tau21 ) )    
             self.TTreeWeights.Fill()
             self.TTreeSemiLept.Fill()
 
