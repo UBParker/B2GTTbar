@@ -84,7 +84,11 @@ class RunSemiLepTTbar_HighMass() :
                           dest='ignoreTrig',
                           default = False,
                           help='Ignore the trigger?')
-        
+
+        parser.add_option('--v5', action='store_true',
+                          default=False,
+                          dest='v5',
+                          help='Do you want to use v5 ttrees?')        
         parser.add_option('--verbose', action='store_true',
                           default=False,
                           dest='verbose',
@@ -103,6 +107,7 @@ class RunSemiLepTTbar_HighMass() :
         ### of the branches that we want to read from the Tree to save time.
         ### Also saved are some nontrivial variables that involve combinations
         ### of things from the tree
+        if options.v5 : from B2GTTreeSemiLepV5 import B2GTTreeSemiLep
         self.treeobj = B2GTTreeSemiLep( options )
         self.TTreeSemiLeptSkim = self.treeobj.tree.CloneTree(0)
         self.TTreeSemiLeptSkim.SetName("TTreeSemiLeptSkim") 
@@ -435,7 +440,7 @@ class RunSemiLepTTbar_HighMass() :
             self.AK8MSDHist[ilep][index].Fill( b.ak8PuppiSD_m_Pcorr  , self.theWeight )
             self.AK8MSDRawHist[ilep][index].Fill( b.akSDRaw_m  , self.theWeight )
             self.AK8MSDPUPPIHist[ilep][index].Fill( b.ak8PuppiSD_m , self.theWeight )
-            self.AK8MSDCHSHist[ilep][index].Fill( b.akCHSSD_m  , self.theWeight )
+            #self.AK8MSDCHSHist[ilep][index].Fill( b.akCHSSD_m  , self.theWeight )
 
         if b.ak8PuppiJetP4 != None :
             self.AK8PuppiPtHist[ilep][index].Fill( b.ak8PuppiJetP4.Perp() * b.PuppiPtSmear  , self.theWeight )

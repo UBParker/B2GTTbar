@@ -189,15 +189,15 @@ class B2GSelectSemiLepTTbar_Type1( ) :
 
         self.PuppiCorr = None
         self.Corr = None
-        self.CorrL2L3 = None
-        self.CorrL2L3SD = None
+        #self.CorrL2L3 = None
+        #self.CorrL2L3SD = None
         self.PtSmear = None
         self.PuppiPtSmear = None
 
 
         self.PuppiCorr = self.tree.JetPuppiCorrFactor[0]
         self.Corr = self.tree.JetCorrFactor[0]
-        self.CorrL2L3 = self.tree.JetSDptCorrL23[0]
+        #self.CorrL2L3 = self.tree.JetSDptCorrL23[0]
         if self.itIsData :
             self.PtSmear = 1.
             self.PuppiPtSmear = 1.
@@ -296,15 +296,15 @@ class B2GSelectSemiLepTTbar_Type1( ) :
 
         ### AK8 jets
 
-        self.akCHSSD_m = self.tree.JetSDmassCorrL23[0]
+        #self.akCHSSD_m = self.tree.JetSDmassRaw[0]
         self.akSDRaw_m = self.tree.JetSDmassRaw[0]
 
 
         self.ak8JetP4 = ROOT.TLorentzVector()
-        self.ak8JetP4.SetPtEtaPhiM( self.tree.JetPt[0],
-                                  self.tree.JetEta[0],
-                                  self.tree.JetPhi[0],
-                                  self.tree.JetMass[0] )   
+        self.ak8JetP4.SetPtEtaPhiM( self.tree.JetPtRaw[0],
+                                  self.tree.JetEtaRaw[0],
+                                  self.tree.JetPhiRaw[0],
+                                  self.tree.JetMassRaw[0] )   
 
         self.ak8JetP4Raw =   self.ak8JetP4
         self.ak8JetP4 =   self.ak8JetP4 * self.Corr
@@ -318,10 +318,10 @@ class B2GSelectSemiLepTTbar_Type1( ) :
        ### AK8 PUPPI jets
 
         self.ak8PuppiJetP4 = ROOT.TLorentzVector()
-        self.ak8PuppiJetP4.SetPtEtaPhiM( self.tree.JetPuppiPt[0],
-                                  self.tree.JetPuppiEta[0],
-                                  self.tree.JetPuppiPhi[0],
-                                  self.tree.JetPuppiMass[0] )  
+        self.ak8PuppiJetP4.SetPtEtaPhiM( self.tree.JetPuppiPtRaw[0],
+                                  self.tree.JetPuppiEtaRaw[0],
+                                  self.tree.JetPuppiPhiRaw[0],
+                                  self.tree.JetPuppiMassRaw[0] )  
         self.ak8PuppiJetP4Raw =   self.ak8PuppiJetP4
         self.ak8PuppiJetP4 =   self.ak8PuppiJetP4 * self.PuppiCorr
         
@@ -389,10 +389,10 @@ class B2GSelectSemiLepTTbar_Type1( ) :
                 self.SDRhoRatio = pow( self.ak8PuppiSDJetP4.M() / (self.ak8PuppiSDJetP4.Perp()*0.8) , 2)
       
             self.SDPuppiptGenpt = float(self.ak8PuppiSDJetP4.Perp())  / float(self.ak8JetP4.Perp() ) 
-            if float(self.akCHSSD_m) > 0.1 :
-                self.SDPuppimassSDCHSmass = float(self.ak8PuppiSDJetP4.M())  / float(self.akCHSSD_m ) 
-            else:
-                 self.SDPuppimassSDCHSmass = 0.0
+            #if float(self.) > 0.1 :
+            #    self.SDPuppimassSDCHSmass = float(self.ak8PuppiSDJetP4.M())  / float(self.akCHSSD_m ) 
+            #else:
+            self.SDPuppimassSDCHSmass = 0.0
             self.ak8PuppiSD_m  = float(self.ak8PuppiSDJetP4.M())
             self.ak8PuppiSD_m_Pcorr = self.CorrPUPPIMass( 
                                                    self.ak8PuppiSDJetP4Raw.Perp(),
