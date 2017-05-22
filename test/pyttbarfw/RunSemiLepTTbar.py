@@ -93,6 +93,8 @@ class RunSemiLepTTbar() :
         ### of the branches that we want to read from the Tree to save time.
         ### Also saved are some nontrivial variables that involve combinations
         ### of things from the tree
+        v5 = True
+        if v5 : from B2GTTreeSemiLepV5 import B2GTTreeSemiLep
         self.treeobj = B2GTTreeSemiLep( options )
         self.TTreeSemiLeptSkim = self.treeobj.tree.CloneTree(0)
         self.TTreeSemiLeptSkim.SetName("TTreeSemiLeptSkim") 
