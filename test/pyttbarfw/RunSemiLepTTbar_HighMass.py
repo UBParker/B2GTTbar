@@ -89,6 +89,7 @@ class RunSemiLepTTbar_HighMass() :
                           default=False,
                           dest='v5',
                           help='Do you want to use v5 ttrees?')        
+
         parser.add_option('--verbose', action='store_true',
                           default=False,
                           dest='verbose',
@@ -101,7 +102,7 @@ class RunSemiLepTTbar_HighMass() :
         self.infile = options.infile
         self.outfile = ROOT.TFile(options.outfile, "RECREATE")
 
-        self.verboseW = False # True
+        self.verboseW = True
         
         ### Create the tree class. This will make simple class members for each
         ### of the branches that we want to read from the Tree to save time.
@@ -573,6 +574,7 @@ class RunSemiLepTTbar_HighMass() :
                 self.Iso2DHist[ilep][index].Fill( a.leptonP4.Perp( a.ak4Jet.Vect() ), a.leptonP4.DeltaR( a.ak4Jet )  , self.theWeight  )
                 self.AK4BdiscHist[ilep][index].Fill(b.ak4JetBdisc , self.theWeight)
         ### Fill the ttree
+        if index > 5 : print "index is {}".format(index)
         if index == 12:            
             
             ### Define lumi weight
@@ -677,7 +679,7 @@ class RunSemiLepTTbar_HighMass() :
                 #self.weightVal = float( self.fillVars[ivar])
                 
 
-            if self.verboseW : print"FILLLLL--------   self.fillVars {}  float( self.fillVars[0])  {}   , float( self.fillVars[1])  {}, subjet tau21 {}".format( self.fillVars, float( self.fillVars[0]) , float( self.fillVars[1]), float( b.ak8SDsubjet0tau21 ) )    
+            #if self.verboseW : print"FILLLLL--------   self.fillVars {}  float( self.fillVars[0])  {}   , float( self.fillVars[1])  {}, subjet tau21 {}".format( self.fillVars, float( self.fillVars[0]) , float( self.fillVars[1]), float( b.ak8SDsubjet0tau21 ) )    
             self.TTreeWeights.Fill()
             self.TTreeSemiLept.Fill()
 
@@ -687,7 +689,7 @@ class RunSemiLepTTbar_HighMass() :
         '''
 
         #self.TTreeWeights.Write()
-        #self.TTreeSemiLeptSkim.Write()
+        #self.TTreeSemiLept.Write()
         
         self.outfile.cd() 
         self.outfile.Write()
