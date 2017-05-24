@@ -403,10 +403,10 @@ class B2GSelectSemiLepTTbar_IsoStd( ) :
         if self.verbose: print"Stage 8: Lepton outside cone of b-jet"
 
 
-        if not (  (self.leptonP4 + self.nuP4).Perp() > 200. )    : return self.passed
+        if not (  (self.leptonP4 + self.nuP4).Perp() > 150. )    : return self.passed
         self.passed[9] = True
         self.passedCount[9] += 1
-        if self.verbose: print"Stage 9: Leptonic W pt > 200 Gev"
+        if self.verbose: print"Stage 9: Leptonic W pt > 150 Gev"
 
         return self.passed
         

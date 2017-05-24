@@ -86,7 +86,7 @@ class RunSemiLepTTbar_HighMass() :
                           help='Ignore the trigger?')
 
         parser.add_option('--v5', action='store_true',
-                          default=False,
+                          default=True,
                           dest='v5',
                           help='Do you want to use v5 ttrees?')        
 

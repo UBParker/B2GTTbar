@@ -27,7 +27,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
 
         self.trigIndex = [
             self.trigMap.HLT_Mu50_v,
-            self.trigMap.HLT_TkMu50_v,
+            #self.trigMap.HLT_TkMu50_v,
             self.trigMap.HLT_Ele45_CaloIdVT_GsfTrkIdT_PFJet200_PFJet50_v,
             #self.trigMap.HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet140_v,
             #self.trigMap.HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165_v
@@ -80,7 +80,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
 
         # Stage 9 : Wlep pt selection
         self.MuonHtLepCut = 150.
-        self.ElectronHtLepCut = 0.
+        self.ElectronHtLepCut = 150.
 
         ### Cached class member variables for plotting
         self.RunNumber = None
