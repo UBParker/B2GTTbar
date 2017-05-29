@@ -60,13 +60,15 @@ if args.append == True:
 myfilelist = []
 
 #enter specified root directory and recursively enter all subdirectories to get pertinent files
+print "Delving.........."
 if args.delve == True:
-    print("Searching specified directory and all subdirectories for " + fileType + " and adding them to the output file")
+    print("Searching the  directory " + inputDirectory + " and all subdirectories for " + fileType + " files and adding them to the output file")
     dirlist = []
-    for eosDir in filter(None,os.popen("xrdfs root://cmseos.fnal.gov/ ls -u "+ inputDirectory ).read().split('\n')):
-        dirlist.append(eosDir)
-        print"The eosDir is {}".format(eosDir[-4:])
-        for eosFile in filter(None,os.popen("xrdfs root://cmseos.fnal.gov/ ls -u "+ inputDirectory+ eosDir[-4:]).read().split('\n')) :
+    print filter(None,os.popen("xrdfs root://cmseos.fnal.gov/ ls -u "+ inputDirectory ).read().split('\n'))
+    for i, eossubDir in enumerate(filter(None,os.popen("xrdfs root://cmseos.fnal.gov/ ls -u "+ inputDirectory ).read().split('\n'))):
+        dirlist.append(eossubDir)
+        print"The eosDir is {}".format(eossubDir) #[-4:])
+        for eosFile in filter(None,os.popen("xrdfs root://cmseos.fnal.gov/ ls -u "+ inputDirectory+ eossubDir[-4:]).read().split('\n')) :
             filenameFull =  eosFile
             if filenameFull.endswith(fileType) and "fail" not in inputDirectory.split(os.sep) :
                 myfilelist.append(filenameFull)       
