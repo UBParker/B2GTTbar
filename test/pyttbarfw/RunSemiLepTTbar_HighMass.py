@@ -577,7 +577,7 @@ class RunSemiLepTTbar_HighMass() :
         if index == 12:            
             
             ### Define lumi weight
-            if options.v5 :
+            if self.options.v5 :
                 if self.theCount < 1 :
                     self.lumiWeight = 1.0
                     self.theCount +=1
@@ -630,7 +630,7 @@ class RunSemiLepTTbar_HighMass() :
 
                             if self.verboseW : print"lumiweight is {}".format(self.lumiWeight)
                 
-            if not options.v5 :
+            if not self.options.v5 :
                 if self.theCount < 1 :
                     self.lumiWeight = 1.0
                     self.theCount +=1
