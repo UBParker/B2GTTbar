@@ -18,7 +18,6 @@ from B2GTTreeSemiLepOut import B2GTTreeSemiLepOut
 
 import B2GSelectSemiLepTTbar_Type1, B2GSelectSemiLepTTbar_Iso2D
 
-
 import ROOT
 
 
@@ -578,91 +577,144 @@ class RunSemiLepTTbar_HighMass() :
         if index == 12:            
             
             ### Define lumi weight
-            
-            if self.theCount < 1 :
-                self.lumiWeight = 1.0
-                self.theCount +=1
-                self.infiles = ['root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ttbar_all_V4.root',
-                                'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ttbarTuneCUETP8M2T4_all_V4.root',
-                                'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_100_V4.root',
-                                'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_200_V4.root',
-                                'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_400_V4.root',
-                                'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_600_V4.root',
-                                'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_800_V4.root',
-                                'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_1200_V4.root',
-                                'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_2500_V4.root',
-                                '/uscms_data/d2/rappocc/analysis/B2G/CMSSW_8_0_22/src/Analysis/B2GTTbar/test/pyttbarfw/b2gtree_MC_ST_tchannel-top_V4.root',
-                                'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ST_tchannel-antitop_V4.root',
-                                'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ST_tW-top_V4.root',
-                                'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtreeV4_ST_tW_antitop_1of1.root',
-                                'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ST_schannel_V4.root',
-                                'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht100_V4.root',
-                                'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht200_V4.root',
-                                'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht300_V4.root',
-                                'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht500_V4.root',
-                                'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht700_V4.root',
-                                'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht1000_V4.root',
-                                'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht1500_V4.root',
-                                'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht2000_V4.root'
+            if options.v5 :
+                if self.theCount < 1 :
+                    self.lumiWeight = 1.0
+                    self.theCount +=1
+                    self.xrdprefix = 'root://131.225.207.127:1094/'
 
-                                ]
-                                
-                self.nEvents = [  92925926., # original ttbar
-                                  70452080., # Otherttbar  - different tune, same MC generator
-                                  10231928., #100To200   W + jets
-                                  4963240.,  #200To400 
-                                  1963464.,  #400To600 
-                                  3722395.,  #600To800
-                                  1540477.,  #800To1200 
-                                  246737.,   #1200To2500 
-                                  253561.,   #2500ToInf 
-                                32808300.,   #singletop_tchanneltop_outfile.root
-                                19825855.,   #singletop_tchannel_outfile.root
-                                  998400.,   #singletop_tW_outfile.root
-                                  985000.,   #singletop_tWantitop_outfile.root
-                                  1000000.,   #singletop_schannel_outfile.root 
-                                 82073090., # 100To200  
-                                18523829., # 200To300  
-                                16830696., # 300To500  
-                                19199088., # 500To700  
-                                15621634., # 700To1000 
-                                4980387.,  # 1000To1500
-                                3846616.,  # 1500To2000
-                                1960245.   # 2000ToInf 
-                               ]
-                               
-                self.xSections = [  831.,
-                                    831.,
-                                    1345.,     #100To200  W + jets
-                                    359.7,     #200To400  
-                                    48.91,     #400To600  
-                                    12.05,     #600To800  
-                                    5.501,     #800To1200 
-                                    1.329,     #1200To2500
-                                    0.03216,   #2500ToInf 
-                                    136.02 * 0.322,#singletop_tchanneltop_outfile.root
-                                    80.95 * 0.322, #singletop_tchannel_outfile.root
-                                    35.6,          #singletop_tW_outfile.root
-                                    35.6,          #singletop_tWantitop_outfile.root
-                                    3.36,           #singletop_schannel_outfile.root 
-                                    27990000., # 100To200
-                                    1712000.,  # 200To300
-                                    347700.,   # 300To500
-                                    32100.,    # 500To700
-                                    6831.,     # 700To1000
-                                    1207.,     # 1000To1500
-                                    119.9,     # 1500To2000
-                                    25.24      # 2000ToInf 
-                                 ]
-                                 
-                self.lumi = 35867.0 # /pb                 
-                               
-                for ifile, afile in enumerate(self.infiles):
-                    if self.verboseW  : print"infile is  {}   Afile is {}".format(self.infile, afile)
-                    if afile == self.infile:
-                        self.lumiWeight =  self.xSections[ifile] / self.nEvents[ifile] * self.lumi
+                    self.eosDir = '/store/user/asparker/B2G2016/V5Trees/'
 
-                        if self.verboseW : print"lumiweight is {}".format(self.lumiWeight)
+                    self.infiles = [
+                    'b2gtreeV5_ST_tW_antitop_RunIISummer16MiniAODv2_try4.root'
+                    'b2gtreeV5_TT_TuneCUETP8M2T4_All_13TeV-powheg-pythia8_RunIISummer16MiniAODv2.root',
+                    'b2gtreeV5_WJetsToLNu_HT-100To200_All_madgraphMLM-pythia8_RunIISummer16MiniAODv2.root',
+                    'b2gtreeV5_WJetsToLNu_HT-1200To2500_All_madgraphMLM-pythia8_RunIISummer16MiniAODv2.root',
+                    'b2gtreeV5_WJetsToLNu_HT-200To400_All_madgraphMLM-pythia8_RunIISummer16MiniAODv2.root',
+                    'b2gtreeV5_WJetsToLNu_HT-2500ToInf_All_madgraphMLM-pythia8_RunIISummer16MiniAODv2.root',
+                    'b2gtreeV5_WJetsToLNu_HT-400To600_All_madgraphMLM-pythia8_RunIISummer16MiniAODv2.root',
+                    'b2gtreeV5_WJetsToLNu_HT-600To800_All_madgraphMLM-pythia8_RunIISummer16MiniAODv2.root',
+                    'b2gtreeV5_WJetsToLNu_HT-800To1200_All_madgraphMLM-pythia8_RunIISummer16MiniAODv2.root',
+
+                    ]
+
+                    self.nEvents = [  
+                                    998276.,#ST_tW_antitop
+                                    154938481.,# TT_TuneCUETP8M2T4_All (sum of 2) 77229341 + 77709140
+                                    78403814.,# WJetsToLNu_HT-100To200_All 10235198 + 28550829 + 39617787
+                                    6797731.,# 1200To2500_All 244532 + 6553199
+                                    39680891.,# 200To400_All  4950373 + 14815928 + 19914590
+                                    2637821.,# 2500ToInf 253561 + 2384260
+                                    7759701.,# 400To600_All 1963464 + 5796237
+                                    18425597.,# 600To800  14819287 + 3606310
+                                    7352465., # 800To1200_  1544513 + 5807952
+                                    ]
+
+                    self.xSections = [  35.6 ,  #singletop_tWantitop
+                                        831., # ttbar 
+                                        1345.,     #100To200  W + jets
+                                        1.329,     #1200To2500
+                                        359.7,     #200To400  
+                                        0.03216,   #2500ToInf
+                                        48.91,     #400To600  
+                                        12.05,     #600To800  
+                                        5.501     #800To1200 
+                                        ]
+                                        
+                    self.lumi = 35867.0 # /pb     ###UPDATE TO CORRECT LUMI AFTER COMPUTING LUMI OF NEW SAMPLES
+
+                    for ifile, afile in enumerate(self.infiles):
+                        if self.verboseW  : print"infile is  {}   Afile is {}".format(self.xrdprefix + self.eosDir +self.infile, afile)
+                        if afile == self.xrdprefix + self.eosDir + self.infile:
+                            self.lumiWeight =  self.xSections[ifile] / self.nEvents[ifile] * self.lumi
+
+                            if self.verboseW : print"lumiweight is {}".format(self.lumiWeight)
+                
+            if not options.v5 :
+                if self.theCount < 1 :
+                    self.lumiWeight = 1.0
+                    self.theCount +=1
+                    self.infiles = ['root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ttbar_all_V4.root',
+                                    'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ttbarTuneCUETP8M2T4_all_V4.root',
+                                    'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_100_V4.root',
+                                    'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_200_V4.root',
+                                    'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_400_V4.root',
+                                    'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_600_V4.root',
+                                    'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_800_V4.root',
+                                    'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_1200_V4.root',
+                                    'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_wjets_2500_V4.root',
+                                    '/uscms_data/d2/rappocc/analysis/B2G/CMSSW_8_0_22/src/Analysis/B2GTTbar/test/pyttbarfw/b2gtree_MC_ST_tchannel-top_V4.root',
+                                    'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ST_tchannel-antitop_V4.root',
+                                    'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ST_tW-top_V4.root',
+                                    'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtreeV4_ST_tW_antitop_1of1.root',
+                                    'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_ST_schannel_V4.root',
+                                    'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht100_V4.root',
+                                    'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht200_V4.root',
+                                    'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht300_V4.root',
+                                    'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht500_V4.root',
+                                    'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht700_V4.root',
+                                    'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht1000_V4.root',
+                                    'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht1500_V4.root',
+                                    'root://131.225.207.127:1094//store/user/asparker/B2G2016/V4Trees/b2gtree_MC_QCD_Ht2000_V4.root'
+
+                                    ]
+                                    
+                    self.nEvents = [  92925926., # original ttbar
+                                      70452080., # Otherttbar  - different tune, same MC generator
+                                      10231928., #100To200   W + jets
+                                      4963240.,  #200To400 
+                                      1963464.,  #400To600 
+                                      3722395.,  #600To800
+                                      1540477.,  #800To1200 
+                                      246737.,   #1200To2500 
+                                      253561.,   #2500ToInf 
+                                    32808300.,   #singletop_tchanneltop_outfile.root
+                                    19825855.,   #singletop_tchannel_outfile.root
+                                      998400.,   #singletop_tW_outfile.root
+                                      985000.,   #singletop_tWantitop_outfile.root
+                                      1000000.,   #singletop_schannel_outfile.root 
+                                     82073090., # 100To200  
+                                    18523829., # 200To300  
+                                    16830696., # 300To500  
+                                    19199088., # 500To700  
+                                    15621634., # 700To1000 
+                                    4980387.,  # 1000To1500
+                                    3846616.,  # 1500To2000
+                                    1960245.   # 2000ToInf 
+                                   ]
+                                   
+                    self.xSections = [  831.,
+                                        831.,
+                                        1345.,     #100To200  W + jets
+                                        359.7,     #200To400  
+                                        48.91,     #400To600  
+                                        12.05,     #600To800  
+                                        5.501,     #800To1200 
+                                        1.329,     #1200To2500
+                                        0.03216,   #2500ToInf 
+                                        136.02 * 0.322,#singletop_tchanneltop_outfile.root
+                                        80.95 * 0.322, #singletop_tchannel_outfile.root
+                                        35.6,          #singletop_tW_outfile.root
+                                        35.6,          #singletop_tWantitop_outfile.root
+                                        3.36,           #singletop_schannel_outfile.root 
+                                        27990000., # 100To200
+                                        1712000.,  # 200To300
+                                        347700.,   # 300To500
+                                        32100.,    # 500To700
+                                        6831.,     # 700To1000
+                                        1207.,     # 1000To1500
+                                        119.9,     # 1500To2000
+                                        25.24      # 2000ToInf 
+                                     ]
+                                     
+                    self.lumi = 35867.0 # /pb                 
+                                   
+                    for ifile, afile in enumerate(self.infiles):
+                        if self.verboseW  : print"infile is  {}   Afile is {}".format(self.infile, afile)
+                        if afile == self.infile:
+                            self.lumiWeight =  self.xSections[ifile] / self.nEvents[ifile] * self.lumi
+
+                            if self.verboseW : print"lumiweight is {}".format(self.lumiWeight)
             
             '''
             self.weights = {
