@@ -525,7 +525,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
 
 
         #if self.verbose: 
-        print"Stage 5 CHECK: Lepton is a Muon bool {0:}, MET is {1:2.2f} GeV".format(self.tree.LeptonIsMu[0] , self.nuP4.Perp() )
+        #print"Stage 5 CHECK: Lepton is a Muon bool {0:}, MET is {1:2.2f} GeV".format(self.tree.LeptonIsMu[0] , self.nuP4.Perp() )
 
         if self.tree.LeptonIsMu[0] > 0. :
             if not self.nuP4.Perp() > self.muonMETPtCut  : return self.passed

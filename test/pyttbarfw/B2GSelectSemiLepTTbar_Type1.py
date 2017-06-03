@@ -14,7 +14,7 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.bdiscmin = options.bdiscmin
         self.ignoreTrig = options.ignoreTrig
         self.verbose = options.verbose
-        self.matchverbose = True
+        self.matchverbose = False #True
         self.infile = options.infile
         if self.verbose : print "The infile is : {}".format(self.infile)
 
@@ -579,7 +579,7 @@ class B2GSelectSemiLepTTbar_Type1( ) :
             else:    
                 self.fakeWloose = 1
 
-            print "PRE Stage 16:  DR btw subjet and quarks are {0:2.2f} and {1:2.2f} compared to DR with b {2:2.2f} ".format( self.GenMatchDR_pup0_Wd1, self.GenMatchDR_pup0_Wd2, self.GenMatchDR_pup0_b )
+            #print "PRE Stage 16:  DR btw subjet and quarks are {0:2.2f} and {1:2.2f} compared to DR with b {2:2.2f} ".format( self.GenMatchDR_pup0_Wd1, self.GenMatchDR_pup0_Wd2, self.GenMatchDR_pup0_b )
             if  (self.wcand_dR_WdauQuark1 > 0.6) or (self.wcand_dR_WdauQuark2 > 0.6) :
                 self.passed[6] = True
                 self.passedCount[6] += 1
