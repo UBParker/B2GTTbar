@@ -586,7 +586,13 @@ class RunSemiLepTTbar_HighMass() :
                     self.eosDir = '/store/user/asparker/B2G2016/V5Trees/'
 
                     self.infiles = [
-                    'b2gtreeV5_ST_tW_antitop_RunIISummer16MiniAODv2_try4.root'
+                    'b2gtreeV5_ST_s-channel_amcatnlo-pythia8_RunIISummer16MiniAODv2_try4.root',
+                    'b2gtreeV5_ST_t-channel_antitop_powhegV2-madspin-pythia8_RunIISummer16MiniAODv2_try3.root',
+                    'b2gtreeV5_ST_t-channel_top_powhegV2-madspin-pythia8_RunIISummer16MiniAODv2_try3.root',
+                    'b2gtreeV5_ST_tW_antitop_RunIISummer16MiniAODv2_try4.root',
+                    'b2gtreeV5_ST_tW_antitop_powheg-pythia8_RunIISummer16MiniAODv2_ext1_try4.root',
+                    'b2gtreeV5_ST_tW_top_powheg-pythia8_RunIISummer16MiniAODv2_try5.root',
+                    'b2gtreeV5_ST_tW_top_powheg-pythia8_RunIISummer16MiniAODv2_ext1_try4.root',
                     'b2gtreeV5_TT_TuneCUETP8M2T4_All_13TeV-powheg-pythia8_RunIISummer16MiniAODv2.root',
                     'b2gtreeV5_WJetsToLNu_HT-100To200_All_madgraphMLM-pythia8_RunIISummer16MiniAODv2.root',
                     'b2gtreeV5_WJetsToLNu_HT-1200To2500_All_madgraphMLM-pythia8_RunIISummer16MiniAODv2.root',
@@ -598,19 +604,30 @@ class RunSemiLepTTbar_HighMass() :
 
                     ]
 
-                    self.nEvents = [  
-                                    998276.,#ST_tW_antitop
-                                    154938481.,# TT_TuneCUETP8M2T4_All (sum of 2) 77229341 + 77709140
+                    self.nEvents = [  1000000., # ST_schannel
+                                    35038862., # ST t channel antitop
+                                    67240808., # ST t channel top
+                                      998276.,#ST_tW_antitop
+                                      6846954., #ST_tW_antitop ext1
+                                      992024., # ST tW top
+                                      6733210., # ST tW top ext1
+                                   154938481.,# TT_TuneCUETP8M2T4_All (sum of 2) 77229341 + 77709140
                                     78403814.,# WJetsToLNu_HT-100To200_All 10235198 + 28550829 + 39617787
-                                    6797731.,# 1200To2500_All 244532 + 6553199
+                                     6797731.,# 1200To2500_All 244532 + 6553199
                                     39680891.,# 200To400_All  4950373 + 14815928 + 19914590
-                                    2637821.,# 2500ToInf 253561 + 2384260
-                                    7759701.,# 400To600_All 1963464 + 5796237
+                                     2637821.,# 2500ToInf 253561 + 2384260
+                                     7759701.,# 400To600_All 1963464 + 5796237
                                     18425597.,# 600To800  14819287 + 3606310
-                                    7352465., # 800To1200_  1544513 + 5807952
+                                     7352465., # 800To1200_  1544513 + 5807952
                                     ]
 
-                    self.xSections = [  35.6 ,  #singletop_tWantitop
+                    self.xSections = [  3.36 , # ST_schannel
+                                        80.95*0.322, # ST t channel antitop
+                                        136.02*0.322, # ST t channel top
+                                        35.6 ,  #singletop_tWantitop
+                                        35.6 ,  #singletop_tWantitop ext1
+                                        35.6 ,  #singletop_tW top
+                                        35.6 ,  #singletop_tW top ext1
                                         831., # ttbar 
                                         1345.,     #100To200  W + jets
                                         1.329,     #1200To2500
@@ -621,7 +638,7 @@ class RunSemiLepTTbar_HighMass() :
                                         5.501     #800To1200 
                                         ]
                                         
-                    self.lumi = 35867.0 # /pb     ###UPDATE TO CORRECT LUMI AFTER COMPUTING LUMI OF NEW SAMPLES
+                    self.lumi = 35860.0 # /pb     ### This is the correct luminosity of the new samples
 
                     for ifile, afile in enumerate(self.infiles):
                         if self.verboseW  : print"infile is  {}   Afile is {}".format(self.xrdprefix + self.eosDir +self.infile, afile)
