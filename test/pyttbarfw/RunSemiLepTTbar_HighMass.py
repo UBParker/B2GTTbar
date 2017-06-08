@@ -101,7 +101,7 @@ class RunSemiLepTTbar_HighMass() :
         self.infile = options.infile
         self.outfile = ROOT.TFile(options.outfile, "RECREATE")
 
-        self.verboseW = True
+        self.verboseW = False #True
         
         ### Create the tree class. This will make simple class members for each
         ### of the branches that we want to read from the Tree to save time.
@@ -573,11 +573,11 @@ class RunSemiLepTTbar_HighMass() :
                 self.Iso2DHist[ilep][index].Fill( a.leptonP4.Perp( a.ak4Jet.Vect() ), a.leptonP4.DeltaR( a.ak4Jet )  , self.theWeight  )
                 self.AK4BdiscHist[ilep][index].Fill(b.ak4JetBdisc , self.theWeight)
         ### Fill the ttree
-        if index > 5 : print "index is {}".format(index)
+        #if index > 5 : print "index is {}".format(index)
         if index == 12:            
             
             ### Define lumi weight
-            if options.v5 :
+            if self.options.v5 :
                 if self.theCount < 1 :
                     self.lumiWeight = 1.0
                     self.theCount +=1
@@ -647,7 +647,7 @@ class RunSemiLepTTbar_HighMass() :
 
                             if self.verboseW : print"lumiweight is {}".format(self.lumiWeight)
                 
-            if not options.v5 :
+            if not self.options.v5 :
                 if self.theCount < 1 :
                     self.lumiWeight = 1.0
                     self.theCount +=1
