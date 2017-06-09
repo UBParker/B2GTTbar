@@ -586,6 +586,8 @@ class RunSemiLepTTbar_HighMass() :
                     self.eosDir = '/store/user/asparker/B2G2016/V5Trees/'
 
                     self.infiles = [
+                    'b2gtreeV5_QCD_Pt-470to600_MuEnriched_pythia8_RunIISummer16MiniAODv2_try2.root',
+                    'b2gtreeV5_QCD_Pt-470to600_MuEnriched_pythia8_RunIISummer16MiniAODv2_ext1_try3.root', 
                     'b2gtreeV5_ST_s-channel_amcatnlo-pythia8_RunIISummer16MiniAODv2_try4.root',
                     'b2gtreeV5_ST_t-channel_antitop_powhegV2-madspin-pythia8_RunIISummer16MiniAODv2_try3.root',
                     'b2gtreeV5_ST_t-channel_top_powhegV2-madspin-pythia8_RunIISummer16MiniAODv2_try3.root',
@@ -604,7 +606,9 @@ class RunSemiLepTTbar_HighMass() :
 
                     ]
 
-                    self.nEvents = [  1000000., # ST_schannel
+                    self.nEvents = [  3851524., # QCD Muenriched 470-600
+                                      5663755., # QCD Muenriched 470-600 ext1
+                                      1000000., # ST_schannel
                                     35038862., # ST t channel antitop
                                     67240808., # ST t channel top
                                       998276.,#ST_tW_antitop
@@ -621,7 +625,9 @@ class RunSemiLepTTbar_HighMass() :
                                      7352465., # 800To1200_  1544513 + 5807952
                                     ]
 
-                    self.xSections = [  3.36 , # ST_schannel
+                    self.xSections = [  645.528 ,  # QCD Muenriched 470-600 
+                                       645.528 ,  # QCD Muenriched 470-600  
+                                               3.36 , # ST_schannel
                                         80.95*0.322, # ST t channel antitop
                                         136.02*0.322, # ST t channel top
                                         35.6 ,  #singletop_tWantitop
@@ -724,7 +730,7 @@ class RunSemiLepTTbar_HighMass() :
                                         25.24      # 2000ToInf 
                                      ]
                                      
-                    self.lumi = 35867.0 # /pb                 
+                    self.lumi = 35860.0 # /pb ### This is the correct luminosity of the new samples                     
                                    
                     for ifile, afile in enumerate(self.infiles):
                         if self.verboseW  : print"infile is  {}   Afile is {}".format(self.infile, afile)
