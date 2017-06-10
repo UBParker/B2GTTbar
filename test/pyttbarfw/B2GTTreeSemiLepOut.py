@@ -3,7 +3,7 @@ import ROOT
 import array
 
 
-class B2GTTreeSemiLep( ) :
+class B2GTTreeSemiLepOut( ) :
     def __init__( self, options ):
 
         ### Get ONE chain for each species we are interested in.
