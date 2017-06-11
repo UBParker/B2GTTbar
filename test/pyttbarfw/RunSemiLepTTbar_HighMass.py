@@ -101,7 +101,7 @@ class RunSemiLepTTbar_HighMass() :
         self.infile = options.infile
         self.outfile = ROOT.TFile(options.outfile, "RECREATE")
 
-        self.verboseW = False #True
+        self.verboseW = True
         
         ### Create the tree class. This will make simple class members for each
         ### of the branches that we want to read from the Tree to save time.
@@ -581,7 +581,7 @@ class RunSemiLepTTbar_HighMass() :
                 if self.theCount < 1 :
                     self.lumiWeight = 1.0
                     self.theCount +=1
-                    self.xrdprefix = 'root://131.225.207.127:1094/'
+                    self.xrdprefix = 'root://cmsxrootd.fnal.gov/'
 
                     self.eosDir = '/store/user/asparker/B2G2016/V5Trees/'
 
@@ -647,8 +647,8 @@ class RunSemiLepTTbar_HighMass() :
                     self.lumi = 35860.0 # /pb     ### This is the correct luminosity of the new samples
 
                     for ifile, afile in enumerate(self.infiles):
-                        if self.verboseW  : print"infile is  {}   Afile is {}".format(self.xrdprefix + self.eosDir +self.infile, afile)
-                        if afile == self.xrdprefix + self.eosDir + self.infile:
+                        if self.verboseW  : print"infile is  {}   Afile is {}".format( self.infile,  self.xrdprefix +self.eosDir + afile)
+                        if self.xrdprefix +self.eosDir + afile ==  self.infile:
                             self.lumiWeight =  self.xSections[ifile] / self.nEvents[ifile] * self.lumi
 
                             if self.verboseW : print"lumiweight is {}".format(self.lumiWeight)
