@@ -97,7 +97,7 @@ class plotstack() :
         
         if options.otherttbar == True :
             self.otherttbar = True
-            nev_ttbar = 70452080.
+            nev_ttbar = 154938481.  #70452080.
             tune = 'CUETP8M2T4'
 
         lumi = 35860. #36494. # pb-1
