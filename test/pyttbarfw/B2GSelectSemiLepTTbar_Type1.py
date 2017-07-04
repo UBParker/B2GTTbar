@@ -51,7 +51,8 @@ class B2GSelectSemiLepTTbar_Type1( ) :
 
         #Stage 6 (16) - AK8 SD Subjt 0 tau21 cut
         # see options.tau21Cut 
-
+        self.wcandtau21 = 10.
+        self.wcandp4 = ROOT.TLorentzVector()
         #Stage 7 (17) - AK8 SD subjet 1 bdisc cut
         # see options.bdiscmin
 

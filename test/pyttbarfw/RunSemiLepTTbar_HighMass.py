@@ -445,7 +445,7 @@ class RunSemiLepTTbar_HighMass() :
         if b.ak8PuppiJetP4 != None :
             self.AK8PuppiPtHist[ilep][index].Fill( b.ak8PuppiJetP4.Perp() * b.PuppiPtSmear  , self.theWeight )
             self.AK8EtaHist[ilep][index].Fill( b.ak8PuppiJetP4.Eta()  , self.theWeight )
-            self.AK8puppitau21Hist[ilep][index].Fill( b.ak8SDsubjet0tau21  , self.theWeight ) ### actually tau21 of subjet, misleading name
+            self.AK8puppitau21Hist[ilep][index].Fill( b.wcandtau21  , self.theWeight ) ### actually tau21 of subjet, misleading name
             self.AK8puppitau32Hist[ilep][index].Fill( b.puppitau32  , self.theWeight )
             if b.ak8Puppi_m_Pcorr != None: 
                 self.AK8MHist[ilep][index].Fill( b.ak8Puppi_m_Pcorr , self.theWeight )
@@ -459,8 +459,8 @@ class RunSemiLepTTbar_HighMass() :
 
         if b.ak8PuppiSDJetP4 != None :
             self.AK8PuppiSDPtHist[ilep][index].Fill( b.ak8PuppiSDJetP4.Perp() * b.PuppiPtSmear  , self.theWeight )
-            self.AK8SDSJ0PtHist[ilep][index].Fill( b.ak8PuppiSDJetP4_Subjet0.Perp() * b.PuppiPtSmear  , self.theWeight )
-            self.AK8MSDSJ0Hist[ilep][index].Fill( b.ak8SDsj0_m  , self.theWeight )
+            self.AK8SDSJ0PtHist[ilep][index].Fill( b.wcandp4.Perp() * b.PuppiPtSmear  , self.theWeight )
+            self.AK8MSDSJ0Hist[ilep][index].Fill( b.wcandp4.M()  , self.theWeight )
 
 
             # Filling jet mass histos binned by pt of the leading SD subjet
@@ -515,8 +515,8 @@ class RunSemiLepTTbar_HighMass() :
                         self.ak8SDPuppiMass0 =  b.ak8PuppiSD_m_Pcorr
                         self.ak8PuppiMass0 =  b.ak8Puppi_m_Pcorr
                         #print"ak8 puppi mass0 from b.ak8Puppi_m_Pcorr is {0:2.2f}".format(b.ak8Puppi_m_Pcorr)
-                        self.ak8SDsj0_m0    =b.ak8SDsj0_m
-                        self.ak8SDsj1_m0    =b.ak8SDsj1_m
+                        self.ak8SDsj0_m0    = b.wcandp4.M()  #b.ak8SDsj0_m
+                        self.ak8SDsj1_m0    = b.ak8SDsj1_m
                         self.theMassHist0 = self.AK8MPtBinnedHistList0[iptbin]
                         self.theSDMassHist0 = self.AK8MSDPtBinnedHistList0[iptbin]
                         self.theSDsj0Masshist0 = self.AK8MSDSJ0PtBinnedHistList0[iptbin]
@@ -532,7 +532,7 @@ class RunSemiLepTTbar_HighMass() :
 
                         if  self.theSDsj0Masshist0 != None :
                             self.theSDsj0Masshist0[ilep][index].Fill(  self.ak8SDsj0_m0  , self.theWeight )
-                            self.theSDsj0Masshist0l2l3[ilep][index].Fill(  b.ak8PuppiSDJetP4_Subjet0.M()  , self.theWeight )
+                            self.theSDsj0Masshist0l2l3[ilep][index].Fill(  b.wcandp4.M()  , self.theWeight )
                             self.theSDsj1Masshist0[ilep][index].Fill(  self.ak8SDsj1_m0  , self.theWeight )
 
             for iptbin, ptbin in enumerate(b.ak8Jet_Ptbinsb) :
@@ -543,7 +543,7 @@ class RunSemiLepTTbar_HighMass() :
                         self.ak8SDPuppiMass0 =  b.ak8PuppiSD_m_Pcorr
                         self.ak8PuppiMass0 =  b.ak8Puppi_m_Pcorr
                         #print"ak8 puppi mass0 from b.ak8Puppi_m_Pcorr is {0:2.2f}".format(b.ak8Puppi_m_Pcorr)
-                        self.ak8SDsj0_m0    =b.ak8SDsj0_m
+                        self.ak8SDsj0_m0    =b.wcandp4.M()
                         self.ak8SDsj1_m0    =b.ak8SDsj1_m
                         self.theMassHist0 = self.AK8MPtBinnedHistList0b[iptbin]
                         self.theSDMassHist0 = self.AK8MSDPtBinnedHistList0b[iptbin]
@@ -560,7 +560,7 @@ class RunSemiLepTTbar_HighMass() :
 
                         if  self.theSDsj0Masshist0 != None :
                             self.theSDsj0Masshist0[ilep][index].Fill(  self.ak8SDsj0_m0  , self.theWeight )
-                            self.theSDsj0Masshist0l2l3[ilep][index].Fill(  b.ak8PuppiSDJetP4_Subjet0.M()  , self.theWeight )
+                            self.theSDsj0Masshist0l2l3[ilep][index].Fill(  b.wcandp4.M()  , self.theWeight )
 
                             self.theSDsj1Masshist0[ilep][index].Fill(  self.ak8SDsj1_m0  , self.theWeight )
         ### Fill the Lepton and AK4 histos

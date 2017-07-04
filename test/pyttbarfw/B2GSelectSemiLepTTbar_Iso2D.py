@@ -70,9 +70,9 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
         self.AK4EtaCut = 2.4
 
         # Stage 7 : 2D cut (decrease QCD contamination)
-        self.DrAK4Lep = 0.1    #0.4                 
+        self.DrAK4Lep = 0.4    #0.1 for the June1 root files                 
         # Loosen cuts here so they can be studied at later stages of selection
-        self.PtRel = 10.      #30.
+        self.PtRel = 30.      #10. for the June1 files. Same cut is applied as here just later in Wtagging script so that it can be varied quickly
 
 
         # Stage 8 : Hemisphere cut (keep leptons far from AK8 Jet)
@@ -120,7 +120,7 @@ class B2GSelectSemiLepTTbar_Iso2D( ) :
 
 
         ### Muon trigger efficiency corrections
-        self.printtriggerWarning = True
+        self.printtriggerWarning = False #True
         self.TriggEffIs = 1.0
 
         self.finCor1 = ROOT.TFile.Open( "./muon_trg_summer16.root","READ")
