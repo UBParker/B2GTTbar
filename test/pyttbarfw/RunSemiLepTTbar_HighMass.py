@@ -596,6 +596,7 @@ class RunSemiLepTTbar_HighMass() :
                     'b2gtreeV5_ST_tW_top_powheg-pythia8_RunIISummer16MiniAODv2_try5.root',
                     'b2gtreeV5_ST_tW_top_powheg-pythia8_RunIISummer16MiniAODv2_ext1_try4.root',
                     'b2gtreeV5_TT_TuneCUETP8M2T4_All_13TeV-powheg-pythia8_RunIISummer16MiniAODv2.root',
+                    'b2gtreeV5_TT_TuneEE5C_All_13TeV-powheg-herwigpp_RunIISummer16MiniAODv2.root',
                     'b2gtreeV5_WJetsToLNu_HT-100To200_All_madgraphMLM-pythia8_RunIISummer16MiniAODv2.root',
                     'b2gtreeV5_WJetsToLNu_HT-1200To2500_All_madgraphMLM-pythia8_RunIISummer16MiniAODv2.root',
                     'b2gtreeV5_WJetsToLNu_HT-200To400_All_madgraphMLM-pythia8_RunIISummer16MiniAODv2.root',
@@ -616,6 +617,7 @@ class RunSemiLepTTbar_HighMass() :
                                       992024., # ST tW top
                                       6733210., # ST tW top ext1
                                    154938481.,# TT_TuneCUETP8M2T4_All (sum of 2) 77229341 + 77709140
+                                      68375043., # TT herwig (sum of 3)
                                     78403814.,# WJetsToLNu_HT-100To200_All 10235198 + 28550829 + 39617787
                                      6797731.,# 1200To2500_All 244532 + 6553199
                                     39680891.,# 200To400_All  4950373 + 14815928 + 19914590
@@ -635,6 +637,7 @@ class RunSemiLepTTbar_HighMass() :
                                         35.6 ,  #singletop_tW top
                                         35.6 ,  #singletop_tW top ext1
                                         831., # ttbar 
+                                        831., # other ttbar
                                         1345.,     #100To200  W + jets
                                         1.329,     #1200To2500
                                         359.7,     #200To400  
