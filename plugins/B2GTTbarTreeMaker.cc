@@ -894,6 +894,9 @@ class B2GTTbarTreeMaker : public edm::one::EDAnalyzer<edm::one::SharedResources>
       Float_t JetPuppiCEF                            ;
       Float_t JetPuppiMF                             ;
       Float_t JetPuppiMult                           ;
+      Float_t JetAK4PuppiCorrFactor                  ;
+      Float_t JetAK4PuppiCorrFactorUp                ;
+      Float_t JetAK4PuppiCorrFactorDn                ;      
       Float_t JetMassCorrFactor                      ;
       Float_t JetMassCorrFactorUp                    ;
       Float_t JetMassCorrFactorDn                    ;
@@ -1788,6 +1791,9 @@ B2GTTbarTreeMaker::B2GTTbarTreeMaker(const edm::ParameterSet& iConfig):
   TreeSemiLept->Branch("JetPuppiCEF"                          , & JetPuppiCEF                       ,    "JetPuppiCEF/F"                            );                                
   TreeSemiLept->Branch("JetPuppiMF"                           , & JetPuppiMF                        ,    "JetPuppiMF/F"                             );                               
   TreeSemiLept->Branch("JetPuppiMult"                         , & JetPuppiMult                      ,    "JetPuppiMult/F"                           );                                  
+  TreeSemiLept->Branch("JetAK4PuppiCorrFactor"                , & JetAK4PuppiCorrFactor             ,    "JetAK4PuppiCorrFactor/F"                  );                                            
+  TreeSemiLept->Branch("JetAK4PuppiCorrFactorUp"              , & JetAK4PuppiCorrFactorUp           ,    "JetAK4PuppiCorrFactorUp/F"                );                                              
+  TreeSemiLept->Branch("JetAK4PuppiCorrFactorDn"              , & JetAK4PuppiCorrFactorDn           ,    "JetAK4PuppiCorrFactorDn/F"                ); 
   TreeSemiLept->Branch("JetMassCorrFactor"                    , & JetMassCorrFactor                 ,    "JetMassCorrFactor/F"                      );                                           
   TreeSemiLept->Branch("JetMassCorrFactorUp"                  , & JetMassCorrFactorUp               ,    "JetMassCorrFactorUp/F"                    );                                             
   TreeSemiLept->Branch("JetMassCorrFactorDn"                  , & JetMassCorrFactorDn               ,    "JetMassCorrFactorDn/F"                    );                                             
@@ -4097,7 +4103,7 @@ B2GTTbarTreeMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
         reco::Candidate::LorentzVector corrSubjetL23res = subjet_corr_factor_L23res_full * uncorrSubjet;
 
         //------------------------------------
-        // PUPPI subjet JEC uncertainty
+        // PUPPI subjet JEC uncertainty 
         //------------------------------------
         double subjet_corrDn_L23 =   1.0;
         JetCorrUncertAK4pup->setJetPhi(  corrSubjetL23res.phi()  );
@@ -5171,7 +5177,12 @@ B2GTTbarTreeMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       JetPuppiCorrFactor                    = corr_factorAK8pup_L23res;          
       JetPuppiCorrFactorUp                  = corrUp_pup_L23;          
       JetPuppiCorrFactorDn                  = corrDn_pup_L23;    
-      
+ 
+      // AK4PUPPI JEC scale nom/up/down  (use for both full jet and groomed mass corrections)     
+      JetAK4PuppiCorrFactor                    = subjet_corr_factor_L23res_full ;          
+      JetAK4PuppiCorrFactorUp                  = subjet_corrUp_L23 ; 
+      JetAK4PuppiCorrFactorDn                  = subjet_corrDn_L23;  
+
       // AK8PUPPI JER
       JetPuppiPtSmearFactor                 = pup_ptsmear;          
       JetPuppiPtSmearFactorUp               = pup_ptsmearUp;          
