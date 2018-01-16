@@ -1,4 +1,5 @@
 
+
 #! /usr/bin/env python
 
 
@@ -87,7 +88,12 @@ class RunSemiLepTTbar_HighMass() :
         parser.add_option('--v5', action='store_true',
                           default=True,
                           dest='v5',
-                          help='Do you want to use v5 ttrees?')        
+                          help='Do you want to use v5 ttrees?')
+        
+        parser.add_option('--UseAK4Corr', action='store_true',
+                          default=False,
+                          dest='UseAK4Corr',
+                          help='Do you want to use ttrees which contain both AK4 and AK8 corrections for the subjets (default uses AK8 corrections)?')
 
         parser.add_option('--verbose', action='store_true',
                           default=False,
@@ -100,7 +106,8 @@ class RunSemiLepTTbar_HighMass() :
         #self.startTime = time.time()
         self.infile = options.infile
         self.outfile = ROOT.TFile(options.outfile, "RECREATE")
-
+        self.UseAK4Corr = options.UseAK4Corr
+        
         self.verboseW = True
         
         ### Create the tree class. This will make simple class members for each
@@ -581,11 +588,80 @@ class RunSemiLepTTbar_HighMass() :
                 if self.theCount < 1 :
                     self.lumiWeight = 1.0
                     self.theCount +=1
-                    self.xrdprefix = 'root://cmsxrootd.fnal.gov/'
+                    self.xrdprefix = ''#'root://cmsxrootd.fnal.gov/'
 
-                    self.eosDir = '/store/user/asparker/B2G2016/V5Trees/'
+                    self.eosDirNew =  '/uscms_data/d3/aparker/B2GTTbarClone/CMSSW_8_0_26/src/Analysis/B2GTTbar/test/'#'/store/user/asparker/B2G2016/V5TreesNew/hadded/'
+                    '''
+                    self.infilesNew = [ 
+                                         'b2gtreeV5_TT_TuneCUETP8M2T4_13TeV-powheg-pythia8_All_AK4Corr.root',
+                                         'b2gtreeV5_TT_TuneEE5C_13TeV-powheg-herwigpp_All_AK4Corr.root',
 
-                    self.infiles = [
+
+]
+                    self.nEventsNew = [ 77081156. + 77722757., # pythia ttbar TuneCUETP8M2T4 including backup
+                                        29201452. + 19762915.+  9998863., # herwig ttbar , all 3 of them  
+                   
+
+                    ]
+                    self.xSectionsNew = [ 831.,# ttbar
+                                          831. # other ttbar          
+]
+                    '''
+
+
+                    self.infilesNew = [
+                                        'b2gtreeV5_TT_TuneCUETP8M2T4_13TeV-powheg-pythia8_All_AK4Corr.root',
+                                        'b2gtreeV5_TT_TuneEE5C_13TeV-powheg-herwigpp_All_AK4Corr.root',
+                                        'b2gtreeV5_ST_t-channel_antitop_powhegV2-madspin-pythia8_AK4corr.root',
+                                        'b2gtreeV5_ST_t-channel_top_powhegV2-madspin-pythia8_AK4corr.root',
+                                        'b2gtreeV5_ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1_All_AK4corr.root',
+                                        'b2gtreeV5_ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1_All_AK4corr.root',
+                                        'b2gtreeV5_WJetsToLNu_HT-100To200_madgraphMLM-pythia8_RunIISummer16MiniAODv2_All_AK4corr.root',
+                                        'b2gtreeV5_WJetsToLNu_HT-200To400_madgraphMLM-pythia8_RunIISummer16MiniAODv2_All_AK4corr.root',
+                                        'b2gtreeV5_WJetsToLNu_HT-400To600_madgraphMLM-pythia8_RunIISummer16MiniAODv2_All_AK4corr.root', 
+                                        'b2gtreeV5_WJetsToLNu_HT-600To800_madgraphMLM-pythia8_RunIISummer16MiniAODv2_All_AK4corr.root',
+                                        'b2gtreeV5_WJetsToLNu_HT-800To1200_madgraphMLM-pythia8_RunIISummer16MiniAODv2_All_AK4corr.root',
+                                        'b2gtreeV5_WJetsToLNu_HT-1200To2500_madgraphMLM-pythia8_RunIISummer16MiniAODv2_All_AK4corr.root',
+                                        'b2gtreeV5_WJetsToLNu_HT-2500ToInf_madgraphMLM-pythia8_RunIISummer16MiniAODv2_All_AK4corr.root',
+]
+
+
+
+
+                    self.nEventsNew = [  77081156. + 77722757., # pythia ttbar TuneCUETP8M2T4 including backup
+                                         29201452. + 19762915.+  9998863., # herwig ttbar , all 3 of them
+                                         38811017. , # ST_t-channel_antitop
+                                         67240808. , # ST_t-channel_top
+                                          6933094. + 998276. , # ST_tW_antitop + ext1
+                                          6952830. + 992024. , # ST_tW_top + ext1
+                                        10235198. + 29503700. + 39494122.  ,  # WJetsToLNu_HT-100To200
+                                         4950373. + 14815928. + 19866331.  ,  # Wjets 200To400
+                                                       1963464. + 5796237. ,  # Wjets 400To600 
+                                                      3779141. + 14908339. ,  # Wjets 600To800 
+                                                       1544513. + 6200954. ,  # Wjets 800To1200                 
+                                                        244532. + 6627909. ,  # Wjets 1200To2500
+                                                       253561. + 2384260.  ,  # Wjets 2500ToInf
+  ]
+                    self.xSectionsNew = [   831., # ttbar
+                                            831., #ttbar
+                                            80.95*0.322, # ST_t-channel_antitop
+                                            136.02*0.322, # ST t channel top 
+                                            35.6 ,  #singletop_tWantitop 
+                                            35.6 ,  #singletop_tW top 
+                                           1345. ,  # WJetsToLNu_HT-100To200
+                                            359.7,  # Wjets 200To400                  
+                                            48.91,  # Wjets 400To600
+                                            12.05,  # Wjets 600To800  
+                                            5.501,  # Wjets 800To1200
+                                            1.329,  # Wjets 1200To2500
+                                            0.03216, # Wjets 2500ToInf 
+
+] 
+
+                    self.eosDirOld = '/store/user/asparker/B2G2016/V5Trees/'                                                                  
+
+                    
+                    self.infilesOld = [
                     'b2gtreeV5_QCD_Pt-470to600_MuEnriched_pythia8_RunIISummer16MiniAODv2_try2.root',
                     'b2gtreeV5_QCD_Pt-470to600_MuEnriched_pythia8_RunIISummer16MiniAODv2_ext1_try3.root', 
                     'b2gtreeV5_ST_s-channel_amcatnlo-pythia8_RunIISummer16MiniAODv2_try4.root',
@@ -607,7 +683,7 @@ class RunSemiLepTTbar_HighMass() :
 
                     ]
 
-                    self.nEvents = [  3851524., # QCD Muenriched 470-600
+                    self.nEventsOld = [  3851524., # QCD Muenriched 470-600
                                       5663755., # QCD Muenriched 470-600 ext1
                                       1000000., # ST_schannel
                                     35038862., # ST t channel antitop
@@ -627,7 +703,7 @@ class RunSemiLepTTbar_HighMass() :
                                      7352465., # 800To1200_  1544513 + 5807952
                                     ]
 
-                    self.xSections = [  645.528 ,  # QCD Muenriched 470-600 
+                    self.xSectionsOld = [  645.528 ,  # QCD Muenriched 470-600 
                                        645.528 ,  # QCD Muenriched 470-600  
                                                3.36 , # ST_schannel
                                         80.95*0.322, # ST t channel antitop
@@ -646,8 +722,20 @@ class RunSemiLepTTbar_HighMass() :
                                         12.05,     #600To800  
                                         5.501     #800To1200 
                                         ]
-                                        
-                    self.lumi = 35860.0 # /pb     ### This is the correct luminosity of the new samples
+                                       
+                    self.lumiOld = 35860.0 # /pb   
+                    
+                    self.lumi = self.lumiOld
+                    self.infiles = self.infilesOld
+                    self.eosDir = self.eosDirOld
+                    self.xSections = self.xSectionsOld
+                    self.nEvents = self.nEventsOld
+                    if self.UseAK4Corr:
+                        self.lumi = 35860.0 # /pb  ### TO-DO:  Update to new Lumi once the _AK4 data files are complete
+                        self.infiles = self.infilesNew
+                        self.eosDir = self.eosDirNew
+                        self.xSections =self.xSectionsNew
+                        self.nEvents = self.nEventsNew
 
                     for ifile, afile in enumerate(self.infiles):
                         if self.verboseW  : print"infile is  {}   Afile is {}".format( self.infile,  self.xrdprefix +self.eosDir + afile)

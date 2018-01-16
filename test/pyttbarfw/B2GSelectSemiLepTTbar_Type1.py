@@ -9,6 +9,7 @@ class B2GSelectSemiLepTTbar_Type1( ) :
     """
     def __init__(self, options, tree, lepsel ):
         self.tau21Cut = options.tau21Cut
+        self.UseAK4Corr = options.UseAK4Corr 
         self.Subjettau21Cut = self.tau21Cut
         self.tau32Cut = options.tau32Cut
         self.bdiscmin = options.bdiscmin
@@ -31,14 +32,14 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         # Stage 0 (10)- Pass Leptonic Selection uppiSDJetP4Subjet0PuppiCorrMass_Binned
 
         # Stage 1 (11)- AK8 Jet Pt and eta cut
-        self.AK8PtCut = 400.
+        self.AK8PtCut =  350. #for the AK8Sept17 ttrees
         self.AK8EtaCut = 2.4
 
         # Stage 2 (12) - AK4 Jet bdisc cut
         # see self.bdiscmin above
 
         # Stage 3 (13) -  AK8 SD Jet mass cut
-        self.minAK8Mass = 110.
+        self.minAK8Mass = 105.
         self.maxAK8Mass = 250.
 
 
@@ -47,7 +48,7 @@ class B2GSelectSemiLepTTbar_Type1( ) :
 
         # Stage 5 (15) - AK8 SD Subjet 0 mass cut
         self.minAK8sjMass = 10.
-        self.maxAK8sjMass = 1000.
+        self.maxAK8sjMass = 100000.
 
         #Stage 6 (16) - AK8 SD Subjt 0 tau21 cut
         # see options.tau21Cut 
@@ -196,7 +197,9 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.PuppiPtSmear = None
 
 
-        self.PuppiCorr = self.tree.JetPuppiCorrFactor[0]
+        self.PuppiAK8Corr = self.tree.JetPuppiCorrFactor[0]
+        if self.UseAK4Corr :
+            self.PuppiCorr = self.tree.JetAK4PuppiCorrFactor[0]
         self.Corr = self.tree.JetCorrFactor[0]
         #self.CorrL2L3 = self.tree.JetSDptCorrL23[0]
         if self.itIsData :
@@ -324,7 +327,7 @@ class B2GSelectSemiLepTTbar_Type1( ) :
                                   self.tree.JetPuppiPhiRaw[0],
                                   self.tree.JetPuppiMassRaw[0] )  
         self.ak8PuppiJetP4Raw =   self.ak8PuppiJetP4
-        self.ak8PuppiJetP4 =   self.ak8PuppiJetP4 * self.PuppiCorr
+        self.ak8PuppiJetP4 =   self.ak8PuppiJetP4 * self.PuppiAK8Corr
         
         
         if self.ak8PuppiJetP4Raw != None :
@@ -384,7 +387,7 @@ class B2GSelectSemiLepTTbar_Type1( ) :
 
         self.ak8PuppiSDJetP4 =  self.ak8PuppiSDJetP4_Subjet0 +  self.ak8PuppiSDJetP4_Subjet1
         self.ak8PuppiSDJetP4Raw =   self.ak8PuppiSDJetP4
-        self.ak8PuppiSDJetP4 =   self.ak8PuppiSDJetP4 * self.PuppiCorr
+        #self.ak8PuppiSDJetP4 =   self.ak8PuppiSDJetP4 #* self.PuppiAK8Corr
         if self.ak8PuppiSDJetP4Raw != None :
             if self.ak8PuppiSDJetP4.Perp() > 0 :
                 self.SDRhoRatio = pow( self.ak8PuppiSDJetP4.M() / (self.ak8PuppiSDJetP4.Perp()*0.8) , 2)
