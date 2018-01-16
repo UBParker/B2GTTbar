@@ -151,6 +151,7 @@ class RunSemiLepTTbar_HighMass() :
         self.AK8MHist = []
         self.AK8MSDHist = []
         self.AK8MSDSJ0Hist = []
+        self.AK8MSDSJ0AK4corrHist = []
         self.lepNames = ['Electron', 'Muon']
 
         self.hists = []
@@ -160,6 +161,7 @@ class RunSemiLepTTbar_HighMass() :
             self.AK8MHist.append([])
             self.AK8MSDHist.append([])
             self.AK8MSDSJ0Hist.append([])
+            self.AK8MSDSJ0AK4corrHist.append([])
 
             self.LeptonPtHist.append([])
             self.LeptonEtaHist.append([])
@@ -199,7 +201,7 @@ class RunSemiLepTTbar_HighMass() :
             self.AK8MHist[ilep][index].Fill( b.ak8Jet.M() )
             self.AK8MSDHist[ilep][index].Fill( b.ak8SDJet.M() )
             self.AK8MSDSJ0Hist[ilep][index].Fill( b.ak8SDJet_Subjet0.M() )
-
+            self.AK8MSDSJ0AK4corrHist[ilep][index].Fill( b.ak8SDJet_Subjet0_AK4corr.M() )
         if a.leptonP4 != None : 
             self.LeptonPtHist[ilep][index].Fill( a.leptonP4.Perp() )
             self.LeptonEtaHist[ilep][index].Fill( a.leptonP4.Eta() )

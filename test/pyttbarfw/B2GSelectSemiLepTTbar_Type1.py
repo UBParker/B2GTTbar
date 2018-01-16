@@ -22,6 +22,7 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.ak8Jet = None
         self.ak8SDJet = None
         self.ak8SDJet_Subjet0 = None
+        self.ak8SDJet_Subjet0_AK4corr = None
         self.ak8SDJet_Subjet1 = None
         self.ak4JetBdisc = None        
 
@@ -36,6 +37,7 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.ak8Jet = None
         self.ak8SDJet = None
         self.ak8SDJet_Subjet0 = None
+        self.ak8SDJet_Subjet0_AK4corr = None
         self.ak8SDJet_Subjet1 = None
         self.ak4JetBdisc = None
         
@@ -52,8 +54,10 @@ class B2GSelectSemiLepTTbar_Type1( ) :
         self.ak8Jet = ROOT.TLorentzVector()
         self.ak8Jet.SetPtEtaPhiM( self.tree.JetPuppiPt[0], self.tree.JetPuppiEta[0], self.tree.JetPuppiPhi[0], self.tree.JetPuppiMass[0] )        
         self.ak8SDJet_Subjet0 = ROOT.TLorentzVector()
+        self.ak8SDJet_Subjet0_AK4corr = ROOT.TLorentzVector()
         self.ak8SDJet_Subjet1 = ROOT.TLorentzVector()
         self.ak8SDJet_Subjet0.SetPtEtaPhiM( self.tree.JetPuppiSDsubjet0pt[0], self.tree.JetPuppiSDsubjet0eta[0], self.tree.JetPuppiSDsubjet0phi[0], self.tree.JetPuppiSDsubjet0mass[0] )
+        self.ak8SDJet_Subjet0_AK4corr.SetPtEtaPhiM( self.tree.JetPuppiSDsubjet0pt[0], self.tree.JetPuppiSDsubjet0eta[0], self.tree.JetPuppiSDsubjet0phi[0], self.tree.JetPuppiSDsubjet0mass[0] )
         self.ak8SDJet_Subjet1.SetPtEtaPhiM( self.tree.JetPuppiSDsubjet1pt[0], self.tree.JetPuppiSDsubjet1eta[0], self.tree.JetPuppiSDsubjet1phi[0], self.tree.JetPuppiSDsubjet1mass[0] )
         self.ak8SDJet =  self.ak8SDJet_Subjet0 +  self.ak8SDJet_Subjet1
         self.tau32 = self.tree.JetPuppiTau32[0]
